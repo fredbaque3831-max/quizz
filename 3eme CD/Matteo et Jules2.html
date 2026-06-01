@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Révisions Histoire-Géo</title>
+  <style>
+    :root{
+      --bg1:#eef6f4;
+      --bg2:#f7f4ee;
+      --card:#ffffffcc;
+      --card-solid:#ffffff;
+      --text:#243447;
+      --muted:#617083;
+      --primary:#5b8def;
+      --primary-dark:#406fdb;
+      --accent:#7cc8a3;
+      --accent-dark:#57b388;
+      --border:#d9e2ea;
+      --shadow:0 18px 40px rgba(35, 55, 80, 0.12);
+      --radius:24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body{
+      margin:0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top left, rgba(91,141,239,0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(124,200,163,0.18), transparent 28%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+
+    .app{
+      max-width:1200px;
+      margin:0 auto;
+      padding:28px 18px 40px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.72));
+      border:1px solid rgba(255,255,255,0.8);
+      box-shadow:var(--shadow);
+      border-radius:32px;
+      padding:28px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size:clamp(1.8rem, 3vw, 3rem);
+      letter-spacing:-0.03em;
+      color:#1f3147;
+    }
+
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+      max-width:780px;
+    }
+
+    .toolbar{
+      margin-top:22px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .tab{
+      border:none;
+      padding:12px 18px;
+      border-radius:999px;
+      background:#edf2f7;
+      color:var(--text);
+      cursor:pointer;
+      font-weight:700;
+      transition:0.2s ease;
+    }
+
+    .tab:hover{ transform: translateY(-1px); }
+    .tab.active{
+      background:var(--primary);
+      color:#fff;
+      box-shadow:0 10px 20px rgba(91,141,239,0.25);
+    }
+
+    select{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:14px;
+      padding:12px 14px;
+      color:var(--text);
+      min-width:220px;
+      outline:none;
+    }
+
+    .content{
+      margin-top:22px;
+      display:grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap:20px;
+    }
+
+    .main, .side{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,0.75);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .section-head{
+      padding:18px 22px;
+      border-bottom:1px solid #e8eef5;
+      background:rgba(255,255,255,0.55);
+    }
+
+    .section-title{
+      margin:0;
+      font-size:1.1rem;
+      color:#1f3147;
+    }
+
+    .section-sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:0.95rem;
+      line-height:1.5;
+    }
+
+    .section-body{
+      padding:22px;
+    }
+
+    .flashcard{
+      background:linear-gradient(180deg, #ffffff, #f9fbfd);
+      border:1px solid var(--border);
+      border-radius:28px;
+      padding:28px;
+      min-height:340px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .flashcard::before{
+      content:"";
+      position:absolute;
+      top:-40px;
+      right:-40px;
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      background:rgba(124,200,163,0.15);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#eef6ff;
+      color:#2f64c7;
+      font-weight:700;
+      font-size:0.9rem;
+      width:fit-content;
+      margin-bottom:16px;
+    }
+
+    .question{
+      font-size:1.45rem;
+      line-height:1.5;
+      font-weight:800;
+      color:#1f3147;
+      margin:0 0 14px;
+      max-width:95%;
+    }
+
+    .answer{
+      display:none;
+      padding:16px 18px;
+      background:#f4fbf7;
+      border:1px solid #d7efe2;
+      border-radius:18px;
+      color:#214433;
+      line-height:1.65;
+    }
+
+    .answer.show{ display:block; }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:700;
+      cursor:pointer;
+      transition:0.2s ease;
+    }
+
+    .btn:hover{ transform: translateY(-1px); }
+
+    .btn-primary{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .btn-primary:hover{ background:var(--primary-dark); }
+
+    .btn-secondary{
+      background:var(--accent);
+      color:#fff;
+    }
+
+    .btn-secondary:hover{ background:var(--accent-dark); }
+
+    .quiz-option{
+      width:100%;
+      text-align:left;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:14px 16px;
+      border-radius:16px;
+      margin:10px 0;
+      cursor:pointer;
+      transition:0.2s ease;
+      line-height:1.5;
+    }
+
+    .quiz-option:hover{
+      border-color:#a9bfd6;
+      background:#f8fbff;
+    }
+
+    .quiz-option:disabled{
+      cursor:not-allowed;
+      opacity:0.85;
+    }
+
+    .feedback{
+      margin-top:14px;
+      font-weight:700;
+      min-height:24px;
+    }
+
+    .right{ color:#1c8f55; }
+    .wrong{ color:#c24141; }
+
+    .hidden{ display:none; }
+
+    .stats{
+      display:grid;
+      gap:12px;
+    }
+
+    .stat{
+      background:rgba(255,255,255,0.78);
+      border:1px solid #e5edf5;
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .stat-label{
+      display:block;
+      font-size:0.9rem;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .stat-value{
+      font-size:1.2rem;
+      font-weight:800;
+      color:#1f3147;
+    }
+
+    .mini-list{
+      margin:0;
+      padding-left:18px;
+      color:var(--text);
+      line-height:1.8;
+    }
+
+    .mini-list li{ margin-bottom:6px; }
+
+    @media (max-width: 900px){
+      .content{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="hero">
+      <h1>Révisions Histoire-Géo</h1>
+      <p class="subtitle">
+        Une appli plus claire, plus douce et plus éducative pour apprendre les repères d’histoire, de géographie et les notions essentielles.
+      </p>
+
+      <div class="toolbar">
+        <div class="tabs">
+          <button class="tab active" onclick="setMode('flashcards', this)">Flashcards</button>
+          <button class="tab" onclick="setMode('quiz', this)">Quiz</button>
+        </div>
+
+        <select id="categorySelect" onchange="render()">
+          <option value="all">Tout mélanger</option>
+          <option value="history">Histoire</option>
+          <option value="geo">Géographie</option>
+          <option value="notions">Notions</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="main">
+        <div class="section-head">
+          <h2 class="section-title">Zone de révision</h2>
+          <p class="section-sub">Lis, mémorise, puis teste-toi avec les questions proposées.</p>
+        </div>
+        <div class="section-body">
+          <div id="flashcardsView"></div>
+          <div id="quizView" class="hidden"></div>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="section-head">
+          <h2 class="section-title">Objectifs de révision</h2>
+          <p class="section-sub">Ce que l’élève travaille avec cette appli.</p>
+        </div>
+        <div class="section-body">
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-label">Mémoire</span>
+              <div class="stat-value">Flashcards</div>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Vérification</span>
+              <div class="stat-value">Quiz QCM</div>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Contenu</span>
+              <div class="stat-value">Histoire + Géo</div>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Conseil</span>
+              <div class="stat-value">Réviser souvent</div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;">
+            <h3 style="margin:0 0 10px; color:#1f3147;">Méthode conseillée</h3>
+            <ul class="mini-list">
+              <li>Lis la question sans regarder la réponse.</li>
+              <li>Essaie de répondre à voix haute.</li>
+              <li>Vérifie ensuite la réponse correcte.</li>
+              <li>Refais plusieurs fois pour mieux mémoriser.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cards = [
+      {type:"history", q:"1914-1918 : que désigne cette période ?", a:"La Grande Guerre, aussi appelée Première Guerre mondiale."},
+      {type:"history", q:"1916 : quel événement majeur faut-il retenir ?", a:"La bataille de Verdun."},
+      {type:"history", q:"1917 : que se passe-t-il en Russie ?", a:"Les révolutions russes."},
+      {type:"history", q:"11 novembre 1918 : quel événement ?", a:"L’armistice de la Première Guerre mondiale."},
+      {type:"history", q:"1933-1945 : quel régime en Allemagne ?", a:"L’Allemagne nazie d’Adolf Hitler."},
+      {type:"history", q:"18 juin 1940 : quel appel célèbre ?", a:"L’appel du général de Gaulle depuis Londres."},
+      {type:"history", q:"6 juin 1944 : quel événement ?", a:"Le débarquement allié en Normandie."},
+      {type:"history", q:"8 mai 1945 : que se passe-t-il ?", a:"La capitulation allemande et la fin de la guerre en Europe."},
+      {type:"history", q:"Août 1945 : quels événements ?", a:"Les bombes atomiques sur Hiroshima et Nagasaki."},
+      {type:"history", q:"1945 : quelle organisation internationale est créée ?", a:"L’ONU."},
+      {type:"history", q:"1947-1991 : quelle période ?", a:"La Guerre froide."},
+      {type:"history", q:"1958 : que marque cette date en France ?", a:"La naissance de la Ve République."},
+      {type:"history", q:"1962 : quel événement en Algérie ?", a:"L’indépendance de l’Algérie."},
+      {type:"history", q:"9 novembre 1989 : quel événement symbolique ?", a:"La chute du mur de Berlin."},
+      {type:"history", q:"11 septembre 2001 : quel événement ?", a:"Les attentats terroristes aux États-Unis."},
+      {type:"notions", q:"Qu’est-ce que la guerre totale ?", a:"Une guerre qui mobilise toutes les ressources d’un pays : soldats, économie, civils, propagande."},
+      {type:"notions", q:"Qu’est-ce que la propagande ?", a:"Un ensemble de moyens pour influencer les opinions et soutenir un régime ou une guerre."},
+      {type:"notions", q:"Qu’est-ce qu’un régime totalitaire ?", a:"Un régime qui contrôle la société, les idées et la vie politique."},
+      {type:"notions", q:"Qu’est-ce que la Shoah ?", a:"L’extermination des Juifs d’Europe par les nazis."},
+      {type:"notions", q:"Qu’est-ce que le goulag ?", a:"Un camp de travail forcé en URSS."},
+      {type:"notions", q:"Qu’est-ce que la Résistance ?", a:"L’ensemble des actions contre l’occupation allemande et le régime de Vichy."},
+      {type:"notions", q:"Qu’est-ce que la décolonisation ?", a:"L’indépendance des colonies par rapport aux puissances européennes."},
+      {type:"notions", q:"Qu’est-ce que le monde bipolaire ?", a:"Un monde dominé par deux grands blocs pendant la Guerre froide."},
+      {type:"geo", q:"Quels sont les 5 océans ?", a:"Pacifique, Atlantique, Indien, Arctique et Austral."},
+      {type:"geo", q:"Quels sont quelques grands fleuves du monde ?", a:"Nil, Congo, Gange, Yangzi, Amazone, Mississippi."},
+      {type:"geo", q:"Quels grands pays faut-il connaître ?", a:"Égypte, Inde, Chine, Japon, États-Unis, Canada, Mexique, Brésil, Indonésie."},
+      {type:"geo", q:"Quelles sont quelques grandes métropoles mondiales ?", a:"Tokyo, Le Caire, Pékin, Shanghai, Bombay, Calcutta, New York, São Paulo, Mexico, Dacca."},
+      {type:"geo", q:"Qu’est-ce qu’un isthme ?", a:"Une bande de terre étroite reliant deux terres et séparant deux mers."},
+      {type:"geo", q:"Quels sont deux isthmes célèbres ?", a:"Suez et Panama."},
+      {type:"geo", q:"Quel détroit faut-il connaître en géographie ?", a:"Le détroit de Gibraltar."}
+    ];
+
+    let mode = "flashcards";
+    let flashIndex = 0;
+    let quizIndex = 0;
+    let score = 0;
+
+    function filteredCards(){
+      const cat = document.getElementById("categorySelect").value;
+      if(cat === "all") return cards;
+      return cards.filter(c => c.type === cat);
+    }
+
+    function setMode(newMode, btn){
+      mode = newMode;
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("flashcardsView").classList.toggle("hidden", newMode !== "flashcards");
+      document.getElementById("quizView").classList.toggle("hidden", newMode !== "quiz");
+      render();
+    }
+
+    function render(){
+      const list = filteredCards();
+      if(mode === "flashcards") renderFlashcards(list);
+      else renderQuiz(list);
+    }
+
+    function renderFlashcards(list){
+      const view = document.getElementById("flashcardsView");
+      if(list.length === 0){
+        view.innerHTML = "<p>Aucune carte disponible pour cette catégorie.</p>";
+        document.getElementById("quizView").innerHTML = "";
+        return;
+      }
+      flashIndex = flashIndex % list.length;
+      const c = list[flashIndex];
+      view.innerHTML = `
+        <div class="flashcard">
+          <div>
+            <div class="badge">Carte de révision</div>
+            <h3 class="question">${c.q}</h3>
+            <div class="answer" id="answerBox">${c.a}</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" onclick="toggleAnswer()">Voir la réponse</button>
+            <button class="btn btn-secondary" onclick="nextFlashcard()">Carte suivante</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleAnswer(){
+      document.getElementById("answerBox").classList.toggle("show");
+    }
+
+    function nextFlashcard(){
+      const list = filteredCards();
+      flashIndex = (flashIndex + 1) % list.length;
+      renderFlashcards(list);
+    }
+
+    function renderQuiz(list){
+      const view = document.getElementById("quizView");
+      if(list.length < 4){
+        view.innerHTML = "<p>Il faut au moins 4 cartes pour faire un quiz.</p>";
+        return;
+      }
+      const current = list[quizIndex % list.length];
+      const wrong = list.filter((_, i) => i !== (quizIndex % list.length)).sort(() => Math.random() - 0.5).slice(0,3);
+      const options = [current.a, ...wrong.map(x => x.a)].sort(() => Math.random() - 0.5);
+
+      view.innerHTML = `
+        <div class="flashcard">
+          <div>
+            <div class="badge">Quiz</div>
+            <h3 class="question">${current.q}</h3>
+            <div id="options"></div>
+            <div class="feedback" id="feedback"></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" onclick="nextQuestion()">Question suivante</button>
+          </div>
+        </div>
+      `;
+
+      const box = document.getElementById("options");
+      options.forEach(opt => {
+        const button = document.createElement("button");
+        button.className = "quiz-option";
+        button.textContent = opt;
+        button.onclick = () => checkAnswer(opt, current.a);
+        box.appendChild(button);
+      });
+
+      updateStats();
+    }
+
+    function checkAnswer(choice, correct){
+      const fb = document.getElementById("feedback");
+      if(choice === correct){
+        fb.textContent = "Bonne réponse !";
+        fb.className = "feedback right";
+        score++;
+      } else {
+        fb.textContent = "Mauvaise réponse. La bonne réponse est : " + correct;
+        fb.className = "feedback wrong";
+      }
+      document.querySelectorAll(".quiz-option").forEach(b => b.disabled = true);
+      updateStats();
+    }
+
+    function nextQuestion(){
+      quizIndex++;
+      renderQuiz(filteredCards());
+    }
+
+    function updateStats(){
+      const list = filteredCards();
+      const total = list.length;
+      const currentNumber = mode === "flashcards" ? (flashIndex + 1) : (quizIndex + 1);
+      document.querySelector(".section-title").nextElementSibling.textContent =
+        mode === "flashcards"
+          ? "Lis la carte, puis clique sur la réponse quand tu es prêt."
+          : "Choisis la bonne réponse, puis passe à la question suivante.";
+
+      if(mode === "flashcards"){
+        const sideStat = document.querySelector(".stat-value");
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>

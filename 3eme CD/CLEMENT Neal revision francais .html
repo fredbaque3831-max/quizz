@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révisions Français Pro - Mode Sombre</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2e2a5e;
+            --background: #0f172a; /* Fond noir/bleu nuit */
+            --card-bg: #1e293b;     /* Couleur des cartes */
+            --accent: #f43f5e;
+            --success: #10b981;
+            --text: #f8fafc;        /* Texte clair */
+            --text-light: #94a3b8;  /* Texte secondaire */
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 3rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #312e81, #4c1d95);
+            color: white;
+            width: 100%;
+            padding: 3rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            margin-bottom: 2.5rem;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .nav-container {
+            display: flex;
+            background: #334155;
+            padding: 0.4rem;
+            border-radius: 30px;
+            gap: 0.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        button.nav-btn {
+            background: transparent;
+            color: var(--text-light);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        button.nav-btn.active {
+            background-color: var(--card-bg);
+            color: #67e8f9; /* Cyan clair pour faire ressortir l'onglet actif */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 650px;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .container.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        /* --- FLASHCARDS STYLES --- */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            margin: 1.5rem 0 2rem 0;
+            width: 100%;
+            height: 280px;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flashcard.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            font-size: 1.35rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+            text-align: center;
+        }
+
+        .card-front {
+            background-color: #1e293b;
+            color: var(--text);
+            border: 2px dashed #475569;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            transform: rotateY(180deg);
+            font-weight: 500;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .card-hint {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1.5rem;
+            font-weight: 700;
+            opacity: 0.6;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+        }
+        .action-btn:hover { 
+            background-color: var(--primary-hover); 
+            transform: translateY(-1px);
+        }
+        .action-btn-secondary {
+            background-color: #334155;
+            color: var(--text);
+        }
+        .action-btn-secondary:hover { background-color: #475569; }
+
+        #card-indicator {
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        /* --- QUIZ STYLES --- */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #334155;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), #a5b4fc);
+            transition: width 0.3s ease;
+        }
+
+        .quiz-question {
+            font-size: 1.35rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .options-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 1.2rem;
+            text-align: left;
+            background-color: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:not([disabled]):hover {
+            background-color: var(--primary-light);
+            border-color: #818cf8;
+            color: #ffffff;
+            transform: translateX(4px);
+        }
+
+        .option-btn.correct {
+            background-color: rgba(16, 185, 129, 0.15);
+            border-color: var(--success);
+            color: #34d399;
+            font-weight: 700;
+        }
+
+        .option-btn.wrong {
+            background-color: rgba(244, 63, 94, 0.15);
+            border-color: var(--accent);
+            color: #fb7185;
+        }
+
+        .score-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #818cf8;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Révisions Français</h1>
+        <p>Maîtrisez la langue et la littérature en mode sombre 🌙</p>
+    </header>
+
+    <div class="nav-container">
+        <button class="nav-btn active" onclick="switchMode('flashcards')">Flashcards</button>
+        <button class="nav-btn" onclick="switchMode('quiz')">Quiz interactif</button>
+    </div>
+
+    <div id="flashcards-section" class="container active">
+        <h2>Cartes de mémorisation</h2>
+        <p class="subtitle">Cliquez sur la carte pour révéler la règle ou la réponse cachée.</p>
+        
+        <div class="flashcard-wrapper" onclick="toggleCard()">
+            <div id="flashcard" class="flashcard">
+                <div id="card-front" class="card-face card-front">
+                    <span id="front-text">Chargement...</span>
+                    <span class="card-hint">👁️ Cliquez pour voir la réponse</span>
+                </div>
+                <div id="card-back" class="card-face card-back">
+                    <span id="back-text">Chargement...</span>
+                    <span class="card-hint" style="color: white; opacity: 0.8;">🔄 Cliquez pour revenir</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="action-btn action-btn-secondary" onclick="prevCard(event)">↩️ Précédent</button>
+            <span id="card-indicator">1 / 10</span>
+            <button class="action-btn" onclick="nextCard(event)">Suivant ➡️</button>
+        </div>
+    </div>
+
+    <div id="quiz-section" class="container">
+        <h2>Évaluez vos connaissances</h2>
+        <p id="quiz-progress" style="color: var(--text-light); font-size: 0.95rem; margin-bottom: 0.5rem;">Question 1 / 10</p>
+        
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        
+        <div id="quiz-box">
+            <div id="question" class="quiz-question">La question apparaîtra ici.</div>
+            <div id="options" class="options-list"></div>
+            <button id="next-quiz-btn" class="action-btn" style="margin-top: 2rem; display: none; width: 100%; text-align: center;" onclick="nextQuizQuestion()">Question suivante ➡️</button>
+        </div>
+
+        <div id="result-box" style="display: none; text-align: center; padding: 1rem 0;">
+            <p class="score-text">✨ Session terminée ! ✨</p>
+            <p id="score-display" style="font-size: 1.3rem; margin-bottom: 2rem; color: var(--text-light);"></p>
+            <button class="action-btn" style="width: 100%;" onclick="restartQuiz()">🔄 Recommencer le test</button>
+        </div>
+    </div>
+
+    <script>
+        // --- BASE DE DONNÉES ---
+        const data = [
+            {
+                question: "Qu'est-ce qu'une métaphore ?",
+                answer: "C'est une figure de style qui associe deux éléments imagés sans utiliser d'outil de comparaison (comme 'comme' ou 'tel que'). Ex: 'Cet homme est un lion'.",
+                options: [
+                    "Une comparaison sans outil de comparaison",
+                    "Une comparaison avec l'outil 'comme'",
+                    "Une exagération de la réalité",
+                    "L'attribution de traits humains à un objet"
+                ],
+                correctIndex: 0
+            },
+            {
+                question: "Quel est le participe passé correct du verbe 'prendre' au féminin pluriel ?",
+                answer: "Le participe passé est 'prises'. On l'accorde si le COD est placé avant le verbe (ex: 'Les notes que j'ai prises').",
+                options: ["Prendu", "Prises", "Prit", "Pris"],
+                correctIndex: 1
+            },
+            {
+                question: "Qu'est-ce qu'un pléonasme ?",
+                answer: "C'est l'association superflue de termes possédant le même sens. Exemples récurrents : 'monter en haut', 'reculer en arrière'.",
+                options: [
+                    "Une contradiction volontaire",
+                    "Une figure pour adoucir une triste réalité",
+                    "La répétition inutile de termes ayant le même sens",
+                    "Un mot possédant plusieurs définitions"
+                ],
+                correctIndex: 2
+            },
+            {
+                question: "Dans la phrase 'Il mange une pomme', quelle est la fonction de 'une pomme' ?",
+                answer: "C'est un Complément d'Objet Direct (COD). Il est directement rattaché au verbe et répond à la question : 'Il mange quoi ?'.",
+                options: ["Sujet de l'action", "Complément d'Objet Direct (COD)", "Complément d'Objet Indirect (COI)", "Attribut du sujet"],
+                correctIndex: 1
+            },
+            {
+                question: "Quel auteur célèbre a écrit le roman 'Les Misérables' ?",
+                answer: "Victor Hugo. Ce chef-d'œuvre de la littérature française décrivant la misère parisienne a été publié en 1862.",
+                options: ["Émile Zola", "Gustave Flaubert", "Albert Camus", "Victor Hugo"],
+                correctIndex: 3
+            },
+            {
+                question: "Quelle est la nature du mot 'rapidement' dans une phrase ?",
+                answer: "C'est un adverbe. Les mots se terminant par '-ment' servent généralement à modifier le sens d'un verbe ou d'un adjectif.",
+                options: ["Un adjectif qualificatif", "Un adverbe de manière", "Un nom commun", "Une conjonction de coordination"],
+                correctIndex: 1
+            },
+            {
+                question: "Comment appelle-t-on une strophe composée de quatre vers ?",
+                answer: "C'est un quatrain. Un tercet en compte 3, un distique en compte 2 et un sizain en compte 6.",
+                options: ["Un tercet", "Un sonnet", "Un quatrain", "Un alexandrin"],
+                correctIndex: 2
+            },
+            {
+                question: "Trouvez la bonne orthographe pour compléter : 'Ils ____ aller au cinéma.'",
+                answer: "La bonne forme est 'auraient' (conditionnel présent, 3e personne du pluriel).",
+                options: ["auraient", "orait", "aurai", "aures"],
+                correctIndex: 0
+            },
+            {
+                question: "Qu'est-ce qu'un oxymore ?",
+                answer: "C'est une figure de style qui réunit deux mots de sens opposés dans une même expression (ex: 'Un silence assourdissant', 'Une obscure clarté').",
+                options: [
+                    "Une répétition en début de phrase",
+                    "Le rapprochement de deux mots aux sens contraires",
+                    "Une comparaison très exagérée",
+                    "Une liste de mots accumulés"
+                ],
+                correctIndex: 1
+            },
+            {
+                question: "À quel mouvement littéraire appartient l'écrivain Émile Zola ?",
+                answer: "Le Naturalisme. Ce mouvement cherche à introduire la méthode des sciences de l'observation dans le roman.",
+                options: ["Le Romantisme", "L'Humanisme", "Le Surréalisme", "Le Naturalisme"],
+                correctIndex: 3
+            }
+        ];
+
+        // --- GESTION DE LA NAVIGATION ---
+        function switchMode(mode) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            if(mode === 'flashcards') {
+                document.getElementById('flashcards-section').classList.add('active');
+                event.target.classList.add('active');
+            } else {
+                document.getElementById('quiz-section').classList.add('active');
+                event.target.classList.add('active');
+                restartQuiz();
+            }
+        }
+
+        // --- LOGIQUE FLASHCARDS ---
+        let currentCardIndex = 0;
+        const cardElem = document.getElementById('flashcard');
+        const frontText = document.getElementById('front-text');
+        const backText = document.getElementById('back-text');
+        const indicatorElem = document.getElementById('card-indicator');
+
+        function updateCard() {
+            cardElem.classList.remove('flipped');
+            setTimeout(() => {
+                frontText.textContent = data[currentCardIndex].question;
+                backText.textContent = data[currentCardIndex].answer;
+                indicatorElem.textContent = `${currentCardIndex + 1} / ${data.length}`;
+            }, 150);
+        }
+
+        function toggleCard() {
+            cardElem.classList.toggle('flipped');
+        }
+
+        function nextCard(event) {
+            event.stopPropagation();
+            currentCardIndex = (currentCardIndex + 1) % data.length;
+            updateCard();
+        }
+
+        function prevCard(event) {
+            event.stopPropagation();
+            currentCardIndex = (currentCardIndex - 1 + data.length) % data.length;
+            updateCard();
+        }
+
+        // --- LOGIQUE QUIZ ---
+        let currentQuizIndex = 0;
+        let score = 0;
+
+        function loadQuizQuestion() {
+            const quizBox = document.getElementById('quiz-box');
+            const resultBox = document.getElementById('result-box');
+            const nextBtn = document.getElementById('next-quiz-btn');
+            
+            nextBtn.style.display = "none";
+            quizBox.style.display = "block";
+            resultBox.style.display = "none";
+
+            document.getElementById('quiz-progress').textContent = `Question ${currentQuizIndex + 1} / ${data.length}`;
+            
+            const progressPercent = ((currentQuizIndex) / data.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+            
+            const currentQ = data[currentQuizIndex];
+            document.getElementById('question').textContent = currentQ.question;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectOption(index, currentQ.correctIndex);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex, correctIndex) {
+            const buttons = document.querySelectorAll('.option-btn');
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === correctIndex) {
+                    btn.classList.add('correct');
+                }
+                if (index === selectedIndex && selectedIndex !== correctIndex) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selectedIndex === correctIndex) {
+                score++;
+            }
+
+            document.getElementById('next-quiz-btn').style.display = "block";
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < data.length) {
+                loadQuizQuestion();
+            } else {
+                document.getElementById('progress-bar').style.width = `100%`;
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-box').style.display = "none";
+            const resultBox = document.getElementById('result-box');
+            resultBox.style.display = "block";
+            
+            let appreciation = "Peut mieux faire, continuez vos efforts ! 📚";
+            if(score >= 8) appreciation = "Excellent travail ! Vous maîtrisez le sujet ! 🏆";
+            else if(score >= 5) appreciation = "Bon score, vous êtes sur la bonne voie ! 👍";
+
+            document.getElementById('score-display').innerHTML = `Vous avez obtenu <strong>${score} / ${data.length}</strong> bonnes réponses.<br><br><span style="color:var(--text); font-weight:600;">${appreciation}</span>`;
+        }
+
+        function restartQuiz() {
+            currentQuizIndex = 0;
+            score = 0;
+            loadQuizQuestion();
+        }
+
+        updateCard();
+        loadQuizQuestion();
+    </script>
+</body>
+</html>

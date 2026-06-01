@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objectif Brevet - Révisions Intégrales</title>
+    <style>
+        :root {
+            --bg-dark: #121214;
+            --card-dark: #1e1e24;
+            --text-light: #f3f4f6;
+            --text-muted: #9ca3af;
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @media (max-width: 650px) {
+            .subject-grid { grid-template-columns: 1fr; }
+        }
+
+        .subject-card {
+            background: var(--card-dark);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: 1px solid #2e2e38;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 6px;
+            background: var(--subject-color);
+        }
+
+        .subject-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 15px var(--subject-color);
+            border-color: transparent;
+        }
+
+        .subject-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-5px);
+        }
+
+        .subject-header {
+            padding: 40px;
+            border-radius: 24px;
+            background: var(--subject-gradient);
+            color: white;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .btn-module {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-module:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .chapter-selector {
+            background: var(--card-dark);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #2e2e38;
+        }
+
+        .chapter-selector h3 {
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .chapter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-chapter {
+            background: #2e2e38;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-chapter:hover, .btn-chapter.active {
+            background: var(--subject-color);
+            font-weight: bold;
+        }
+
+        /* Fiche de cours résumé */
+        .course-summary {
+            background: rgba(255,255,255,0.03);
+            border-left: 5px solid var(--subject-color);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .course-summary h4 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+
+        .course-summary p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .course-summary ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* Styles Spécifiques pour les Cartes Mentales CSS de l'onglet révision */
+        .mindmap-container {
+            background: #141419;
+            border: 1px solid #2e2e38;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .mindmap-title {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mindmap-root {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .mindmap-node-core {
+            background: var(--subject-gradient);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .mindmap-branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .mindmap-branch {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-top: 4px solid var(--branch-color, var(--subject-color));
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .mindmap-branch h5 {
+            color: var(--branch-color, #fff);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .mindmap-leafs {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.95rem;
+        }
+
+        .mindmap-leafs li {
+            position: relative;
+            padding-left: 15px;
+            color: var(--text-muted);
+        }
+
+        .mindmap-leafs li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--branch-color, var(--subject-color));
+        }
+
+        .revision-list {
+            background: var(--card-dark);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .revision-item {
+            padding: 15px;
+            border-bottom: 1px solid #2e2e38;
+            line-height: 1.6;
+        }
+        .revision-item:last-child { border: none; }
+        .revision-item strong { color: #fff; font-size: 1.1rem; }
+
+        /* Flashcards */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 450px;
+            height: 300px;
+            margin: 40px auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .card-front {
+            background: var(--card-dark);
+            border: 3px solid var(--subject-color);
+            color: white;
+        }
+
+        .card-back {
+            background: var(--subject-gradient);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Quizz */
+        .quiz-container {
+            background: var(--card-dark);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .quiz-progress {
+            height: 6px;
+            background: #2e2e38;
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .quiz-progress-bar {
+            height: 100%;
+            background: var(--subject-gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: #2e2e38;
+            color: white;
+            border: 2px solid transparent;
+            padding: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background: #3e3e4a;
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct { background: #10b981 !important; border-color: #10b981; }
+        .option-btn.wrong { background: #ef4444 !important; border-color: #ef4444; }
+
+        .score-screen { text-align: center; padding: 30px; }
+        .score-circle {
+            width: 150px; height: 150px; border-radius: 50%;
+            background: var(--subject-gradient);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; font-weight: bold; margin: 20px auto;
+        }
+
+        .btn-action {
+            background: var(--subject-gradient);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-action:hover { transform: scale(1.05); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="home-view" class="view active">
+            <header>
+                <h1>🎯 Objectif Brevet 2026</h1>
+                <p style="color: var(--text-muted)">Système d'apprentissage complet & Cartes mentales interactives</p>
+            </header>
+            <div class="subject-grid" id="subject-menu"></div>
+        </div>
+
+        <div id="subject-view" class="view">
+            <button class="btn-back" onclick="showView('home-view')">← Retour aux matières</button>
+            
+            <div class="subject-header" id="subject-hero">
+                <h1 id="subject-title">Matière</h1>
+                <div class="nav-modules">
+                    <button class="btn-module" onclick="openModuleTab('revision')">📖 Fiches & Cours</button>
+                    <button class="btn-module" onclick="openModuleTab('flashcards')">🃏 Flashcards</button>
+                    <button class="btn-module" onclick="openModuleTab('quiz')">🧠 Quizz (10 Qs)</button>
+                </div>
+            </div>
+
+            <div class="chapter-selector" id="chapter-selector-container">
+                <h3 id="selector-title">Sélectionner un filtre d'étude :</h3>
+                <div class="chapter-buttons" id="chapter-buttons-zone"></div>
+            </div>
+
+            <div id="module-revision" class="sub-view" style="display:none;">
+                <div class="course-summary" id="course-summary-box"></div>
+                <div id="mindmap-zone"></div>
+                <div class="revision-list" id="revision-content"></div>
+            </div>
+
+            <div id="module-flashcards" class="sub-view" style="display:none;">
+                <div class="flashcard-wrapper" onclick="flipCard()">
+                    <div class="flashcard" id="flashcard">
+                        <div class="card-face card-front" id="card-front">Question</div>
+                        <div class="card-face card-back" id="card-back">Réponse</div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn-action" onclick="nextFlashcard(event)">Flashcard Suivante ➔</button>
+                </div>
+            </div>
+
+            <div id="module-quiz" class="sub-view" style="display:none;">
+                <div class="quiz-container" id="quiz-box">
+                    <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-progress-bar"></div></div>
+                    <div class="question-text" id="question-text">La question apparaîtra ici.</div>
+                    <div class="options-grid" id="options-grid"></div>
+                </div>
+                <div class="quiz-container score-screen" id="score-box" style="display:none;">
+                    <h2>Résultat du Quizz !</h2>
+                    <div class="score-circle" id="score-circle">0/10</div>
+                    <p id="score-comment">Sélectionnez un autre chapitre ou relancez le test !</p>
+                    <button class="btn-action" onclick="setupQuiz()">Recommencer cette série</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        /* --- BASE DE DONNÉES STRUCTURÉE ULTRA-PRÉCISE AVEC LOGIQUE DE CARTES MENTALES --- */
+        const database = {
+            histoire: {
+                title: "Histoire",
+                color: "#a855f7",
+                gradient: "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)",
+                desc: "Chronologie et cours complet de 3ème",
+                chapters: [
+                    {
+                        name: "Chapitre 1 : La Première Guerre mondiale",
+                        summary: "<h4>La Première Guerre mondiale (1914-1918) : Une guerre totale et une violence de masse</h4><p>La Grande Guerre commence en août 1914 suite à l'engrenage diplomatique provoqué par l'assassinat de l'archiduc François-Ferdinand à Sarajevo. Elle oppose l'Entente (France, Royaume-Uni, Russie puis États-Unis) aux Empires centraux (Allemagne, Autriche-Hongrie).</p><p>Le conflit se transforme rapidement en une <strong>guerre de position (ou de tranchées)</strong> à partir de la fin 1914. Les soldats font face à l'enfer du front, illustré par la gigantesque <strong>bataille de Verdun (février-décembre 1916)</strong> qui fait plus de 300 000 morts.</p><p>C'est une <strong>guerre totale</strong> : toute la société est mobilisée. Les industries sont reconverties pour l'armement, les femmes remplacent les hommes dans les champs et usines (les munitionnettes), l'État recourt aux emprunts de guerre et à la propagande/censure (le bourrage de crâne). Elle est marquée par une violence extrême qui touche aussi les civils, notamment à travers le <strong>génocide des Arméniens (1915)</strong> dans l'Empire ottoman, faisant environ 1,2 million de victimes.</p><p>En <strong>1917</strong>, la Russie quitte le conflit suite aux <strong>révolutions russes</strong> menées par Lénine et les Bolcheviks, tandis que les États-Unis entrent en guerre. L'épuisement général conduit à la signature de <strong>l'Armistice le 11 novembre 1918</strong>.",
+                        mindmap: {
+                            core: "1ère Guerre Mondiale",
+                            branches: [
+                                { name: "⚔️ Formes du Conflit", color: "#f43f5e", items: ["Guerre de mouvement (1914 / 1918)", "Guerre de position/tranchées (1915-1917)", "Verdun (1916): 300 000 morts"] },
+                                { name: "📢 Guerre Totale", color: "#3b82f6", items: ["Mobilisation économique (obus, usines)", "Propagande, censure & bourrage de crâne", "Rôle crucial des femmes (munitionnettes)"] },
+                                { name: "🚨 Violence de Masse", color: "#10b981", items: ["Poilus: armes modernes, gaz, obus", "Génocide des Arméniens (1915)", "Souffrances des civils sous occupation"] },
+                                { name: "📉 Tournants & Fin", color: "#eab308", items: ["1917: Révolutions russes (Lénine)", "1917: Entrée en guerre des USA", "11 nov 1918: Armistice de Rethondes"] }
+                            ]
+                        },
+                        data: [
+                            { q: "1914-1918", a: "Grande Guerre (Première guerre mondiale)" },
+                            { q: "1916", a: "Bataille de Verdun" },
+                            { q: "1917", a: "Révolution(s) russe(s)" },
+                            { q: "11 novembre 1918", a: "Armistice de la Première Guerre mondiale" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 2 : Les régimes totalitaires de l'entre-deux-guerres",
+                        summary: "<h4>Les régimes totalitaires en URSS et en Allemagne (1920-1939)</h4><p>Un régime totalitaire est une dictature qui cherche à contrôler l'ensemble de la société, de l'économie et de la pensée par la terreur, la propagande et l'embrigadement.</p><p><strong>En URSS</strong>, après la mort de Lénine, <strong>Staline s'impose au pouvoir (1924-1953)</strong>. Il transforme radicalement l'économie en décrétant la <strong>collectivisation forcée des terres</strong> (1929) et en éliminant les opposants ou paysans riches (dékoulakisation). La terreur de masse culmine lors de la Grande Terreur (1937-1938) avec l'envoi des millions de déportés au <strong>Goulag</strong> (camps de travail forcé). L'économie est totalement planifiée par l'État.</p><p><strong>En Allemagne</strong>, profitant de la crise économique mondiale de 1929, <strong>Adolf Hitler et son parti nazi (NSDAP) accèdent au pouvoir en 1933</strong>. Hitler supprime les libertés individuelles et fonde le IIIe Reich. C'est un régime profondément <strong>raciste et antisémite</strong>, défini par les lois antijuives de Nuremberg (1935). L'embrigadement de la jeunesse (Jeunesses hitlériennes) et le culte du chef (le Führer) caractérisent le quotidien.</p>",
+                        mindmap: {
+                            core: "Régimes Totalitaires",
+                            branches: [
+                                { name: "🛠️ URSS Soviétique", color: "#ef4444", items: ["Staline au pouvoir (1924-1953)", "Collectivisation & Planification (1929)", "Terreur: Goulag et procès politiques"] },
+                                { name: "🦅 Allemagne Nazie", color: "#6b7280", items: ["Hitler chancelier (1933)", "Idéologie: Racisme, antisémitisme", "Lois de Nuremberg (1935)"] },
+                                { name: "🧠 Points Communs", color: "#a855f7", items: ["Culte de la personnalité (Chef unique)", "Parti unique & Fin de la démocratie", "Propagande et embrigadement des jeunes"] }
+                            ]
+                        },
+                        data: [
+                            { q: "1924-1953", a: "Staline au pouvoir en URSS" },
+                            { q: "1933-1945", a: "L’Allemagne nazie d’Adolf Hitler" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 3 : La République française (1919-1946)",
+                        summary: "<h4>La France de l'entre-deux-guerres : Crises et Front Populaire</h4><p>Dans les années 1930, la France subit de plein fouet la grande dépression économique mondiale, entraînant chômage et instabilité ministérielle. Les ligues d'extrême droite manifestent violemment le 6 février 1934, faisant craindre un coup d'État fasciste.</p><p>Face à cette menace, les partis de gauche (SFIO, PCF, Radicaux) s'unissent pour former le <strong>Front Populaire</strong>. Menés par Léon Blum, ils remportent les élections législatives de <strong>1936</strong>. Une immense vague de grèves joyeuses pousse le patronat à négocier.</p><p>En juin 1936 sont signés les <strong>accords de Matignon</strong>. Ils accordent de grandes avancées sociales révolutionnaires pour la classe ouvrière : hausse des salaires, liberté syndicale, et vote des lois historiques imposant les <strong>deux premières semaines de congés payés</strong> ainsi que la réduction du temps de travail à la <strong>semaine de 40 heures</strong>. L'alliance éclate en 1938 sous fond de tensions internationales.",
+                        mindmap: {
+                            core: "France 1919-1946",
+                            branches: [
+                                { name: "📉 Les Crises (1930)", color: "#f97316", items: ["Grande dépression économique", "Chômage de masse & Instabilité", "Émeutes des ligues d'extrême droite (1934)"] },
+                                { name: "🌹 Le Front Populaire (1936)", color: "#ec4899", items: ["Alliance PCF, SFIO, Radicaux", "Léon Blum chef du gouvernement", "Mouvement de grèves joyeuses"] },
+                                { name: "📜 Lois Sociales", color: "#10b981", items: ["Accords de Matignon (Juin 1936)", "2 semaines de congés payés", "Semaine de travail fixée à 40h"] }
+                            ]
+                        },
+                        data: [
+                            { q: "1936", a: "Victoire électorale et lois sociales du Front populaire" },
+                            { q: "1940-1944", a: "Régime de Vichy, collaboration et fin de la IIIe République" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 4 : La Seconde Guerre mondiale",
+                        summary: "<h4>La Seconde Guerre mondiale (1939-1945) : Une guerre d'anéantissement et la France occupée</h4><p>Déclenchée le 1er septembre 1939 par l'invasion de la Pologne par l'Allemagne, la Seconde Guerre mondiale oppose l'Axe (Allemagne, Italie, Japon) aux Alliés (Royaume-Uni, URSS, États-Unis). C'est une <strong>guerre d'anéantissement</strong> idéologique, technologique et humaine sans précédent, marquée par l'extermination industrielle des populations jugées 'inférieures' par les nazis : la <strong>Shoah</strong> (Juifs) et le Samudaripen (Tziganes) font plus de 6 millions de morts dans les centres de mise à mort (Auschwitz).</p><p>En mai 1940, la France s'effondre militairement. Le maréchal Pétain signe l'armistice et instaure le <strong>Régime de Vichy</strong> (Fin de la IIIe République). C'est un régime autoritaire, antisémite, remplaçant la devise républicaine par 'Travail, Famille, Patrie' et choisissant la <strong>collaboration</strong> avec l'Allemagne nazie (Rafle du Vel d'Hiv, milice, STO).</p><p>Refusant la défaite, le général de Gaulle lance l'<strong>Appel du 18 juin 1940</strong> depuis Londres pour fonder la France Libre. Sur le territoire national, la <strong>Résistance intérieure</strong> s'organise clandestinement (sabotages, maquis). Jean Moulin unifie ces mouvements au sein du CNR en 1943. Grâce aux débarquements alliés (<strong>Normandie le 6 juin 1944</strong>), la France est libérée. Le GPRF rétablit la République et concrétise de grandes avancées comme le <strong>droit de vote des femmes (1944)</strong> et la Sécurité sociale. La guerre se clôt mondialement en août 1945 avec les bombardements atomiques sur Hiroshima et Nagasaki.",
+                        mindmap: {
+                            core: "2nde Guerre Mondiale",
+                            branches: [
+                                { name: "🌍 Conflit Mondial", color: "#3b82f6", items: ["Axe vs Alliés (1939-1945)", "Guerre d'anéantissement idéologique", "Hiroshima & Nagasaki (Août 1945)"] },
+                                { name: "💀 Génocides", color: "#ef4444", items: ["Shoah (Juifs) & Samudaripen (Tziganes)", "Centres de mise à mort (Auschwitz)", "6 millions de victimes civiles"] },
+                                { name: "🥖 France de Vichy", color: "#6b7280", items: ["Maréchal Pétain / Armistice 1940", "Devise: Travail, Famille, Patrie", "Collaboration active, STO, Rafles"] },
+                                { name: "🇨🇵 La Résistance", color: "#10b981", items: ["De Gaulle: Appel du 18 juin 1940", "Jean Moulin unifie le CNR (1943)", "Débarquement Normandie (6 juin 1944)", "Droit de vote des femmes (1944)"] }
+                            ]
+                        },
+                        data: [
+                            { q: "1939-1945", a: "Seconde Guerre mondiale" },
+                            { q: "18 juin 1940", a: "Appel du général De Gaulle à la radio de Londres" },
+                            { q: "6 juin 1944", a: "Débarquement allié en Normandie" },
+                            { q: "1944-1945", a: "Libération de la France, GPRF et rétablissement de la IVe République" },
+                            { q: "1944-1945", a: "Droit de vote des femmes en France" },
+                            { q: "8 mai 1945", a: "Capitulation allemande - fin de la guerre en Europe" },
+                            { q: "Août 1945", a: "Bombes atomiques sur Hiroshima et Nagasaki (Japon)" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 5 : Guerre froide et Décolonisation",
+                        summary: "<h4>Le monde bipolaire de la Guerre froide et l'effondrement des empires coloniaux</h4><p>Dès <strong>1947</strong>, le monde entre dans la <strong>Guerre froide</strong>, un affrontement idéologique, technologique, géopolitique et culturel global mais <i>sans guerre directe</i> entre les deux superpuissances : les <strong>États-Unis</strong> (capitalisme, bloc de l'Ouest, OTAN) et l'<strong>URSS</strong> (communisme, bloc de l'Est, Pacte de Varsovie). Le monde est bipolaire. L'Europe est divisée par le 'Rideau de fer', symbolisé par le Mur de Berlin (1961-1989). Des crises majeures éclatent (Cuba, guerre du Vietnam). Le conflit s'achève en <strong>1991 avec l'éclatement de l'URSS</strong>.</p><p>En parallèle, affaiblis par la guerre, les empires coloniaux européens font face à la <strong>décolonisation (1947-1962)</strong>. Les peuples réclament l'indépendance, obtenue de manière négociée (Inde en 1947) ou par les armes. C'est le cas de la douloureuse <strong>Guerre d'Algérie (1954-1962)</strong>, qui s'achève par les accords d'Évian et l'<strong>indépendance de l'Algérie en 1962</strong>. Les nouveaux États indépendants tentent de former le 'Tiers-Monde' non-aligné.",
+                        mindmap: {
+                            core: "Guerre Froide & Décolo",
+                            branches: [
+                                { name: "🥶 Guerre Froide", color: "#3b82f6", items: ["Monde Bipolaire (USA vs URSS)", "Blocs OTAN (Ouest) vs Varsovie (Est)", "Crises: Berlin, Cuba, Vietnam", "1991: Dislocation de l'URSS"] },
+                                { name: "🌍 Décolonisation", color: "#f97316", items: ["Émergence du Tiers-Monde", "Indépendance de l'Inde (1947 - Négociée)", "Guerre d'Algérie (1954-1962 - Violente)", "Accords d'Évian (1962)"] }
+                            ]
+                        },
+                        data: [
+                            { q: "1945", a: "Création de l’ONU" },
+                            { q: "1947-1991", a: "Guerre Froide" },
+                            { q: "1947-1962", a: "Principale phase de décolonisation mondiale" },
+                            { q: "1954-1962", a: "Guerre d’Algérie" },
+                            { q: "1962", a: "Indépendance de l’Algérie" },
+                            { q: "1991", a: "Éclatement / dislocation de l’URSS" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 6 : La construction européenne et la Ve République",
+                        summary: "<h4>La construction européenne et l'évolution de la Ve République française</h4><p>Pour ancrer durablement la paix, les dirigeants européens initient la construction européenne. En <strong>1957, le traité de Rome</strong> fonde la CEE (Communauté Économique Européenne) établissant un marché commun. En <strong>1992, le traité de Maastricht</strong> marque un tournant géant en créant l'<strong>Union Européenne</strong>, instaurant la citoyenneté européenne et posant les bases de la monnaie unique, l'<strong>Euro, mis en circulation en 2002</strong>.</p><p>En France, la crise d'Algérie provoque la chute de la IVe République. <strong>Charles de Gaulle fonde la Ve République en 1958</strong>, dotée d'une nouvelle Constitution qui renforce les pouvoirs du Président. En <strong>1962</strong>, la réforme instituant <strong>l'élection du Président au suffrage universel direct</strong> accentue cette légitimité populaire. La vie politique française traverse ensuite des évolutions de société cruciales (Loi Veil légalisant l'<strong>IVG en 1975</strong>) et des mécanismes institutionnels majeurs comme l'<strong>alternance</strong> politique droite/gauche sous les années Mitterrand (1981-1995) et Chirac (1995-2007).",
+                        mindmap: {
+                            core: "Europe & Ve Rép.",
+                            branches: [
+                                { name: "🇪🇺 Union Européenne", color: "#1d4ed8", items: ["1957: Traité de Rome (CEE)", "1992: Traité de Maastricht (UE)", "2002: Passage concret à l'Euro", "Institutions: Bruxelles/Strasbourg"] },
+                                { name: "🇨🇵 Institutions Ve Rép.", color: "#ef4444", items: ["1958: Constitution de De Gaulle", "1962: Président élu directement", "Pouvoir exécutif renforcé"] },
+                                { name: "📈 Évolutions Société", color: "#10b981", items: ["1975: Loi Veil sur l'IVG", "1981: Alternance (Mitterrand)", "1995-2007: Années Chirac"] }
+                            ]
+                        },
+                        data: [
+                            { q: "1957", a: "Traité de Rome, création de la CEE" },
+                            { q: "1958", a: "Naissance de la Ve République" },
+                            { q: "1958-1969", a: "Les années de GAULLE" },
+                            { q: "1962", a: "Election du président de la République au suffrage universel direct" },
+                            { q: "1975", a: "Loi Veil sur l’Interruption Volontaire de Grossesse (IVG)" },
+                            { q: "9 novembre 1989", a: "Chute du mur de Berlin" },
+                            { q: "1992", a: "Traité de Maastricht (Création de l'Union Européenne et citoyenneté)" },
+                            { q: "1981-1995", a: "Les années MITTERRAND et l'alternance gauche/droite" },
+                            { q: "1995-2007", a: "Les années CHIRAC" },
+                            { q: "2002", a: "L'Euro devient la monnaie fiduciaire européenne unique" },
+                            { q: "11 septembre 2001", a: "Attentats terroristes aux Etats-Unis (Nouvel ordre mondial instable)" }
+                        ]
+                    }
+                ]
+            },
+            geo: {
+                title: "Géographie",
+                color: "#eab308",
+                gradient: "linear-gradient(135deg, #eab308 0%, #f97316 100%)",
+                desc: "Dynamiques territoriales de la France et mondialisation",
+                chapters: [
+                    {
+                        name: "Chapitre 1 : Les aires urbaines et démographie en France",
+                        summary: "<h4>Les aires urbaines : Nouvelles géographies d'une France mondialisée</h4><p>Aujourd'hui, plus de 85% de la population française vit dans une <strong>aire urbaine</strong>. Une aire urbaine est un espace continu composé d'un <strong>pôle urbain</strong> (ville-centre + banlieues adjacentes) qui concentre les emplois, et d'une <strong>couronne périurbaine</strong> constituée de communes rurales où au moins 40% de la population active travaille dans le pôle urbain.</p><p>Cette dynamique engendre la <strong>périurbanisation</strong> : l'étalement des villes sur les espaces ruraux environnants. Elle est nourrie par la recherche d'un cadre de vie plus vert et de logements moins chers. Ce phénomène provoque d'importants <strong>migrations pendulaires</strong> quotidiennes (trajets domicile-travail), saturant les infrastructures de transport et augmentant la pollution.</p><p>La population française est ainsi très inégalement répartie. Les fortes densités se concentrent dans les grandes métropoles (Paris, Lyon, Marseille), sur les façades maritimes (héliotropisme et littoralisation) et les grands axes fluviaux, laissant apparaître en négatif la 'diagonale des faibles densités'.",
+                        mindmap: {
+                            core: "Aires Urbaines",
+                            branches: [
+                                { name: "🏢 Structure de l'Aire", color: "#eab308", items: ["Pôle urbain (Ville + Banlieue)", "Couronne périurbaine (+40% emplois)", "Métropolisation des richesses"] },
+                                { name: "🚗 Conséquences", color: "#f97316", items: ["Périurbanisation (étalement urbain)", "Migrations pendulaires quotidiennes", "Développement des transports (TGV)"] },
+                                { name: "🗺️ Répartition Inégale", color: "#3b82f6", items: ["Littoralisation & Héliotropisme", "Diagonale des faibles densités", "Concentration dans les vallées"] }
+                            ]
+                        },
+                        data: [
+                            { q: "La France", a: "Territoire national composé de la métropole et des territoires ultramarins." },
+                            { q: "Aires urbaines", a: "Une dizaine d'aires urbaines françaises parmi les plus peuplées concentrent population et fonctions de commandement." },
+                            { q: "Répartition population", a: "La population est inégalement répartie, fortement concentrée dans les grandes aires urbaines et le long des littoraux / vallées fluviales." }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 2 : Les espaces productifs face à la mondialisation",
+                        summary: "<h4>La mutation profonde des espaces productifs français</h4><p>Un espace productif est une portion de territoire aménagée et valorisée pour développer une activité économique. Face à la mondialisation et à la concurrence internationale, ces espaces se réorganisent.</p><p>Les <strong>espaces industriels</strong> subissent une désindustrialisation des vieux bassins (Nord, Est) mais connaissent un renouveau majeur grâce à la haute technologie. Les industries se regroupent dans des <strong>technopôles</strong> (comme à Toulouse pour l'aéronautique ou Sophia-Antipolis) qui associent recherche, universités et entreprises compétitives.</p><p>Les <strong>espaces agricoles</strong> se spécialisent et s'insèrent dans l'agro-industrie mondiale (Grand Bassin parisien pour la céréaliculture, grands vignobles bordelais). C'est une agriculture intensive, fortement mécanisée et intégrée aux marchés mondiaux.</p><p>Les <strong>espaces tertiaires</strong> (services) dominent l'économie (plus de 75% du PIB). Ils se situent au cœur des quartiers d'affaires des métropoles (La Défense à Paris) ou dans les grands pôles touristiques mondiaux (littoraux, stations de ski alpines, parcs d'attraction).</p>",
+                        mindmap: {
+                            core: "Espaces Productifs",
+                            branches: [
+                                { name: "🏭 Industrie Haute Tech", color: "#a855f7", items: ["Technopôles majeures (Toulouse, Sophia)", "Lien Recherche / Entreprise", "Déclin des vieux bassins miniers"] },
+                                { name: "🚜 Agriculture Connectée", color: "#10b981", items: ["Intégration à l'agro-industrie", "Céréaliculture (Bassin parisien)", "Exportations (Vins, Fromages)"] },
+                                { name: "💻 Tertiaire Dominateur", color: "#ec4899", items: ["Quartiers d'affaires (La Défense)", "Tourisme mondial majeur", "75% de la richesse nationale"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Mondialisation", a: "Métropoles dynamiques et espaces productifs français sont fortement connectés aux flux mondiaux." },
+                            { q: "Points d'entrée", a: "Les ports, aéroports internationaux et interfaces frontalières lient la France au reste du monde." }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 3 : Aménagement du territoire et repères physiques",
+                        summary: "<h4>Aménager le territoire pour réduire les fractures géographiques</h4><p>L'aménagement du territoire consiste à disposer l'espace pour offrir les meilleures conditions de vie possibles à la population et assurer l'équité territoriale. Il est piloté par l'État, les collectivités territoriales et l'Union Européenne (FEDER).</p><p>L'objectif majeur est de <strong>réduire les inégalités</strong> de richesse et d'accès aux services publics entre l'Île-de-France (hyper-centrée) et les espaces en marge (les banlieues défavorisées via la politique de la ville, ou le monde rural isolé). Les acteurs s'appuient sur des infrastructures de transports majeurs (Autoroutes, lignes TGV) configurés historiquement en étoile autour de Paris pour désenclaver les régions.</p><p>Ces infrastructures composent avec les contraintes des <strong>repères physiques majeurs</strong> de la France : les grands massifs montagneux anciens (Massif Central, Vosges) ou jeunes (Alpes, Pyrénées) et les 5 grands fleuves nationaux (Seine, Loire, Rhône, Garonne, Rhin) qui dessinent les axes de circulation naturels et l'organisation des 13 grandes régions métropolitaines.</p>",
+                        mindmap: {
+                            core: "Aménagement & Physique",
+                            branches: [
+                                { name: "🛠️ Objectifs de l'Aménagement", color: "#3b82f6", items: ["Réduire les inégalités territoriales", "Politique de la ville (Banlieues)", "Aide au monde rural (Désenclavement)"] },
+                                { name: "🏗️ Moyens & Transports", color: "#eab308", items: ["Lignes TGV en étoile / Autoroutes", "Acteurs: État, Régions, Europe"] },
+                                { name: "⛰️ Reliefs & Fleuves", color: "#10b981", items: ["5 Fleuves: Seine, Loire, Rhône, Garonne, Rhin", "Alpes, Pyrénées, Massif Central", "13 Régions de métropole"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Repères physiques", a: "Massifs montagneux, grands fleuves (Seine, Loire, Rhône, Garonne) et façades maritimes structurent le territoire." },
+                            { q: "Régions", a: "La France métropolitaine est découpée en 13 grandes régions administratives territoriales." },
+                            { q: "Axes de transport", a: "Réseaux d'autoroutes et lignes TGV en étoile convergent majoritairement vers Paris." }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 4 : La France et l'UE dans le monde",
+                        summary: "<h4>Le rayonnement de la France et de l'Union Européenne à l'échelle globale</h4><p>La France est une puissance mondiale majeure. Grâce à l'histoire coloniale, elle détient des territoires éparpillés sur le globe : les <strong>DROM-COM</strong> (Guadeloupe, Martinique, Réunion, Mayotte, Guyane, Polynésie...). Ces territoires lui offrent la 2e plus grande **Zone Économique Exclusive (ZEE)** maritime mondiale, riche en ressources. Elle diffuse son influence culturelle via la <strong>Francophonie</strong> et sa puissance géopolitique (siège permanent à l'ONU, arme nucléaire).</p><p>À une autre échelle, la France est le pilier de l'**Union Européenne (27 pays)**, l'un des trois pôles majeurs de la richesse mondiale (la Triade). L'UE rayonne par sa puissance commerciale, financière et normative. L'espace européen s'organise autour d'un centre névralgique hyper-dense : la <strong>Mégalopole européenne</strong> (ou dorsale), qui concentre les richesses de Londres à Milan en passant par les grands sièges des institutions de l'UE (Bruxelles, Strasbourg, Luxembourg).</p>",
+                        mindmap: {
+                            core: "France & UE Monde",
+                            branches: [
+                                { name: "🌍 Puissance Française", color: "#ef4444", items: ["DROM-COM: Présence planétaire", "2ème ZEE maritime mondiale", "Rayonnement: La Francophonie"] },
+                                { name: "🇪🇺 Puissance de l'UE", color: "#1d4ed8", items: ["27 États membres / Pôle mondial", "Mégalopole européenne (Dorsale)", "Sièges majeurs: Bruxelles & Strasbourg"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Territoires ultra-marins", a: "DROM et COM confèrent à la France une présence mondiale et une immense zone économique exclusive (ZEE)." },
+                            { q: "Francophonie", a: "Ensemble d'États à travers le monde partageant l'usage de la langue française." },
+                            { q: "Union Européenne", a: "Composée de 27 États membres possédant chacun leur capitale politique." },
+                            { q: "Pôles économiques", a: "L'UE forme l'un des trois pôles majeurs de la Triade économique mondiale." },
+                            { q: "Métropoles & Sièges UE", a: "Bruxelles, Strasbourg et Luxembourg abritent les principales institutions européennes." },
+                            { q: "Mégalopole européenne", a: "Dorsale européenne s'étendant de Londres à Milan, concentrant fortes densités et richesses." }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 5 : Repères géographiques mondiaux",
+                        summary: "<h4>Cartographie mondiale : Les repères fondamentaux pour le Brevet</h4><p>La maîtrise de l'espace mondial est indispensable pour l'épreuve de géographie. Les repères s'articulent autour de structures naturelles et humaines :</p><p>Les grands repères physiques dessinent les zones climatiques de notre planète : l'<strong>Équateur</strong> sépare les deux hémisphères, bordé par le Tropique du Cancer (Nord) et le Tropique du Capricorne (Sud). Les grands massifs montagneux (Himalaya en Asie, la Cordillère des Andes en Amérique du Sud, les Rocheuses au Nord) façonnent les continents bordés par les grands océans (Atlantique, Pacifique, Indien, Arctique, Antarctique).</p><p>Les axes économiques mondiaux empruntent des fleuves géants (Nil, Amazone, Mississippi) et passent par des points d'étranglement stratégiques du commerce mondial comme les canaux artificiels de Suez et de Panama, ou le détroit de Gibraltar. L'humanité se concentre enfin de façon spectaculaire au sein de **gigantesques métropoles mondiales** (Tokyo, New York, Shanghai, Bombay, Sao Paulo) situées au cœur des superpuissances étudiées (USA, Chine, Union indienne, Brésil).</p>",
+                        mindmap: {
+                            core: "Repères Mondiaux",
+                            branches: [
+                                { name: "☀️ Lignes Climatiques", color: "#eab308", items: ["Équateur / Tropiques (Cancer & Capricorne)", "Cercles polaires Arctique & Antarctique"] },
+                                { name: "⛰️ Géographie Physique", color: "#10b981", items: ["Massifs: Himalaya, Andes, Rocheuses", "Fleuves: Nil, Amazone, Yangzi, Congo", "Océans: Pacifique, Atlantique, Indien"] },
+                                { name: "🔀 Points Clés & Villes", color: "#ec4899", items: ["Canaux de Suez et Panama", "Superpuissances: USA, Chine, Inde", "Mégapoles: Tokyo, New-York, Shanghai"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Grands repères mondiaux", a: "Continents, océans, Équateur, tropiques, cercles polaires définissent les zones climatiques." },
+                            { q: "Montagnes mondiales", a: "Himalaya, Andes, Rocheuses, Alpes sont les grands massifs mondiaux." },
+                            { q: "Grands fleuves mondiaux", a: "Nil, Congo, Gange, Yangzi, Amazone, Mississippi." },
+                            { q: "Passages stratégiques", a: "Isthmes de Suez et Panama ; détroit de Gibraltar." },
+                            { q: "Puissances mondiales", a: "États majeurs étudiés : États-Unis, Chine, Union Indienne, Japon, Canada, Mexique, Brésil." },
+                            { q: "Métropoles mondiales", a: "Tokyo, Le Caire, Pékin, Shanghai, Bombay, New-York, Sao Paulo, Mexico..." }
+                        ]
+                    }
+                ]
+            },
+            maths: {
+                title: "Mathématiques",
+                color: "#ec4899",
+                gradient: "linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)",
+                desc: "Algèbre, Géométrie, Fonctions et Statistiques",
+                chapters: [
+                    {
+                        name: "Chapitre 1 : Nombres, Arithmétique et Fractions",
+                        summary: "<h4>Arithmétique, divisibilité et calculs fractionnaires avancés</h4><p>L'<strong>Arithmétique</strong> étudie les propriétés des nombres entiers. Un nombre entier $a$ est un multiple d'un entier $b$ s'il existe un entier $k$ tel que $a = b \times k$ (on dit alors que $b$ divise $a$).</p><p>Les critères de divisibilité indispensables sont :<br>- Divisible par 2 : le nombre est pair (finit par 0, 2, 4, 6, 8). Forme générale : $2k$.<br>- Divisible par 5 : finit par 0 ou 5.<br>- Divisible par 3 (ou 9) : la somme de ses chiffres est un multiple de 3 (ou 9).</p><p>Un <strong>nombre premier</strong> est un entier positif possédant exactement deux diviseurs distincts : 1 et lui-même. La liste des dix premiers est : 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 (Attention : 1 n'est pas premier). Tout nombre entier peut se décomposer de façon unique en un produit de facteurs premiers (ex: $60 = 2^2 \times 3 \times 5$). Cette décomposition sert à simplifier les fractions pour obtenir une <strong>fraction irréductible</strong>.</p><p><strong>Règles opératoires fondamentales :</strong><br>- Somme/Soustraction de fractions : Réduire impérativement au même dénominateur commun : $\frac{a}{c} + \frac{b}{c} = \frac{a+b}{c}$.<br>- Multiplication : On multiplie numérateurs entre eux et dénominateurs entre eux : $\frac{a}{b} \times \frac{c}{d} = \frac{ac}{bd}$.<br>- Division : Diviser revient à multiplier par l'inverse : $\frac{a}{b} \div \frac{c}{d} = \frac{a}{b} \times \frac{d}{c} = \frac{ad}{bc}$.Deux nombres sont dits inverses si leur produit vaut 1 (ex: 3 et $\frac{1}{3}$). Deux nombres sont dits opposés si leur somme vaut 0 (ex: 3 et -3).</p>",
+                        mindmap: {
+                            core: "Arithmétique & Fractions",
+                            branches: [
+                                { name: "🔢 Divisibilité", color: "#ec4899", items: ["Critère du 3/9: somme des chiffres", "Critère du 2/5: dernier chiffre", "Forme pair = 2k | impair = 2k+1"] },
+                                { name: "⭐ Nombres Premiers", color: "#f43f5e", items: ["Exactement 2 diviseurs: 1 et lui-même", "Liste: 2, 3, 5, 7, 11, 13, 17, 19...", "Décomposition en facteurs premiers"] },
+                                { name: "🧮 Fractions", color: "#a855f7", items: ["Irréductible: simplifiée au maximum", "Addition: même dénominateur requis", "Division: multiplier par l'inverse"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Noms des résultats de l’addition, soustraction, multiplication, division", a: "Somme, différence, produit, quotient" },
+                            { q: "Cite un multiple de 12", a: "12, 24, 36, 48..." },
+                            { q: "Cite un diviseur de 15", a: "1, 3, 5, 15" },
+                            { q: "7 est-il un multiple de 14 ?", a: "Non, 7 est un diviseur de 14 (14 est le multiple de 7)" },
+                            { q: "Comment repère-t-on un nombre qui se divise par 2 ?", a: "Son dernier chiffre se termine par 0, 2, 4, 6 ou 8 (il est pair)" },
+                            { q: "Comment repère-t-on un nombre qui se divise par 3 (ou par 9) ?", a: "La somme de ses chiffres est dans la table du 3 (ou du 9)" },
+                            { q: "Comment repère-t-on un nombre qui se divise par 5 ?", a: "Son dernier chiffre se termine par 0 ou 5" },
+                            { q: "Écriture mathématique d’un nombre pair / impair", a: "Pair : 2k | Impair : 2k + 1 (avec k un entier)" },
+                            { q: "Écriture mathématique d’un nombre multiple de 7", a: "7k (avec k un entier)" },
+                            { q: "Qu’est-ce qu’un nombre premier ?", a: "Un nombre entier positif qui possède exactement deux diviseurs distincts : 1 et lui-même" },
+                            { q: "Nombres premiers entre 1 et 30", a: "2, 3, 5, 7, 11, 13, 17, 19, 23, 29" },
+                            { q: "Qu’est-ce qu’une fraction irréductible ?", a: "Une fraction qu’on ne peut plus simplifier (le numérateur et le dénominateur n'ont plus de diviseur commun autre que 1)" },
+                            { q: "Méthodes pour rendre une fraction irréductible", a: "Par divisions successives par des diviseurs communs OU en décomposant en produit de facteurs premiers puis en barrant les facteurs communs" },
+                            { q: "Comment ajoute-t-on deux nombres négatifs ?", a: "On ajoute leurs distances à zéro et on conserve le signe (-)" },
+                            { q: "Comment ajoute-t-on deux nombres de signes contraires ?", a: "On soustrait la plus petite distance à zéro de la plus grande et on met le signe du nombre qui a la plus grande distance" },
+                            { q: "Soustraire un nombre revient à...", a: "Ajouter son opposé" },
+                            { q: "Comment ajouter ou soustraire deux fractions ?", a: "On les met au même dénominateur, on ajoute (ou soustrait) les numérateurs et on garde le dénominateur commun" },
+                            { q: "Comment multiplier deux fractions ?", a: "On multiplie les numérateurs entre eux et les dénominateurs entre eux (en pensant à simplifier avant de calculer)" },
+                            { q: "Comment calcule-t-on la fraction d’une quantité ?", a: "On multiplie la quantité par la fraction" },
+                            { q: "Qu’est-ce que deux nombres opposés ?", a: "Deux nombres dont la somme vaut 0 (Exemple : 3 et -3)" },
+                            { q: "Qu’est-ce que deux nombres inverses ?", a: "Deux nombres dont le produit vaut 1 (Exemple : 3 et 1/3)" },
+                            { q: "Comment diviser deux fractions ?", a: "On conserve la première fraction et on la multiplie par l’inverse de la seconde fraction" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 2 : Puissances et Calcul Littéral",
+                        summary: "<h4>Puissances, notation scientifique et techniques d'algèbre</h4><p>Une puissance exprime une multiplication répétée : $a^n = a \times a \times \dots \times a$ ($n$ fois). Par convention, $a^{-n} = \frac{1}{a^n}$ (représente l'inverse de $a^n$). Les puissances de 10 sont utilisées pour gérer des ordres de grandeurs physiques via des préfixes : Méga ($10^6$), Giga ($10^9$), Micro ($10^{-6}$), Nano ($10^{-9}$). L'**écriture scientifique** consiste à écrire un nombre sous la forme unique $a \times 10^n$, où $a$ est un nombre décimal tel que $1 \le a < 10$ et $n$ un entier relatif.</p><p>Le **calcul littéral** consiste à manipuler des expressions contenant des lettres. On effectue deux types de transformations contraires :<br>1. **Développer** (transformer un produit en somme/différence) :<br>- Simple distributivité : $k(a+b) = ka + kb$<br>- Double distributivité : $(a+b)(c+d) = ac + ad + bc + bd$<br>2. **Factoriser** (transforme une somme/différence en produit) : Cela consiste à identifier un facteur commun évident ou à exploiter une identité remarquable au programme de 3ème : $a^2 - b^2 = (a-b)(a+b)$.</p>",
+                        mindmap: {
+                            core: "Puissances & Algèbre",
+                            branches: [
+                                { name: "⚡ Puissances de 10", color: "#3b82f6", items: ["a^-n = 1 / a^n (inverse)", "Méga (10^6) / Giga (10^9)", "Micro (10^-6) / Nano (10^-9)"] },
+                                { name: "🔬 Écriture Scientifique", color: "#eab308", items: ["Format: a × 10^n", "Condition: 1 ≤ a < 10", "n doit être un entier relatif"] },
+                                { name: "📝 Calcul Littéral", color: "#10b981", items: ["Développer: Double distributivité", "Factoriser: Trouver facteur commun", "Identité: a² - b² = (a-b)(a+b)"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Que signifie a³ ?", a: "a × a × a" },
+                            { q: "Que signifie a^n ?", a: "a × a × ... × a (n fois)" },
+                            { q: "Que signifie a^(-n) ?", a: "L’inverse de a^n, soit 1 / a^n" },
+                            { q: "Comment multiplie-t-on un nombre par 10^n ?", a: "On décale la virgule de n rangs vers la droite" },
+                            { q: "Comment multiplie-t-on un nombre par 10^(-n) ?", a: "On décale la virgule de n rangs vers la gauche" },
+                            { q: "Que signifie le préfixe Méga ?", a: "1 000 000 (1 million, soit 10^6)" },
+                            { q: "Que signifie le préfixe Giga ?", a: "1 000 000 000 (1 milliard, soit 10^9)" },
+                            { q: "Que signifie le préfixe Micro ?", a: "0,000 001 (1 millionième, soit 10^-6)" },
+                            { q: "Que signifie le préfixe Nano ?", a: "0,000 000 001 (1 milliardième, soit 10^-9)" },
+                            { q: "Formules de distributivité (simple et double)", a: "Simple : k(a+b) = ka+kb | Double : (a+b)(c+d) = ac+ad+bc+bd" },
+                            { q: "Forme factorisée de a² - b²", a: "(a - b)(a + b)" },
+                            { q: "Comment factoriser une expression ?", a: "Il faut trouver un facteur commun ou utiliser une identité remarquable" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 3 : Équations et Résolution de Problèmes",
+                        summary: "<h4>Résolution formelle d'équations du premier et second degré</h4><p>Une **équation** est une égalité contenant une inconnue, généralement notée $x$. Résoudre l'équation consiste à trouver toutes les valeurs numériques de $x$ qui rendent l'égalité vraie.</p><p>Pour une équation du 1er degré, la stratégie fondamentale consiste à regrouper les termes en $x$ d'un côté du signe égal et les nombres constants de l'autre, en effectuant rigoureusement les mêmes opérations (addition, soustraction, multiplication, division non nulle) sur les deux membres de l'équation.</p><p>Le programme de 3ème introduit des équations particulières du second degré :<br>1. **L'équation-produit nul** de la forme $A(x) \times B(x) = 0$. On applique le théorème fondamental : *un produit de facteurs est nul si et seulement si l'un au moins des facteurs est nul*. On résout donc séparément $A(x) = 0$ ou $B(x) = 0$.<br>2. **L'équation type $x^2 = a$** : Si $a > 0$, l'équation possède exactement deux solutions réelles distinctes : $x = \sqrt{a}$ et $x = -\sqrt{a}$. Si $a = 0$, l'unique solution est $0$. Si $a < 0$, elle n'admet aucune solution réelle car le carré d'un nombre réel est toujours positif.</p>",
+                        mindmap: {
+                            core: "Équations",
+                            branches: [
+                                { name: "🔤 Premier Degré", color: "#ec4899", items: ["Isoler l'inconnue x", "Opérations identiques à gauche/droite", "Vérification de la solution"] },
+                                { name: "✖️ Équation Produit", color: "#a855f7", items: ["Format: A(x) × B(x) = 0", "Règle: A(x) = 0 OU B(x) = 0", "Donne généralement deux solutions"] },
+                                { name: "📐 Format x² = a", color: "#3b82f6", items: ["Si a > 0: x = √a et x = -√a", "Si a = 0: x = 0", "Si a < 0: Impossible (pas de solution)"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Comment resolve une équation du 1er degré ?", a: "Mettre les inconnues x d’un côté et les termes constants de l’autre en effectuant les mêmes opérations sur chaque membre" },
+                            { q: "Comment résout-on une équation produit nul (A × B = 0) ?", a: "Un produit est nul si et seulement si l'un au moins de ses facteurs est nul (A = 0 ou B = 0)" },
+                            { q: "Quelles sont les solutions de x² = a (avec a positif) ?", a: "x = √a et x = -√a" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 4 : Géométrie Plane, Pythagore et Thalès",
+                        summary: "<h4>Les deux grands théorèmes géométriques du plan</h4><p>Ce chapitre structure le raisonnement déductif en géométrie plane. Rappels essentiels : la somme des angles intérieurs d'un triangle vaut toujours 180°. Un triangle isocèle possède deux côtés égaux et deux angles de même mesure. Un triangle équilatéral possède trois côtés égaux et trois angles mesurant chacun 60°.</p><p>**Le Théorème de Pythagore** s'applique exclusivement dans un **triangle rectangle**. Il énonce que le carré de la longueur de l'hypoténuse (le côté le plus long face à l'angle droit) est égal à la somme des carrés des longueurs des deux autres côtés ($BC^2 = AB^2 + AC^2$). Il sert à *calculer une longueur manquante*. Sa réciproque sert à *prouver qu'un triangle est rectangle* si l'égalité se vérifie pour le côté le plus long, tandis que sa contraposée prouve qu'il ne l'est pas.</p><p>**Le Théorème de Thalès** s'applique dans des configurations de droites sécantes coupées par deux droites parallèles (configuration des triangles emboîtés ou configuration 'papillon'). Si les droites sont parallèles, il y a proportionnalité des longueurs des côtés des deux triangles : $\frac{AM}{AB} = \frac{AN}{AC} = \frac{MN}{BC}$. Il sert à *calculer une longueur*. Sa réciproque permet de *prouver le parallélisme* de deux droites à condition que les rapports de longueurs soient égaux **et** que les points soient alignés dans le même ordre.</p>",
+                        mindmap: {
+                            core: "Pythagore & Thalès",
+                            branches: [
+                                { name: "📐 Triangle rectangle", color: "#f43f5e", items: ["Somme des angles = 180°", "Hypoténuse = côté le plus long"] },
+                                { name: "🔺 Pythagore", color: "#ec4899", items: ["Théorème: Calculer une longueur", "Formule: BC² = AB² + AC²", "Réciproque: Démontrer l'angle droit"] },
+                                { name: "🦋 Thalès", color: "#a855f7", items: ["Configuration emboîtée ou Papillon", "Condition requise: Droites parallèles", "Réciproque: Démontrer le parallélisme"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Que vaut la somme des angles dans un triangle ?", a: "180°" },
+                            { q: "Propriétés d’un triangle isocèle", a: "Deux côtés de même longueur et deux angles à la base de même mesure" },
+                            { q: "Propriétés d’un triangle équilatéral", a: "Trois côtés de même longueur et trois angles égaux à 60°" },
+                            { q: "Comment s’appelle le côté le plus long dans un triangle rectangle ?", a: "L’hypoténuse (c'est aussi le côté opposé à l'angle droit)" },
+                            { q: "À quoi sert le théorème de Pythagore et sa configuration ?", a: "Il sert à calculer une longueur dans un triangle rectangle" },
+                            { q: "Données nécessaires pour la réciproque ou contraposée de Pythagore", a: "Un triangle dont on connaît les longueurs des 3 côtés" },
+                            { q: "Rôle de la réciproque et de la contraposée de Pythagore", a: "La réciproque prouve qu’un triangle est rectangle ; la contraposée prouve qu’il ne l’est pas" },
+                            { q: "Qu’est-ce que la médiatrice d’un segment ?", a: "La droite perpendiculaire à ce segment qui passe par son milieu" },
+                            { q: "Propriétés d’un parallélogramme", a: "Côtés opposés égaux et parallèles, diagonales qui se coupent en leur milieu" },
+                            { q: "Propriétés d’un rectangle", a: "4 angles droits, diagonales de même longueur qui se coupent en leur milieu" },
+                            { q: "Propriétés d’un losange", a: "4 côtés de même longueur, diagonales perpendiculaires qui se coupent en leur milieu" },
+                            { q: "Propriétés d’un carré", a: "4 angles droits et 4 côtés de même longueur (diagonales perpendiculaires, égales et de même milieu)" },
+                            { q: "À quoi sert le théorème de Thalès et ses configurations ?", a: "À calculer une longueur. Configurations : triangles emboîtés (imbriqués) ou en papillon avec deux côtés parallèles" },
+                            { q: "Rôle de la réciproque et de la contraposée de Thalès", a: "La réciproque sert à montrer que deux droites sont parallèles ; la contraposée montre qu'elles ne le sont pas" },
+                            { q: "Énoncé de la réciproque de Thalès", a: "Si les points sont alignés dans le même ordre et si les rapports de longueurs sont égaux, alors les droites sont parallèles" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 5 : Trigonométrie et Transformations",
+                        summary: "<h4>Relations trigonométriques et transformations géométriques du plan</h4><p>La **trigonométrie** étudie les relations entre les angles aigus et les longueurs des côtés dans un triangle rectangle. Elle introduit trois rapports fondamentaux dépendant uniquement de la mesure de l'angle :<br>- **Cosinus** : $\cos(\text{angle}) = \frac{\text{Côté Adjacent}}{\text{Hypoténuse}}$<br>- **Sinus** : $\sin(\text{angle}) = \frac{\text{Côté Opposé}}{\text{Hypoténuse}}$<br>- **Tangente** : $\tan(\text{angle}) = \frac{\text{Côté Opposé}}{\text{Côté Adjacent}}$<br>Le moyen mnémotechnique universel est **CAH SOH TOA**. Pour retrouver la mesure d'un angle en degrés à partir d'un rapport numérique, on applique les fonctions réciproques sur la calculatrice (touches `Arccos`, `Arcsin` ou `Arctan`).</p><p>Les **transformations du plan** modifient la position d'une figure. Les isométries conservent les longueurs et les angles : la **translation** (glissement rectiligne selon un vecteur/direction/sens/longueur) et la **rotation** (pivotement autour d'un centre d'un angle donné dans un sens horaire ou anti-horaire). Le programme intègre l'**homothétie** de centre $O$ et de rapport $k$ : elle agrandit ou réduit une figure. Si $k > 0$, la figure est du même côté du centre. Si $k < 0$, la figure subit un retournement de l'autre côté du centre. Deux triangles ayant des angles égaux ou des côtés proportionnels sont dits **semblables**.</p>",
+                        mindmap: {
+                            core: "Trigonométrie & Transfo",
+                            branches: [
+                                { name: "📐 CAH SOH TOA", color: "#3b82f6", items: ["Cos = Adjacent / Hypoténuse", "Sin = Opposé / Hypoténuse", "Tan = Opposé / Adjacent", "Calcul d'angle via touches Arc/Inverses"] },
+                                { name: "🔄 Isométries", color: "#10b981", items: ["Translation: Glissement sans tourner", "Rotation: Centre, angle et sens", "Conservent longueurs et aires"] },
+                                { name: "🔎 Homothétie", color: "#eab308", items: ["Agrandit ou réduit la figure", "Rapport k > 0: même côté du centre", "Rapport k < 0: effet de retournement"] }
+                            ]
+                        },
+                        data: [
+                            { q: "À quoi sert la trigonométrie et dans quelle configuration ?", a: "À calculer une longueur ou un angle dans un triangle rectangle" },
+                            { q: "Formules trigonométriques (Cosinus, Sinus, Tangente)", a: "Cos = Adjacent/Hypoténuse | Sin = Opposé/Hypoténuse | Tan = Opposé/Adjacent (Mémo: CAHSOHTOA)" },
+                            { q: "Comment calculer la mesure d'un angle en trigonométrie ?", a: "On utilise les touches inverses de la calculatrice : Arccos, Arcsin ou Arctan" },
+                            { q: "En quoi consiste une translation ?", a: "Faire glisser une figure selon une direction, un sens et une longueur, sans la déformer ni la tourner" },
+                            { q: "En quoi consiste une rotation ?", a: "Faire tourner une figure autour d’un point (centre), d’un angle donné et dans un sens déterminé, sans la déformer" },
+                            { q: "En quoi consiste une homothétie de rapport k (positif / négatif) ?", a: "Agrandir ou réduction une figure depuis un centre. Si k > 0 la figure reste du même côté, si k < 0 elle subit un retournement de 180° de l'autre côté" },
+                            { q: "Comment reconnaître deux triangles semblables ?", a: "Ils ont leurs angles deux à deux égaux ou les longueurs de leurs côtés proportionnelles" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 6 : Repérage, Aires, Volumes et Échelles",
+                        summary: "<h4>Géométrie dans l'espace, formules métriques et effets d'échelles</h4><p>Le repérage s'effectue dans le plan à l'aide de deux axes perpendiculaires : l'axe horizontal (**abscisses**) et l'axe vertical (**ordonnées**). Dans le couple $(x ; y)$, l'abscisse précède toujours l'ordonnée. Sur la Terre, le repérage sphérique utilise les coordonnées géographiques : la **latitude** (par rapport à l'Équateur) et la **longitude** (par rapport au méridien de Greenwich).</p><p>Les formules fondamentales à connaître par cœur pour le brevet incluent :<br>- Périmètre cercle = $2 \times \pi \times R$ | Aire disque = $\pi \times R^2$<br>- Aire triangle = $\frac{\text{Base} \times \text{Hauteur}}{2}$ (la hauteur étant perpendiculaire au côté opposé).<br>- Volumes fondamentaux :<br>  * Cube = $c^3$ | Pavé droit = $L \times l \times h$<br>  * Cylindre / Prisme droit = $\text{Aire de la Base} \times h$<br>  * Cône de révolution / Pyramide = $\frac{\text{Aire de la Base} \times h}{3}$<br>  * Sphère (Boule) = $\frac{4}{3} \times \pi \times R^3$<br>Rappels de conversion : $1 \text{ L} = 1 \text{ dm}^3$. Lors d'un agrandissement ou d'une réduction de **rapport $k$**, les longueurs sont multipliées par $k$, les **aires par $k^2$**, et les **volumes par $k^3$**.</p>",
+                        mindmap: {
+                            core: "Aires & Volumes",
+                            branches: [
+                                { name: "🗺️ Repérage", color: "#ec4899", items: ["Plan: Coordonnées (Abscisse ; Ordonnée)", "Terre: Latitude (Équateur) / Longitude"] },
+                                { name: "📦 Volumes Clés", color: "#a855f7", items: ["Cylindre/Prisme: Base × h", "Pyramide/Cône: (Base × h) / 3", "Boule: (4/3) × π × R³", "Équivalence: 1 L = 1 dm³"] },
+                                { name: "📈 Effet Échelle k", color: "#3b82f6", items: ["Longueurs multipliées par k", "Aires multipliées par k²", "Volumes multipliés par k³"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Lignes de référence pour se repérer sur la Terre (Méridien / Parallèle)", a: "Le méridien de Greenwich (origine des longitudes) et l’Équateur (origine des latitudes)" },
+                            { q: "Périmètre d’un rectangle et d’un carré", a: "Rectangle : 2 × (L + l) | Carré : 4 × c" },
+                            { q: "Périmètre (circonférence) d’un cercle", a: "2 × π × R (ou π × d)" },
+                            { q: "Aire d’un rectangle, d’un carré et d’un triangle", a: "Rectangle : L × l | Carré : c² | Triangle : (Base × Hauteur) / 2" },
+                            { q: "Qu’est-ce qu’une hauteur dans un triangle ?", a: "Une droite passant par un sommet et perpendiculaire au côté opposé" },
+                            { q: "Aire d’un disque", a: "π × R²" },
+                            { q: "Nom des axes horizontal et vertical dans un repère", a: "Horizontal : l’axe des abscisses | Vertical : l’axe des ordonnées" },
+                            { q: "Dans le couple de coordonnées (5 ; -7), que représentent 5 et -7 ?", a: "5 est l’abscisse (axe horizontal), -7 est l’ordonnée (axe vertical)" },
+                            { q: "Unités de longueur, masse et contenance de Kilo à Milli", a: "km/hm/dam/m/dm/cm/mm | kg/hg/dag/g/dg/cg/mg | kL/hL/daL/L/dL/cL/mL" },
+                            { q: "Facteur multiplicateur de passage d'une unité à la suivante (Longueur, Aire, Volume)", a: "Longueur : ×10 | Aire : ×100 | Volume : ×1000" },
+                            { q: "Quelle est la correspondance de volume pour 1 L ?", a: "1 L = 1 dm³" },
+                            { q: "Volume d'un cube et d'un pavé droit (parallélépipède)", a: "Cube : c³ | Pavé : Longueur × largeur × Hauteur" },
+                            { q: "Volume d'un cylindre et d'un prisme droit", a: "Cylindre : π × R² × h | Prisme : Aire de la Base × h" },
+                            { q: "Volume d'une pyramide et d'un cône de révolution", a: "Pyramide ou Cône = (Aire de la Base × Hauteur) / 3" },
+                            { q: "Volume d’une sphère (boule)", a: "(4/3) × π × R³" },
+                            { q: "Effet d'un agrandissement/réduction de rapport k sur les Aires et Volumes", a: "Les aires sont multipliées par k² ; les volumes sont multipliés par k³" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 7 : Proportionnalité, Statistiques et Fonctions",
+                        summary: "<h4>Gestion de données, statistiques et modélisation par les fonctions</h4><p>La **proportionnalité** traduit une relation linéaire régulière entre deux grandeurs (vérifiée si les rapports de la 2e ligne sur la 1ère sont constants). Graphiquement, elle se traduit par des points parfaitement alignés sur une droite passant par l'origine du repère. La vitesse s'exprime par la formule rationnelle $v = \frac{d}{t}$. Les pourcentages s'appliquent couramment (ex: une baisse de $a\%$ revient à multiplier par le coefficient multiplicateur $1 - \frac{a}{100}$).</p><p>Une **fonction** numérique est une boîte noire mathématique qui transforme un nombre de départ $x$ en un unique nombre d'arrivée $f(x)$. Le nombre de départ $x$ s'appelle l'**antécédent** (lu sur l'axe horizontal). Le résultat $f(x)$ s'appelle l'**image** (lue sur l'axe vertical).<br>- Fonction linéaire : $f(x) = ax$ (représente une situation de proportionnalité, modélisée par une droite passant par l'origine).<br>- Fonction affine : $f(x) = ax + b$ (modélisée par une droite quelconque où $a$ est le coefficient directeur et $b$ l'ordonnée à l'origine).</p><p>En **statistiques**, on analyse une série de données brutes :<br>- **Moyenne** : Somme pondérée de toutes les valeurs divisée par l'effectif total.<br>- **Médiane** : Valeur centrale qui partage la série ordonnée en deux groupes d'effectifs égaux (50% au-dessus, 50% en dessous).<br>- **Étendue** : Différence entre la valeur maximale et la valeur minimale de la série (mesure de dispersion).</p>",
+                        mindmap: {
+                            core: "Proportionnalité, Stat & Fonctions",
+                            branches: [
+                                { name: "📈 Proportionnalité", color: "#eab308", items: ["Graphique: Droite passant par l'origine", "Formule de la Vitesse: v = d / t", "Évolution %: Multiplier par (1 ± a/100)"] },
+                                { name: "⚙️ Les Fonctions", color: "#ec4899", items: ["x = antécédent (axe X) | f(x) = image (axe Y)", "Linéaire f(x)=ax | Affine f(x)=ax+b", "a = coefficient directeur / b = ordonnée à l'origine"] },
+                                { name: "📊 Statistiques", color: "#10b981", items: ["Moyenne: Somme des valeurs / Effectif total", "Médiane: Partage la série ordonnée à 50%", "Étendue: Valeur Max - Valeur Min"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Comment vérifie-t-on un tableau de proportionnalité ?", a: "On divise tous les nombres de la 2e ligne par ceux de la 1e ligne. On doit obtenir un résultat constant appelé coefficient de proportionnalité" },
+                            { q: "Comment reconnaître la proportionnalité sur un graphique ?", a: "Les points sont alignés sur une droite qui passe par l’origine du repère" },
+                            { q: "Formule liant vitesse, distance et temps", a: "v = d / t (ou d = v × t | t = d / v)" },
+                            { q: "Deux autres écritures de 15%", a: "15/100 ou 0,15" },
+                            { q: "Augmenter / Diminuer une quantité de a% revient à...", a: "Augmenter : multiplier par (1 + a/100) | Diminuer : multiplier par (1 - a/100)" },
+                            { q: "Qu’est-ce qu’une fonction, une image et un antécédent ?", a: "Fonction : processus transformant x en f(x). Image : nombre obtenu en sortie (axe des ordonnées). Antécédent : nombre mis au départ (axe des abscisses)" },
+                            { q: "Formule et graphique d'une fonction linéaire / affine", a: "Linéaire : f(x) = ax (droite passant par l'origine) | Affine : f(x) = ax + b (droite)" },
+                            { q: "Dans la fonction f(x) = ax + b, comment nomme-t-on a et b ?", a: "a est le coefficient directeur, b est l’ordonnée à l’origine" },
+                            { q: "Comment calcule-t-on une fréquence en statistiques ?", a: "Fréquence = Effectif du caractère / Effectif total" },
+                            { q: "Comment calcule-t-on la moyenne, la médiane et l’étendue ?", a: "Moyenne : Somme des valeurs/Effectif total. Médiane : Valeur centrale après tri. Étendue : Valeur max - Valeur min" }
+                        ]
+                    }
+                ]
+            },
+            francais: {
+                title: "Français",
+                color: "#10b981",
+                gradient: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                desc: "Modes, temps grammaticaux et figures de style",
+                chapters: [
+                    {
+                        name: "Chapitre 1 : Les modes verbaux",
+                        summary: "<h4>La morphologie et la sémantique des modes verbaux</h4><p>En conjugaison française, les **modes** indiquent la manière dont le locuteur envisage l'action exprimée par le verbe. On distingue fondamentalement deux grandes catégories de modes :</p><p>1. **Les modes personnels** (qui se conjuguent avec des pronoms personnels je, tu, il...) :<br>- **L'indicatif** : C'est le mode de la réalité, du fait certain inscrit dans le temps (présent, passé, futur).<br>- **Le subjonctif** : C'est le mode de l'irréel, du virtuel, exprimant le doute, le souhait, le regret, l'obligation ou une action incertaine (généralement introduit par la conjonction 'que').<br>- **Le conditionnel** : Exprime une action soumise à une condition explicite ou implicite, une hypothèse, ou sert à formuler une demande polie.<br>- **L'impératif** : Mode de l'injonction, utilisé pour exprimer un ordre strict, un conseil bienveillant ou une interdiction formelle (il ne comporte que 3 personnes et pas de pronom sujet exprimé).</p><p>2. **Les modes impersonnels** (invariables en personne) :<br>- **L'infinitif** : Forme nominale stable du verbe.<br>- **Le participe** (Présent / Passé) : Adopte une valeur proche de l'adjectif.<br>- **Le gérondif** (introduit par 'en' + participe présent) : Exprime la simultanéité de deux actions, la cause ou la manière.</p>",
+                        mindmap: {
+                            core: "Modes Verbaux",
+                            branches: [
+                                { name: "👥 Modes Personnels", color: "#10b981", items: ["Indicatif: Fait certain, ancré dans le réel", "Subjonctif: Le doute, le souhait ('que')", "Conditionnel: Soumis à condition/hypothèse", "Impératif: Ordre ou conseil (3 personnes, pas de pronom)"] },
+                                { name: "🚫 Modes Impersonnels", color: "#059669", items: ["Infinitif: Le verbe à l'état pur", "Gérondif: Simultanéité ('en' + Participe Présent)", "Participe: Valeur verbale ou adjectivale"] }
+                            ]
+                        },
+                        data: [
+                            { q: "Il a été puni pour avoir voulu désobéir. (avoir voulu)", a: "Mode Infinitif" },
+                            { q: "Je ne comprends pas qu'il préfère travailler. (préfère)", a: "Mode Subjonctif" },
+                            { q: "Il aurait pu te le dire. (aurait pu)", a: "Mode Conditionnel" },
+                            { q: "En courant, il s'est foulé la cheville. (En courant)", a: "Mode Gérondif" },
+                            { q: "Il faisait du ski en zigzaguant sur la montagne. (en zigzaguant)", a: "Mode Gérondif" },
+                            { q: "Avoir passé son diplôme est une véritable fierté. (Avoir passé)", a: "Mode Infinitif" },
+                            { q: "Cela aurait été plus simple. (aurait été)", a: "Mode Conditionnel" },
+                            { q: "Soyez gentils avec elle. (Soyez)", a: "Mode Impératif" },
+                            { q: "Après son succès, rester le même n'a pas été facile. (rester)", a: "Mode Infinitif" },
+                            { q: "Comprenez-moi, ce n'est pas possible. (Comprenez-moi)", a: "Mode Impératif" },
+                            { q: "Pourriez-vous me passer le sel ? (Pourriez-vous)", a: "Mode Conditionnel" },
+                            { q: "Vous aviez fini sans vous en rendre compte. (aviez fini)", a: "Mode Indicatif" },
+                            { q: "Ils auront compris avant toi. (auront compris)", a: "Mode Indicatif" },
+                            { q: "Il regrette que tu ne puisses pas l'aider. (puisses)", a: "Mode Subjonctif" },
+                            { q: "Ils auraient compris sans toi. (auraient compris)", a: "Mode Conditionnel" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 2 : Les figures de style",
+                        summary: "<h4>Les procédés stylistiques et figures de rhétorique textuelle</h4><p>Les **figures de style** sont des procédés d'écriture qui s'écartent de l'usage ordinaire de la langue pour donner de la force, de la beauté ou de l'émotion à un texte littéraire. Le programme de 3ème les classe en grandes catégories logiques :</p><p>1. **Les figures d'analogie (création d'images)** :<br>- **La comparaison** : Rapproche deux éléments (comparé/comparant) via un outil de comparaison explicite (comme, tel que, semblable à).<br>- **La métaphore** : Assimile deux éléments directement, *sans* mot de comparaison. Elle devient filée si elle se poursuit sur plusieurs lignes.<br>- **La personnification** : Attribue des comportements ou traits humains à un objet inanimé ou un animal.<br>- **L'allégorie** : Représente une idée abstraite sous les traits d'un personnage (ex: la Faucheuse pour la Mort).</p><p>2. **Les figures d'opposition** :<br>- **L'antithèse** : Associe deux termes de sens opposés au sein d'une même structure syntaxique.<br>- **L'oxymore** : Réunit deux mots de sens contradictoires côte à côte dans le même groupe nominal (ex: une obscure clarté).</p><p>3. **Les figures d'atténuation / amplification** :<br>- **La litote** : En dire moins pour en faire entendre plus (ex: Ce n'est pas un sot = il est très intelligent).<br>- **L'hyperbole** : Exagération manifeste des termes pour frapper l'esprit.<br>- **L'énumération / accumulation** : Succession de termes alignés créant un effet de profusion ou d'étouffement.<br>- **La périphrase** : Remplacer un mot par une expression descriptive plus longue.</p>",
+                        mindmap: {
+                            core: "Figures de Style",
+                            branches: [
+                                { name: "👁️ Analogie & Images", color: "#10b981", items: ["Comparaison: Avec outil (comme, tel)", "Métaphore: Image directe sans outil", "Personnification: Objet = Comportement humain", "Allégorie: Idée abstraite incarnée"] },
+                                { name: "🌓 Opposition", color: "#3b82f6", items: ["Antithèse: Deux opposés dans la phrase", "Oxymore: Deux opposés collés (Obscure clarté)"] },
+                                { name: "🔊 Échelle & Effets", color: "#f97316", items: ["Hyperbole: Exagération extrême", "Litote: Dire moins pour sous-entendre plus", "Périphrase: Expression au lieu d'un seul mot"] }
+                            ]
+                        },
+                        data: [
+                            { q: "« Pour qui sont ces serpents qui sifflent sur vos têtes ? »", a: "Allitération (répétition de consonnes)" },
+                            { q: "« […] je me suis baigné dans le poème / De la mer… »", a: "Métaphore" },
+                            { q: "« Ce n’était pas un sot, non, non, et croyez-m'en »", a: "Litote" },
+                            { q: "« Cette obscure clarté qui tombe des étoiles »", a: "Oxymore" },
+                            { q: "« Le Malheur a percé mon vieux cœur de sa lance »", a: "Allégorie" },
+                            { q: "« De même que le vent [...] de même la mer dispersa les longues poutres. »", a: "Comparaison" },
+                            { q: "« [...] une des injures les plus crues [...] faisant allusion à la façon dont sa mère l'avait conçu »", a: "Périphrase" },
+                            { q: "« Tout lui plaît et déplaît [...] Sans raison il est gai, sans raison il s’afflige »", a: "Antithèse" },
+                            { q: "« Je m'en vais vous mander la chose la plus étonnante, la plus surprenante... »", a: "Énumération + Hyperbole" },
+                            { q: "« Ô Mort, vieux capitaine, il est temps ! »", a: "Allégorie" },
+                            { q: "« des palais Romains le front audacieux »", a: "Personnification" }
+                        ]
+                    },
+                    {
+                        name: "Chapitre 3 : Les valeurs du présent de l'indicatif",
+                        summary: "<h4>L'analyse contextuelle des valeurs du présent de l'indicatif</h4><p>Le **présent de l'indicatif** est un temps complexe dont l'usage s'étend bien au-delà de la simple description de l'action en cours. En analyse de texte au Brevet, tu dois être capable de définir précisément sa **valeur d'emploi** contextuelle :</p><p>1. **Le présent d'énonciation (immédiat)** : Il coïncide exactement avec le moment où l'on parle ou écrit (ex: 'Je ne comprends pas l'exercice actuellement').<br>2. **Le présent de vérité générale (permanent)** : Il énonce des faits intemporels, des vérités scientifiques, des définitions géographiques ou des proverbes immuables (ex: 'L'eau bout à 100°C', 'La Terre tourne autour du Soleil').<br>3. **Le présent itératif (d'habitude ou de répétition)** : Il sert à exprimer des actions régulières, rituelles ou cycliques qui se répètent dans le temps (ex: 'Il se consacre à son sport tous les mardis').<br>4. **Le présent de narration (historique)** : Inséré au milieu d'un récit globalement mené aux temps du passé (passé simple/imparfait), il transpose soudainement une action au présent pour lui donner du dynamisme, de la vivacité et plonger instantanément le lecteur au cœur de l'action dramatique.<br>5. **Le présent à valeur de passé récent ou futur proche** : Indique une action venant tout juste de s'achever ou sur le point de se produire immédiatement (ex: 'Ils nous quittent à l'instant').</p>",
+                        mindmap: {
+                            core: "Valeurs du Présent",
+                            branches: [
+                                { name: "💬 Énonciation", color: "#10b981", items: ["Action en cours / Moment présent", "Ex: 'Je te téléphone car je m'ennuie'"] },
+                                { name: "🌍 Vérité Générale", color: "#a855f7", items: ["Faits scientifiques permanents", "Proverbes ou définitions géographiques", "Ex: 'Le granit est une roche dure'"] },
+                                { name: "🔄 Itératif (Habitude)", color: "#3b82f6", items: ["Actions répétées régulièrement", "Mots clés: chaque jour, souvent, le soir", "Ex: 'La pendule sonne toutes les heures'"] },
+                                { name: "📖 Narration", color: "#ef4444", items: ["Inséré au milieu d'un récit au passé", "Dynamise l'action, crée de la surprise", "Ex: 'Un terrible craquement les fait sursauter'"] }
+                            ]
+                        },
+                        data: [
+                            { q: "En Laponie, l’hiver, le soleil ne se lève pas.", a: "Présent de vérité générale" },
+                            { q: "Elle téléphone tous les jours à ses amies.", a: "Présent itératif / d'habitude" },
+                            { q: "Le 26 décembre 1999, une tempête ravage les forêts françaises.", a: "Présent de narration" },
+                            { q: "Le granit est une roche dure qui est formée de cristaux variés.", a: "Présent de vérité générale" },
+                            { q: "Pendant ses trajets matinaux en bus, il lit le journal.", a: "Présent itératif / d'habitude" },
+                            { q: "La brume estompe les détails du paysage qui prend un aspect irréel.", a: "Présent d'énonciation" },
+                            { q: "Ils s’enfoncèrent dans la forêt... Un terrible craquement les fait soudain sursauter.", a: "Présent de narration" },
+                            { q: "Je te téléphone parce que je m’ennuie.", a: "Présent d'énonciation" },
+                            { q: "Encore une semaine et les vacances commencent.", a: "Présent à valeur de futur proche" },
+                            { q: "Je n’arrive pas à ouvrir cette porte.", a: "Présent d'énonciation" },
+                            { q: "Les jours rallongent au printemps.", a: "Présent de vérité générale" },
+                            { q: "Le soir, Jean se consacre à sa collection de timbres.", a: "Présent itératif / d'habitude" },
+                            { q: "La pendule sonne toutes les heures.", a: "Présent itératif / d'habitude" },
+                            { q: "Tu aurais dû venir plus tôt pour les voir, ils nous quittent à l’instant.", a: "Présent à valeur de passé récent" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        /* --- LOGIQUE DE L'APPLICATION INTERACTIVE --- */
+        let currentSubject = "";
+        let currentModule = "";
+        let selectedChapterIndex = -1; 
+        let currentFlashcardIndex = 0;
+        let flashcardsData = [];
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function initApp() {
+            const menu = document.getElementById('subject-menu');
+            menu.innerHTML = "";
+            for (let key in database) {
+                const sub = database[key];
+                const card = document.createElement('div');
+                card.className = 'subject-card';
+                card.style.setProperty('--subject-color', sub.color);
+                card.innerHTML = `<h2 style="color: ${sub.color}">${sub.title}</h2><p style="color: var(--text-muted)">${sub.desc}</p>`;
+                card.onclick = () => openSubject(key);
+                menu.appendChild(card);
+            }
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function openSubject(key) {
+            currentSubject = key;
+            const sub = database[key];
+            
+            document.documentElement.style.setProperty('--subject-gradient', sub.gradient);
+            document.documentElement.style.setProperty('--subject-color', sub.color);
+            document.getElementById('subject-title').innerText = sub.title;
+            
+            selectedChapterIndex = -1;
+            openModuleTab('revision');
+            showView('subject-view');
+        }
+
+        function renderChapterSelector() {
+            const zone = document.getElementById('chapter-buttons-zone');
+            zone.innerHTML = "";
+            const chaps = database[currentSubject].chapters;
+
+            const btnAll = document.createElement('button');
+            btnAll.className = `btn-chapter ${selectedChapterIndex === -1 ? 'active' : ''}`;
+            btnAll.innerText = "📚 Tout le programme";
+            btnAll.onclick = () => { selectedChapterIndex = -1; refreshCurrentModule(); };
+            zone.appendChild(btnAll);
+
+            chaps.forEach((ch, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-chapter ${selectedChapterIndex === idx ? 'active' : ''}`;
+                btn.innerText = `Ch. ${idx + 1}`;
+                btn.title = ch.name;
+                btn.onclick = () => { selectedChapterIndex = idx; refreshCurrentModule(); };
+                zone.appendChild(btn);
+            });
+        }
+
+        function openModuleTab(moduleName) {
+            currentModule = moduleName;
+            document.querySelectorAll('.sub-view').forEach(sv => sv.style.display = 'none');
+            document.getElementById(`module-${moduleName}`).style.display = 'block';
+            refreshCurrentModule();
+        }
+
+        function refreshCurrentModule() {
+            renderChapterSelector();
+            if (currentModule === 'revision') setupRevision();
+            else if (currentModule === 'flashcards') setupFlashcards();
+            else if (currentModule === 'quiz') setupQuiz();
+        }
+
+        function getFilteredQuestions() {
+            const chaps = database[currentSubject].chapters;
+            if (selectedChapterIndex === -1) {
+                let dataset = [];
+                chaps.forEach(c => { dataset = dataset.concat(c.data); });
+                return dataset;
+            } else {
+                return chaps[selectedChapterIndex].data;
+            }
+        }
+
+        /* --- GENERATION DU MODULE REVISION AVEC CONSTITUTION DE LA CARTE MENTALE --- */
+        function setupRevision() {
+            const container = document.getElementById('revision-content');
+            const summaryBox = document.getElementById('course-summary-box');
+            const mindmapZone = document.getElementById('mindmap-zone');
+            const chaps = database[currentSubject].chapters;
+
+            if (selectedChapterIndex === -1) {
+                summaryBox.innerHTML = `<h4>💡 Mode d'apprentissage Intégral</h4><p>Pour afficher le <strong>cours rédigé de façon exhaustive</strong> ainsi que sa <strong>carte mentale arborescente</strong>, clique sur un chapitre spécifique (boutons Ch.1, Ch.2...) dans le sélecteur ci-dessus.</p>`;
+                mindmapZone.innerHTML = "";
+                
+                let htmlContent = "";
+                chaps.forEach(ch => {
+                    htmlContent += `<div style="margin-top: 25px; color: var(--subject-color); font-weight: bold; border-bottom: 2px dashed #2e2e38; padding-bottom: 5px; font-size:1.2rem;">${ch.name}</div>`;
+                    ch.data.forEach(item => {
+                        htmlContent += `<div class="revision-item"><strong>${item.q} :</strong> ${item.a}</div>`;
+                    });
+                });
+                container.innerHTML = htmlContent;
+            } else {
+                const activeChap = chaps[selectedChapterIndex];
+                summaryBox.innerHTML = activeChap.summary;
+                
+                // Construction dynamique de la carte mentale stylisée en branches
+                if(activeChap.mindmap) {
+                    let mapData = activeChap.mindmap;
+                    let branchesHtml = mapData.branches.map(b => `
+                        <div class="mindmap-branch" style="--branch-color: ${b.color};">
+                            <h5>${b.name}</h5>
+                            <ul class="mindmap-leafs">
+                                ${b.items.map(li => `<li>${li}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `).join('');
+
+                    mindmapZone.innerHTML = `
+                        <div class="mindmap-container">
+                            <div class="mindmap-title">🧠 Carte Mentale de Révision Rapide</div>
+                            <div class="mindmap-root">
+                                <div><span class="mindmap-node-core">${mapData.core}</span></div>
+                                <div class="mindmap-branches">
+                                    ${branchesHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    mindmapZone.innerHTML = "";
+                }
+
+                container.innerHTML = activeChap.data.map(item => `
+                    <div class="revision-item">
+                        <strong>${item.q} :</strong> ${item.a}
+                    </div>
+                `).join('');
+            }
+        }
+
+        /* --- MODULE FLASHCARDS --- */
+        function setupFlashcards() {
+            const rawData = getFilteredQuestions();
+            flashcardsData = [...rawData].sort(() => Math.random() - 0.5);
+            currentFlashcardIndex = 0;
+            if(flashcardsData.length === 0) {
+                document.getElementById('card-front').innerText = "Aucune donnée disponible";
+                document.getElementById('card-back').innerText = "-";
+                return;
+            }
+            showFlashcard();
+        }
+
+        function showFlashcard() {
+            const card = document.getElementById('flashcard');
+            card.classList.remove('flipped');
+            const item = flashcardsData[currentFlashcardIndex];
+            document.getElementById('card-front').innerText = item.q;
+            document.getElementById('card-back').innerText = item.a;
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+        }
+
+        function nextFlashcard(event) {
+            event.stopPropagation();
+            if(flashcardsData.length <= 1) return;
+            currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcardsData.length;
+            document.getElementById('flashcard').classList.remove('flipped');
+            setTimeout(showFlashcard, 200);
+        }
+
+        /* --- MODULE QUIZZ --- */
+        function setupQuiz() {
+            const rawData = getFilteredQuestions();
+            const shuffled = [...rawData].sort(() => Math.random() - 0.5);
+            quizQuestions = shuffled.slice(0, Math.min(10, shuffled.length));
+            currentQuizIndex = 0;
+            quizScore = 0;
+            
+            document.getElementById('quiz-box').style.display = 'block';
+            document.getElementById('score-box').style.display = 'none';
+            
+            if(quizQuestions.length === 0) {
+                document.getElementById('question-text').innerText = "Sélectionnez un autre filtre.";
+                document.getElementById('options-grid').innerHTML = "";
+                return;
+            }
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            const progress = (currentQuizIndex / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progress}%`;
+
+            const currentQ = quizQuestions[currentQuizIndex];
+            document.getElementById('question-text').innerText = `Question : ${currentQ.q}`;
+
+            let allItemsGlobal = [];
+            database[currentSubject].chapters.forEach(c => { allItemsGlobal = allItemsGlobal.concat(c.data); });
+            
+            const wrongs = allItemsGlobal.filter(i => i.a !== currentQ.a).sort(() => Math.random() - 0.5).slice(0, 3);
+            const options = [currentQ, ...wrongs].sort(() => Math.random() - 0.5);
+
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = "";
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.a;
+                btn.onclick = () => checkAnswer(btn, opt.a === currentQ.a);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedBtn, isCorrect) {
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                selectedBtn.classList.add('correct');
+                quizScore++;
+            } else {
+                selectedBtn.classList.add('wrong');
+                document.querySelectorAll('.option-btn').forEach(b => {
+                    if (b.innerText === quizQuestions[currentQuizIndex].a) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+
+            setTimeout(() => {
+                currentQuizIndex++;
+                if (currentQuizIndex < quizQuestions.length) {
+                    showQuizQuestion();
+                } else {
+                    endQuiz();
+                }
+            }, 1500);
+        }
+
+        function endQuiz() {
+            document.getElementById('quiz-box').style.display = 'none';
+            document.getElementById('score-box').style.display = 'block';
+            document.getElementById('quiz-progress-bar').style.width = `100%`;
+            
+            document.getElementById('score-circle').innerText = `${quizScore}/${quizQuestions.length}`;
+            
+            let comment = "Allez, analyse bien la carte mentale de ce chapitre pour consolider tes connaissances !";
+            if(quizScore >= 8) comment = "Excellent score ! Tu as une mémoire d'éléphant ! 🌟 🎉";
+            else if(quizScore >= 5) comment = "Bon travail, la moyenne est acquise. Révise encore un peu pour la mention. 👍";
+            
+            document.getElementById('score-comment').innerText = comment;
+        }
+
+        initApp();
+    </script>
+</body>
+</html>

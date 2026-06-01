@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Histoire</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .question-container {
+            margin: 20px 0;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            background-color: #ecf0f1;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #bdc3c7;
+        }
+        .option.selected {
+            background-color: #3498db;
+            color: white;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .progress {
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .score {
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2em;
+            color: #27ae60;
+        }
+        .feedback {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QCM Histoire</h1>
+        <div class="progress">
+            Question <span id="current-question">1</span> sur <span id="total-questions">28</span>
+        </div>
+        <div class="score">
+            Score : <span id="score">0</span>%
+        </div>
+        <div class="question-container">
+            <div class="question" id="question-text"></div>
+            <div class="options" id="options-container"></div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+        <div class="navigation">
+            <button id="prev-btn" disabled>Précédent</button>
+            <button id="next-btn">Suivant</button>
+        </div>
+    </div>
+
+    <script>
+        // Liste des questions et réponses
+        const questions = [
+            {
+                question: "Quelle période correspond à la Première Guerre mondiale ?",
+                options: ["1914-1918", "1939-1945", "1945-1953", "1962-1975"],
+                correctAnswer: 0
+            },
+            {
+                question: "En quelle année a eu lieu la bataille de Verdun ?",
+                options: ["1914", "1916", "1918", "1939"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année a eu lieu la Révolution russe ?",
+                options: ["1914", "1917", "1924", "1945"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle date correspond à l'Armistice de la Première Guerre mondiale ?",
+                options: ["11 novembre 1918", "8 mai 1945", "18 juin 1940", "6 juin 1944"],
+                correctAnswer: 0
+            },
+            {
+                question: "Qui était au pouvoir en URSS entre 1924 et 1953 ?",
+                options: ["Lénine", "Staline", "Trotski", "Gorbatchev"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle période correspond à l'Allemagne nazie d'Adolf Hitler ?",
+                options: ["1914-1918", "1933-1945", "1945-1953", "1958-1969"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année le Front populaire a-t-il remporté une victoire électorale ?",
+                options: ["1933", "1936", "1945", "1958"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle période correspond à la Seconde Guerre mondiale ?",
+                options: ["1914-1918", "1939-1945", "1945-1953", "1958-1969"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle date correspond à l'Appel du général De Gaulle à la radio de Londres ?",
+                options: ["6 juin 1944", "8 mai 1945", "18 juin 1940", "11 novembre 1918"],
+                correctAnswer: 2
+            },
+            {
+                question: "Quelle date correspond au Débarquement allié en Normandie ?",
+                options: ["18 juin 1940", "6 juin 1944", "8 mai 1945", "11 novembre 1918"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle période correspond à la Libération de la France et au rétablissement de la République (IVe République) ?",
+                options: ["1939-1945", "1944-1945", "1958-1969", "1962-1975"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année les femmes ont-elles obtenu le droit de vote en France ?",
+                options: ["1936", "1944-1945", "1958", "1975"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle date correspond à la capitulation allemande et à la fin de la Seconde Guerre mondiale en Europe ?",
+                options: ["11 novembre 1918", "8 mai 1945", "6 juin 1944", "18 juin 1940"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année les bombes atomiques ont-elles été lancées sur Hiroshima et Nagasaki ?",
+                options: ["1944", "1945", "1947", "1957"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle période correspond au régime de Vichy ?",
+                options: ["1939-1945", "1940-1944", "1945-1953", "1958-1969"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année l'ONU a-t-elle été créée ?",
+                options: ["1944", "1945", "1947", "1957"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle période correspond à la Guerre Froide ?",
+                options: ["1939-1945", "1945-1953", "1947-1991", "1958-1969"],
+                correctAnswer: 2
+            },
+            {
+                question: "Quelle période correspond à la principale phase de décolonisation ?",
+                options: ["1945-1953", "1947-1962", "1958-1969", "1962-1975"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année le Traité de Rome a-t-il été signé, créant l'UE ?",
+                options: ["1945", "1957", "1981", "1992"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année la Ve République est-elle née ?",
+                options: ["1945", "1958", "1962", "1975"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle période correspond aux années De Gaulle ?",
+                options: ["1945-1953", "1958-1969", "1962-1975", "1981-1995"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle période correspond à la Guerre d'Algérie ?",
+                options: ["1945-1953", "1954-1962", "1958-1969", "1962-1975"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année l'Algérie a-t-elle obtenu son indépendance ?",
+                options: ["1954", "1958", "1962", "1975"],
+                correctAnswer: 2
+            },
+            {
+                question: "En quelle année l'élection du président de la République au suffrage universel direct a-t-elle été instaurée ?",
+                options: ["1958", "1962", "1975", "1981"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année la loi Veil sur l'IVG a-t-elle été promulguée ?",
+                options: ["1962", "1975", "1981", "1992"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle date correspond à la chute du mur de Berlin ?",
+                options: ["9 novembre 1989", "11 septembre 2001", "1991", "2002"],
+                correctAnswer: 0
+            },
+            {
+                question: "Quelle date correspond aux attentats terroristes aux États-Unis ?",
+                options: ["9 novembre 1989", "11 septembre 2001", "1991", "2002"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année le Traité de Maastricht a-t-il été signé ?",
+                options: ["1981", "1991", "1992", "2002"],
+                correctAnswer: 2
+            },
+            {
+                question: "Quelle période correspond aux années Mitterrand ?",
+                options: ["1958-1969", "1981-1995", "1995-2007", "2002-2012"],
+                correctAnswer: 1
+            },
+            {
+                question: "Quelle période correspond aux années Chirac ?",
+                options: ["1958-1969", "1981-1995", "1995-2007", "2002-2012"],
+                correctAnswer: 2
+            },
+            {
+                question: "En quelle année l'URSS s'est-elle disloquée ?",
+                options: ["1989", "1991", "1992", "2002"],
+                correctAnswer: 1
+            },
+            {
+                question: "En quelle année l'euro est-il devenu la monnaie européenne ?",
+                options: ["1991", "1992", "2002", "2012"],
+                correctAnswer: 2
+            }
+        ];
+
+        // Variables globales
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = Array(questions.length).fill(null);
+
+        // Éléments DOM
+        const questionText = document.getElementById("question-text");
+        const optionsContainer = document.getElementById("options-container");
+        const currentQuestionSpan = document.getElementById("current-question");
+        const totalQuestionsSpan = document.getElementById("total-questions");
+        const scoreSpan = document.getElementById("score");
+        const feedbackDiv = document.getElementById("feedback");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+
+        // Initialisation
+        totalQuestionsSpan.textContent = questions.length;
+        loadQuestion();
+
+        // Charger une question
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionText.textContent = question.question;
+
+            optionsContainer.innerHTML = "";
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement("div");
+                optionDiv.className = "option";
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionDiv.classList.add("selected");
+                }
+                optionDiv.textContent = option;
+                optionDiv.addEventListener("click", () => selectOption(index));
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            feedbackDiv.textContent = "";
+            feedbackDiv.className = "feedback";
+
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = userAnswers[currentQuestionIndex] === null;
+        }
+
+        // Sélectionner une option
+        function selectOption(index) {
+            userAnswers[currentQuestionIndex] = index;
+            const options = optionsContainer.querySelectorAll(".option");
+            options.forEach(option => option.classList.remove("selected"));
+            options[index].classList.add("selected");
+            nextBtn.disabled = false;
+
+            // Vérifier la réponse
+            const question = questions[currentQuestionIndex];
+            if (index === question.correctAnswer) {
+                feedbackDiv.textContent = "Bonne réponse !";
+                feedbackDiv.className = "feedback correct";
+            } else {
+                feedbackDiv.textContent = `Mauvaise réponse. La bonne réponse était : ${question.options[question.correctAnswer]}`;
+                feedbackDiv.className = "feedback incorrect";
+            }
+        }
+
+        // Passer à la question suivante
+        nextBtn.addEventListener("click", () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                // Calculer le score final
+                calculateScore();
+                alert(`QCM terminé ! Votre score final est de ${score}%.`);
+            }
+        });
+
+        // Revenir à la question précédente
+        prevBtn.addEventListener("click", () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+
+        // Calculer le score
+        function calculateScore() {
+            let correctAnswers = 0;
+            questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    correctAnswers++;
+                }
+            });
+            score = Math.round((correctAnswers / questions.length) * 100);
+            scoreSpan.textContent = score;
+
+            // Afficher le score toutes les 10 questions
+            if ((currentQuestionIndex + 1) % 10 === 0 || currentQuestionIndex === questions.length - 1) {
+                alert(`Score après ${currentQuestionIndex + 1} questions : ${Math.round((correctAnswers / (currentQuestionIndex + 1)) * 100)}%`);
+            }
+        }
+    </script>
+</body>
+</html>

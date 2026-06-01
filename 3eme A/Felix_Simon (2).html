@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objectif Brevet - Révisions Interactives</title>
+    <style>
+        /* --- CONFIGURATION GLOBALE & THÈME SOMBRE --- */
+        :root {
+            --bg-dark: #0f0c1b;
+            --bg-card: #1a1632;
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --text-light: #f5f6fa;
+            --text-muted: #a29bfe;
+            --accent-purple: #a55eea;
+            --accent-blue: #0984e3;
+            --success: #00b894;
+            --error: #d63031;
+            --mix-gradient: linear-gradient(135deg, #ff7675, #6c5ce7);
+
+            /* Couleurs par matière */
+            --color-histoire: #0984e3;
+            --color-géo: #00b894;
+            --color-français: #d63031;
+            --color-maths: #fdcb6e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1e113a 0%, var(--bg-dark) 70%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, var(--secondary), var(--primary), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            min-height: 500px;
+            position: relative;
+        }
+
+        /* --- ÉCRANS (GÉNÉRIQUE) --- */
+        .screen {
+            display: none;
+            background: var(--bg-card);
+            border: 2px solid rgba(108, 92, 231, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(108, 92, 231, 0.1);
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* --- ANIMATIONS ET BOUTONS --- */
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.6), 0 0 15px var(--secondary);
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 206, 201, 0.1);
+            box-shadow: 0 0 15px rgba(0, 206, 201, 0.4);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* --- NAVIGATION --- */
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(162, 155, 254, 0.2);
+        }
+
+        /* --- INTERFACE 1 : CHOIX MATIÈRE --- */
+        .grid-subjects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .subject-card {
+            background: linear-gradient(145deg, #221c42, #16122c);
+            border: 2px solid rgba(165, 94, 234, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Styles dynamiques injectés par JS selon la matière */
+        .subject-card.card-histoire { border-color: rgba(9, 132, 227, 0.4); }
+        .subject-card.card-histoire:hover { border-color: var(--color-histoire); box-shadow: 0 10px 25px rgba(9, 132, 227, 0.3); }
+        
+        .subject-card.card-géo { border-color: rgba(0, 184, 148, 0.4); }
+        .subject-card.card-géo:hover { border-color: var(--color-géo); box-shadow: 0 10px 25px rgba(0, 184, 148, 0.3); }
+
+        .subject-card.card-français { border-color: rgba(214, 48, 49, 0.4); }
+        .subject-card.card-français:hover { border-color: var(--color-français); box-shadow: 0 10px 25px rgba(214, 48, 49, 0.3); }
+
+        .subject-card.card-maths { border-color: rgba(253, 203, 110, 0.4); }
+        .subject-card.card-maths:hover { border-color: var(--color-maths); box-shadow: 0 10px 25px rgba(253, 203, 110, 0.3); }
+
+        .subject-card h3 {
+            font-size: 1.6rem;
+            color: var(--text-light);
+            text-transform: capitalize;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Grosse case Général centrée */
+        .subject-card.mix-card {
+            grid-column: 1 / -1;
+            aspect-ratio: auto;
+            padding: 2.5rem;
+            border: 2px solid #ff7675;
+            max-width: 500px;
+            margin: 1rem auto 0 auto;
+            width: 100%;
+        }
+        
+        .subject-card.mix-card h3 {
+            font-size: 2.2rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .subject-card.mix-card p {
+            font-size: 1.1rem !important;
+        }
+
+        .subject-card.mix-card:hover {
+            box-shadow: 0 12px 30px rgba(255, 118, 117, 0.4);
+            border-color: #ff7675;
+            transform: translateY(-6px);
+        }
+
+        /* --- INTERFACE 2 : CHOIX RUBRIQUE --- */
+        .grid-rubrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* --- RUBRIQUE : FICHES --- */
+        .fiche-content {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .fiche-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .fiche-content::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .fiche-item {
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 1rem;
+            padding: 1.2rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        /* Couleurs dynamiques des bordures de fiches */
+        .fiche-item.border-histoire { border-left-color: var(--color-histoire); }
+        .fiche-item.border-géo { border-left-color: var(--color-géo); }
+        .fiche-item.border-français { border-left-color: var(--color-français); }
+        .fiche-item.border-maths { border-left-color: var(--color-maths); }
+        .fiche-item.border-mixte { border-left-color: var(--accent-purple); }
+
+        .fiche-item strong {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        /* --- RUBRIQUE : FLASHCARDS --- */
+        .flashcard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .flashcard {
+            width: 100%;
+            max-width: 450px;
+            height: 280px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, #2c1a4d, #140d26);
+            border: 2px solid var(--primary);
+        }
+
+        /* Couleurs personnalisées pour le recto des flashcards */
+        .flashcard-front.bg-histoire { border-color: var(--color-histoire); background: linear-gradient(135deg, #0f2b48, #16122c); }
+        .flashcard-front.bg-géo { border-color: var(--color-géo); background: linear-gradient(135deg, #093323, #16122c); }
+        .flashcard-front.bg-français { border-color: var(--color-français); background: linear-gradient(135deg, #3a1118, #16122c); }
+        .flashcard-front.bg-maths { border-color: var(--color-maths); background: linear-gradient(135deg, #3e3016, #16122c); }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, #114b5f, #1a936f);
+            border: 2px solid var(--secondary);
+            transform: rotateY(180deg);
+        }
+
+        /* --- RUBRIQUE : QUIZZ --- */
+        .quiz-box {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(162, 155, 254, 0.3);
+            padding: 1.2rem;
+            text-align: left;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background: rgba(108, 92, 231, 0.2);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: rgba(0, 184, 148, 0.3) !important;
+            border-color: var(--success) !important;
+            box-shadow: 0 0 10px rgba(0, 184, 148, 0.4);
+        }
+
+        .option-btn.wrong {
+            background: rgba(214, 48, 49, 0.3) !important;
+            border-color: var(--error) !important;
+            box-shadow: 0 0 10px rgba(214, 48, 49, 0.4);
+        }
+
+        /* --- KEYFRAMES ANIMATIONS --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Objectif Brevet</h1>
+        <p>Révise tes examens de manière fluide et interactive</p>
+    </header>
+
+    <div class="container">
+
+        <div id="screen-subjects" class="screen active">
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">Choisis ta matière</h2>
+            <div class="grid-subjects" id="subjects-list"></div>
+        </div>
+
+        <div id="screen-rubrics" class="screen">
+            <div class="nav-header">
+                <button class="btn btn-secondary" onclick="changeScreen('screen-subjects')">← Matières</button>
+                <h2 id="current-subject-title" style="text-transform: capitalize;">Matière</h2>
+            </div>
+            <div class="grid-rubrics">
+                <button class="btn" onclick="startRubric('fiches')">📖 Fiches de révision</button>
+                <button class="btn" onclick="startRubric('flashcards')">⚡ Flashcards</button>
+                <button class="btn" onclick="startRubric('quizz')">🎯 Quiz (10 questions)</button>
+            </div>
+        </div>
+
+        <div id="screen-fiches" class="screen">
+            <div class="nav-header">
+                <button class="btn btn-secondary" onclick="changeScreen('screen-rubrics')">← Retour</button>
+                <h2>📖 Fiches de révision</h2>
+            </div>
+            <div class="fiche-content" id="fiche-target"></div>
+        </div>
+
+        <div id="screen-flashcards" class="screen">
+            <div class="nav-header">
+                <button class="btn btn-secondary" onclick="changeScreen('screen-rubrics')">← Retour</button>
+                <h2>⚡ Flashcards</h2>
+            </div>
+            <div class="flashcard-container">
+                <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front" id="flash-recto">Question / Date</div>
+                        <div class="flashcard-back" id="flash-verso">Réponse / Événement</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary" onclick="prevFlashcard()">Précédent</button>
+                    <button class="btn" onclick="nextFlashcard()">Suivant →</button>
+                </div>
+                <p id="flashcard-counter" style="color: var(--text-muted);"></p>
+            </div>
+        </div>
+
+        <div id="screen-quizz" class="screen">
+            <div class="nav-header">
+                <button class="btn btn-secondary" onclick="changeScreen('screen-rubrics')">Quitter</button>
+                <h2>🎯 Le Quiz interactif</h2>
+                <div id="quiz-timer" style="color: var(--secondary); font-weight: bold;">Score : <span id="current-score">0</span></div>
+            </div>
+            <div class="quiz-box">
+                <div class="progress-bar"><div class="progress" id="quiz-progress"></div></div>
+                <div class="question-text" id="quiz-question">Ici la question ?</div>
+                <div class="options-grid" id="quiz-options"></div>
+                <button class="btn" id="btn-next-question" style="display:none; margin-top: 1rem; align-self: flex-end;" onclick="nextQuizQuestion()">Question suivante</button>
+            </div>
+        </div>
+
+        <div id="screen-quiz-result" class="screen" style="text-align: center;">
+            <h2>🎉 Session Terminée !</h2>
+            <p style="font-size: 1.5rem; margin: 2rem 0; color: var(--secondary);">Ton Score : <span id="final-score">0</span> / 10</p>
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <button class="btn" onclick="startRubric('quizz')">Recommencer (Nouvelle série)</button>
+                <button class="btn btn-secondary" onclick="changeScreen('screen-subjects')">Autre matière</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* ==========================================
+            DONNÉES DE L'APPLICATION
+            ========================================== */
+        const appData = {
+            histoire: [
+                { q: "1914-1918", r: "Grande Guerre (Première guerre mondiale)", source: "histoire" },
+                { q: "1916", r: "Bataille de Verdun", source: "histoire" },
+                { q: "1917", r: "Révolution(s) russe(s)", source: "histoire" },
+                { q: "11 novembre 1918", r: "Armistice de la Première Guerre mondiale", source: "histoire" },
+                { q: "1924-1953", r: "Staline au pouvoir en URSS", source: "histoire" },
+                { q: "1933-1945", r: "L’Allemagne nazie d’Adolf Hitler", source: "histoire" },
+                { q: "1936", r: "Victoire électorale et lois sociales du Front populaire", source: "histoire" },
+                { q: "1939-1945", r: "Seconde Guerre mondiale", source: "histoire" },
+                { q: "18 juin 1940", r: "Appel du général De Gaulle à la radio de Londres", source: "histoire" },
+                { q: "6 juin 1944", r: "Débarquement allié en Normandie", source: "histoire" },
+                { q: "1944-1945", r: "Libération de la France, GPRF et rétablissement de la IVe République", source: "histoire" },
+                { q: "1944-1945", r: "Droit de vote des femmes en France", source: "histoire" },
+                { q: "8 mai 1945", r: "Capitulation allemande - fin de la Seconde Guerre mondiale en Europe", source: "histoire" },
+                { q: "Août 1945", r: "Bombes atomiques sur Hiroshima et Nagasaki (Japon)", source: "histoire" },
+                { q: "1940-1944", r: "Régime de Vichy", source: "histoire" },
+                { q: "1945", r: "Création de l’ONU", source: "histoire" },
+                { q: "1947-1991", r: "Guerre Froide", source: "histoire" },
+                { q: "1947-1962", r: "Principale phase de décolonisation", source: "histoire" },
+                { q: "1957", r: "Traité de Rome, création de l’UE", source: "histoire" },
+                { q: "1958", r: "Naissance de la Ve République", source: "histoire" },
+                { q: "1958-1969", r: "Les années de GAULLE", source: "histoire" },
+                { q: "1954-1962", r: "Guerre d’Algérie", source: "histoire" },
+                { q: "1962", r: "Indépendance de l’Algérie et Élection du président au suffrage universel direct", source: "histoire" },
+                { q: "1975", r: "Loi Veil sur l’Interruption Volontaire de Grossesse (IVG)", source: "histoire" },
+                { q: "9 novembre 1989", r: "Chute du mur de Berlin", source: "histoire" },
+                { q: "11 septembre 2001", r: "Attentats terroristes aux Etats-Unis", source: "histoire" },
+                { q: "1992", r: "Traité de Maastricht", source: "histoire" },
+                { q: "1981-1995", r: "Les années MITTERRAND et alternance", source: "histoire" },
+                { q: "1995-2007", r: "Les années CHIRAC", source: "histoire" },
+                { q: "1991", r: "Éclatement et dislocation de l’URSS", source: "histoire" },
+                { q: "2002", r: "L'Euro devient la monnaie européenne", source: "histoire" },
+                { q: "1941 (Guerre du Pacifique)", r: "Attaque de Pearl Harbor par le Japon, entrée en guerre des États-Unis", source: "histoire" },
+                { q: "1947 (Décolonisation)", r: "Indépendance de l'Inde (partition entre Inde et Pakistan)", source: "histoire" },
+                { q: "1961", r: "Construction du mur de Berlin par la RDA communiste", source: "histoire" },
+                { q: "1962 (Guerre Froide)", r: "Crise des missiles de Cuba, point culminant des tensions USA-URSS", source: "histoire" }
+            ],
+            géo: [
+                { q: "Le territoire de la France", r: "Composé de la métropole et des territoires ultramarins (DROM-COM)", source: "géo" },
+                { q: "Aires urbaines françaises", r: "Une dizaine parmi les plus peuplées avec une forte concentration de population", source: "géo" },
+                { q: "Répartition de la population française", r: "Inégalement répartie, fortement concentrée dans les aires urbaines et vallées fluviales", source: "géo" },
+                { q: "Mondialisation en France", r: "Marquée par des métropoles dynamiques et des espaces productifs connectés", source: "géo" },
+                { q: "Points d'entrée du territoire", r: "Ports, aéroports, interfaces frontalières et façades maritimes majeures", source: "géo" },
+                { q: "Grands repères physiques français", r: "Massifs montagneux, forestiers, grandes vallées, fleuves et domaines bioclimatiques", source: "géo" },
+                { q: "Régions métropolitaines", r: "La France est découpée en 13 régions métropolitaines", source: "géo" },
+                { q: "Union Européenne", r: "Composée de 27 États membres disposant chacun de leur capitale", source: "géo" },
+                { q: "Megalopole européenne", r: "Épine dorsale européenne concentrant richesses, populations et axes de transports majeurs", source: "géo" },
+                { q: "Grands fleuves mondiaux", r: "Nil, Congo, Gange, Yangzi, Amazone, Mississippi", source: "géo" },
+                { q: "Grandes chaînes de montagnes mondiales", r: "Himalaya, Andes, Rocheuses, Alpes", source: "géo" },
+                { q: "Points de passage maritimes clés", r: "Isthmes de Suez et de Panama ; détroit de Gibraltar", source: "géo" },
+                { q: "Grandes métropoles mondiales", r: "Tokyo, Le Caire, Pékin, Shanghai, Bombay, New-York, Sao Paulo, Mexico", source: "géo" },
+                { q: "Périurbanisation", r: "Extension de la ville au détriment des espaces ruraux environnants", source: "géo" },
+                { q: "Espace productif agricole", r: "Spécialisé et intégré à l'agroalimentaire mondial (ex: la Beauce ou la Champagne)", source: "géo" },
+                { q: "Espace productif industriel", r: "Dynamique autour des technopôles et de la haute technologie (ex: l'aéronautique à Toulouse)", source: "géo" },
+                { q: "DROM (Départements et Régions d'Outre-Mer)", r: "Guadeloupe, Martinique, Guyane, La Réunion, Mayotte", source: "géo" }
+            ],
+            français: [
+                { q: "Le présent d'énonciation", r: "Évoque un événement qui se produit en même temps que la parole ou l’écriture (Ex: Le froid est vif ce matin)", source: "français" },
+                { q: "Le présent de vérité générale", r: "Exprime des notions intemporelles, des faits vrais de tout temps (Ex: Il vaut mieux prévenir que guérir)", source: "français" },
+                { q: "Le présent de narration", r: "Rend l’action plus vivante dans un récit au passé en donnant l'impression de vivre la scène", source: "français" },
+                { q: "Le présent itératif / d'habitude", r: "Permet d'exprimer l’habitude, la répétition (Ex: Tous les matins, je bois un grand verre d’eau)", source: "français" },
+                { q: "Le présent à valeur de futur proche / passé récent", r: "Exprime un futur très proche ou un passé récent (Ex: Je termine ce devoir et j’arrive / Il vient de partir)", source: "français" },
+                { q: "En Laponie, l’hiver, le soleil ne se lève pas.", r: "Présent de vérité générale", source: "français" },
+                { q: "Elle téléphone tous les jours à ses amies.", r: "Présent itératif / d'habitude", source: "français" },
+                { q: "Le 26 décembre 1999, une tempête ravage les forêts françaises.", r: "Présent de narration", source: "français" },
+                { q: "Le granit est une roche dure qui est formée de cristaux variés.", r: "Présent de vérité générale", source: "français" },
+                { q: "Pendant ses trajets matinaux en bus, il lit le journal.", r: "Présent itératif / d'habitude", source: "français" },
+                { q: "La brume estompe les détails du paysage qui prend un aspect irréel.", r: "Présent d'énonciation", source: "français" },
+                { q: "Ils s’enfoncèrent prudemment dans la forêt et marchèrent en silence. Un terrible craquement les fait soudain sursauter.", r: "Présent de narration", source: "français" },
+                { q: "Je te téléphone parce que je m’ennuie.", r: "Présent d'énonciation", source: "français" },
+                { q: "Encore une semaine et les vacances commencent.", r: "Présent à valeur de futur proche", source: "français" },
+                { q: "Je n’arrive pas à ouvrir cette porte.", r: "Présent d'énonciation", source: "français" },
+                { q: "Les jours rallongent au printemps.", r: "Présent de vérité générale", source: "français" },
+                { q: "Le soir, Jean se consacre à sa collection de timbres.", r: "Présent itératif / d'habitude", source: "français" },
+                { q: "La pendule sonne toutes les heures.", r: "Présent itératif / d'habitude", source: "français" },
+                { q: "Tu aurais dû venir plus tôt pour les voir, ils nous quittent à l’instant.", r: "Présent à valeur de passé récent", source: "français" },
+                { q: "La Métaphore", r: "Associer deux éléments sans outil de comparaison (ex: 'Cette femme est une lionne')", source: "français" },
+                { q: "La Personnification", r: "Attribuer des traits ou comportements humains à un objet ou un animal (ex: 'La rue hurlait')", source: "français" },
+                { q: "L'Hyperbole", r: "Exagérer une expression pour frapper les esprits (ex: 'Je meurs de soif')", source: "français" },
+                { q: "L'Antithèse", r: "Placer deux mots ou expressions opposés dans la même phrase (ex: 'Un noble silence et une voix vulgaire')", source: "français" }
+            ],
+            maths: [
+                { q: "Dire les noms du résultat de l’addition, la soustraction, la multiplication, la division", r: "Addition : somme | Soustraction : différence | Multiplication : produit | Division : quotient", source: "maths" },
+                { q: "Écrire l’égalité correspondante à la division euclidienne", r: "a = b × q + r avec r < b (où a est le dividende, b le diviseur, q le quotient et r le reste)", source: "maths" },
+                { q: "Cite un multiple de 12", r: "12, 24, 36, 48, 60...", source: "maths" },
+                { q: "Cite un diviseur de 15", r: "1, 3, 5, ou 15", source: "maths" },
+                { q: "7 est-il un multiple de 14 ?", r: "Non, 7 est un diviseur (ou sous-multiple) de 14. C'est 14 qui est un multiple de 7.", source: "maths" },
+                { q: "Comment repère-t-on un nombre qui se divise par 2 ?", r: "C'est un nombre pair : son chiffre des unités se termine par 0, 2, 4, 6 ou 8.", source: "maths" },
+                { q: "Comment repère-t-on un nombre qui se divise par 3 (ou par 9) ?", r: "La somme de ses chiffres est un multiple de 3 (ou de 9).", source: "maths" },
+                { q: "Comment repère-t-on un nombre qui se divise par 5 ?", r: "Son chiffre des unités se termine par 0 ou 5.", source: "maths" },
+                { q: "Quelle est l’écriture mathématique d’un nombre pair ? impair ?", r: "Pair : 2k | Impair : 2k + 1 (avec k un entier)", source: "maths" },
+                { q: "Quelle est l’écriture mathématique d’un nombre multiple de 7 ?", r: "7k (avec k un entier)", source: "maths" },
+                { q: "Qu’est-ce qu’un nombre premier ?", r: "Un nombre entier positif qui possède exactement deux diviseurs distincts : 1 et lui-même.", source: "maths" },
+                { q: "Récite les nombres premiers entre 1 et 30", r: "2, 3, 5, 7, 11, 13, 17, 19, 23, 29", source: "maths" },
+                { q: "Qu’est-ce qu’une fraction irréductible ?", r: "Une fraction dont le numérateur et le dénominateur ont 1 pour seul diviseur commun, qu'on ne peut plus simplifier.", source: "maths" },
+                { q: "Comment rendre une fraction irréductible ?", r: "2 méthodes : par divisions successives par des diviseurs communs, ou en décomposant en produit de facteurs premiers puis en simplifiant les facteurs communs.", source: "maths" },
+                { q: "Comment ajoute-t-on deux nombres négatifs ?", r: "On garde le signe - et on ajoute leurs distances à zéro.", source: "maths" },
+                { q: "Comment ajoute-t-on deux nombres de signes contraires ?", r: "On prend le signe du nombre qui a la plus grande distance à zéro, et on soustrait les distances à zéro.", source: "maths" },
+                { q: "Soustraire un nombre cela revient à...", r: "Ajouter son opposé.", source: "maths" },
+                { q: "Comment ajouter ou soustraire deux fractions ?", r: "On les réduit au même dénominateur. On ajoute/soustrait les numérateurs et on conserve le dénominateur commun.", source: "maths" },
+                { q: "Comment multiplier deux fractions ?", r: "On multiplie les numérateurs entre eux et les dénominateurs entre eux.", source: "maths" },
+                { q: "Comment calcule-t-on la fraction d’une quantité ?", r: "On multiplie la quantité par la fraction.", source: "maths" },
+                { q: "Qu’est-ce que deux nombres opposés ?", r: "Deux nombres dont la somme vaut 0 (Ex : 3 et -3).", source: "maths" },
+                { q: "Qu’est-ce que deux nombres inverses ?", r: "Deux nombres dont le produit vaut 1 (Ex : 3 et 1/3).", source: "maths" },
+                { q: "Comment diviser deux fractions ?", r: "On multiplie la première fraction par l’inverse de la deuxième.", source: "maths" },
+                { q: "Que signifie a³ ?", r: "a × a × a (Le produit de 3 facteurs égaux à a)", source: "maths" },
+                { q: "Que signifie a^n ?", r: "a × a × ... × a (Le produit de n facteurs égaux à a)", source: "maths" },
+                { q: "Que signifie a^-n ?", r: "1 / a^n (L’inverse de a^n)", source: "maths" },
+                { q: "Comment multiplie-t-on un nombre par 10^n ?", r: "On décale la virgule de n rangs vers la droite.", source: "maths" },
+                { q: "Comment multiplie-t-on un nombre par 10^-n ?", r: "On décale la virgule de n rangs vers la gauche.", source: "maths" },
+                { q: "Que signifie le préfixe méga (M) ?", r: "Un facteur de 1 000 000 (1 million) ou 10⁶.", source: "maths" },
+                { q: "Que signifie le préfixe giga (G) ?", r: "Un facteur de 1 000 000 000 (1 milliard) ou 10⁹.", source: "maths" },
+                { q: "Que signifie le préfixe micro (µ) ?", r: "Un facteur de 0,000 001 (1 millionième) ou 10⁻⁶.", source: "maths" },
+                { q: "Que signifie le préfixe nano (n) ?", r: "Un facteur de 0,000 000 001 (1 milliardième) ou 10⁻⁹.", source: "maths" },
+                { q: "Théorème de Pythagore", r: "Dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés (BC² = AB² + AC²)", source: "maths" },
+                { q: "Théorème de Thalès", r: "Sert à calculer des longueurs dans une configuration de droites parallèles coupées par deux sécantes", source: "maths" },
+                { q: "Trigonométrie (SOH CAH TOA)", r: "Sinus = Opposé/Hypoténuse | Cosinus = Attenant/Hypoténuse | Tangente = Opposé/Attenant", source: "maths" },
+                { q: "Probabilité d'un événement", r: "Nombre d'issues favorables divisé par le nombre total d'issues possibles (Toujours compris entre 0 et 1)", source: "maths" }
+            ]
+        };
+
+        // Pool global automatique
+        appData["Toutes les matières"] = [
+            ...appData.histoire,
+            ...appData.géo,
+            ...appData.français,
+            ...appData.maths
+        ];
+
+        /* ==========================================
+            LOGIQUE DE NAVIGATION & ETAT DE L'APP
+            ========================================== */
+        let currentSubject = '';
+        let currentFlashcardIndex = 0;
+        let quizQuestions = [];
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        window.onload = function() {
+            renderSubjects();
+        };
+
+        function changeScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function renderSubjects() {
+            const list = document.getElementById('subjects-list');
+            list.innerHTML = '';
+            
+            // Les 4 matières standards d'abord avec ajout de classe couleur spécifique
+            Object.keys(appData).forEach(subject => {
+                if (subject !== "Toutes les matières") {
+                    const card = document.createElement('div');
+                    card.className = `subject-card card-${subject}`;
+                    
+                    let subColor = 'var(--secondary)';
+                    if(subject === 'histoire') subColor = 'var(--color-histoire)';
+                    if(subject === 'géo') subColor = 'var(--color-géo)';
+                    if(subject === 'français') subColor = 'var(--color-français)';
+                    if(subject === 'maths') subColor = 'var(--color-maths)';
+
+                    card.innerHTML = `<h3>${subject}</h3><p style="color:${subColor}; font-size:0.95rem; font-weight: bold;">${appData[subject].length} repères</p>`;
+                    card.onclick = () => selectSubject(subject);
+                    list.appendChild(card);
+                }
+            });
+
+            // La grosse case Générale centrée en bas
+            const mixCard = document.createElement('div');
+            mixCard.className = 'subject-card mix-card';
+            mixCard.innerHTML = `<h3 style="background: var(--mix-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎯 Général</h3><p style="color:#ff7675; font-weight:bold;">${appData["Toutes les matières"].length} repères mixés</p>`;
+            mixCard.onclick = () => selectSubject("Toutes les matières");
+            list.appendChild(mixCard);
+        }
+
+        function selectSubject(subject) {
+            currentSubject = subject;
+            document.getElementById('current-subject-title').innerText = subject;
+            changeScreen('screen-rubrics');
+        }
+
+        function startRubric(rubric) {
+            if (rubric === 'fiches') {
+                setupFiches();
+                changeScreen('screen-fiches');
+            } else if (rubric === 'flashcards') {
+                currentFlashcardIndex = 0;
+                if (currentSubject === "Toutes les matières") {
+                    appData["Toutes les matières"].sort(() => 0.5 - Math.random());
+                }
+                setupFlashcard();
+                changeScreen('screen-flashcards');
+            } else if (rubric === 'quizz') {
+                setupQuiz();
+                changeScreen('screen-quizz');
+            }
+        }
+
+        /* ==========================================
+            FONCTIONNALITÉ : FICHES
+            ========================================== */
+        function setupFiches() {
+            const target = document.getElementById('fiche-target');
+            target.innerHTML = '';
+            appData[currentSubject].forEach(item => {
+                const div = document.createElement('div');
+                
+                // Détermination de la couleur de bordure de l'élément de la fiche
+                let borderClass = 'border-mixte';
+                let labelColor = 'var(--secondary)';
+                
+                let sourceMatiere = item.source || currentSubject;
+                if (sourceMatiere === 'histoire') { borderClass = 'border-histoire'; labelColor = 'var(--color-histoire)'; }
+                if (sourceMatiere === 'géo') { borderClass = 'border-géo'; labelColor = 'var(--color-géo)'; }
+                if (sourceMatiere === 'français') { borderClass = 'border-français'; labelColor = 'var(--color-français)'; }
+                if (sourceMatiere === 'maths') { borderClass = 'border-maths'; labelColor = 'var(--color-maths)'; }
+
+                div.className = `fiche-item ${borderClass}`;
+                div.innerHTML = `<strong style="color: ${labelColor};">${item.q} :</strong> <span>${item.r}</span>`;
+                target.appendChild(div);
+            });
+        }
+
+        /* ==========================================
+            FONCTIONNALITÉ : FLASHCARDS
+            ========================================== */
+        function setupFlashcard() {
+            const cardElement = document.querySelector('.flashcard');
+            const frontElement = document.getElementById('flash-recto');
+            cardElement.classList.remove('flipped');
+            
+            // Nettoyage des anciennes classes de couleur de fond du recto
+            frontElement.className = "flashcard-front";
+            
+            const data = appData[currentSubject];
+            const current = data[currentFlashcardIndex];
+            
+            // Détermination de la couleur thématique du recto de la flashcard
+            let sourceMatiere = current.source || currentSubject;
+            if (sourceMatiere === 'histoire') frontElement.classList.add('bg-histoire');
+            if (sourceMatiere === 'géo') frontElement.classList.add('bg-géo');
+            if (sourceMatiere === 'français') frontElement.classList.add('bg-français');
+            if (sourceMatiere === 'maths') frontElement.classList.add('bg-maths');
+            
+            frontElement.innerText = current.q;
+            document.getElementById('flash-verso').innerText = current.r;
+            document.getElementById('flashcard-counter').innerText = `${currentFlashcardIndex + 1} / ${data.length}`;
+        }
+
+        function nextFlashcard() {
+            const data = appData[currentSubject];
+            currentFlashcardIndex = (currentFlashcardIndex + 1) % data.length;
+            setupFlashcard();
+        }
+
+        function prevFlashcard() {
+            const data = appData[currentSubject];
+            currentFlashcardIndex = (currentFlashcardIndex - 1 + data.length) % data.length;
+            setupFlashcard();
+        }
+
+        /* ==========================================
+            FONCTIONNALITÉ : QUIZ
+            ========================================== */
+        function setupQuiz() {
+            quizScore = 0;
+            quizCurrentIndex = 0;
+            document.getElementById('current-score').innerText = quizScore;
+            
+            let shuffledData = [...appData[currentSubject]].sort(() => 0.5 - Math.random());
+            quizQuestions = shuffledData.slice(0, 10);
+            
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            quizAnswered = false;
+            document.getElementById('btn-next-question').style.display = 'none';
+            
+            const progressPercent = (quizCurrentIndex / 10) * 100;
+            document.getElementById('quiz-progress').style.width = `${progressPercent}%`;
+
+            const currentQ = quizQuestions[quizCurrentIndex];
+            document.getElementById('quiz-question').innerText = `Que correspond ou se passe-t-il lors de/en : "${currentQ.q}" ?`;
+
+            let wrongAnswers = appData[currentSubject]
+                .filter(item => item.r !== currentQ.r)
+                .map(item => item.r)
+                .filter((value, index, self) => self.indexOf(value) === index)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3);
+
+            let allOptions = [currentQ.r, ...wrongAnswers].sort(() => 0.5 - Math.random());
+
+            const optionsTarget = document.getElementById('quiz-options');
+            optionsTarget.innerHTML = '';
+
+            allOptions.forEach(optionText => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optionText;
+                btn.onclick = () => checkQuizAnswer(btn, optionText, currentQ.r);
+                optionsTarget.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(selectedBtn, chosenAnswer, correctAnswer) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const allButtons = document.querySelectorAll('.option-btn');
+            
+            if (chosenAnswer === correctAnswer) {
+                selectedBtn.classList.add('correct');
+                quizScore++;
+                document.getElementById('current-score').innerText = quizScore;
+            } else {
+                selectedBtn.classList.add('wrong');
+                allButtons.forEach(btn => {
+                    if (btn.innerText === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            document.getElementById('btn-next-question').style.display = 'block';
+        }
+
+        function nextQuizQuestion() {
+            quizCurrentIndex++;
+            if (quizCurrentIndex < 10 && quizCurrentIndex < quizQuestions.length) {
+                showQuizQuestion();
+            } else {
+                document.getElementById('quiz-progress').style.width = `100%`;
+                document.getElementById('final-score').innerText = quizScore;
+                changeScreen('screen-quiz-result');
+            }
+        }
+    </script>
+</body>
+</html>

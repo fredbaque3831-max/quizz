@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masterclass : Les Valeurs du Présent 🚀</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #818cf8;
+            --accent-secondary: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #34d399;
+            --error: #f87171;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        /* --- ACCUEIL --- */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10deg); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .punchline {
+            background: rgba(129, 140, 248, 0.1);
+            border-left: 4px solid var(--accent-primary);
+            padding: 15px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .btn {
+            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+            color: #fff;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(129, 140, 248, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* --- ZONE JEU --- */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 15px;
+        }
+
+        .score-badge {
+            background: rgba(255,255,255,0.05);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 1px solid var(--card-border);
+        }
+
+        .sentence-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            padding: 25px;
+            border-radius: 16px;
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent-primary);
+        }
+
+        /* Feedback States */
+        .option-btn.correct {
+            background: rgba(52, 211, 153, 0.2) !important;
+            border-color: var(--success) !important;
+            color: #fff;
+        }
+
+        .option-btn.wrong {
+            background: rgba(248, 113, 113, 0.2) !important;
+            border-color: var(--error) !important;
+            color: #fff;
+        }
+
+        #feedback-message {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            min-height: 30px;
+        }
+
+        .next-btn {
+            margin-top: 20px;
+            background: var(--text-main);
+            color: #0f172a;
+        }
+        
+        .next-btn:hover {
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="home-screen" class="screen active">
+            <h1>LES VALEURS DU PRÉSENT 🔥</h1>
+            <p class="subtitle">Deviens une machine en français, pas de place pour le hasard 🧠</p>
+            
+            <div class="punchline">
+                <p>« Gros, la leçon elle est carrée. T'as le présent d'énonciation (en direct live 🎤), de vérité générale (vrai de fou 🌍), de narration (pour le suspense 🎬), d'habitude (tous les jours la même 🔁), ou futur proche/passé récent (ça bouge vite ⚡). Montre-moi ce que t'as dans le ventre ! »</p>
+            </div>
+
+            <button class="btn" onclick="startApp()">WESH, ENVOIE LES EXOS ! 🚀</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <span style="color: var(--accent-primary); font-weight: 700;">VALEURS DU PRÉSENT 💎</span>
+                <div class="score-badge">Score : <span id="score-count" style="color: var(--success);">0</span> 🔥</div>
+            </div>
+
+            <div class="sentence-box" id="sentence-display">
+                </div>
+
+            <div class="options-grid" id="options-container">
+                </div>
+
+            <div id="feedback-message"></div>
+
+            <button id="next-button" class="btn next-btn" style="display: none;" onclick="generateQuestion()">PHRASE SUIVANTE, CHU CHAUD ⚔️</button>
+        </div>
+    </div>
+
+    <script>
+        // Banques d'ingrédients pour générer des phrases uniques à l'infini ☄️
+        const sujets = ["Mon pote", "Le prof", "Le chat", "Un gars du quartier", "Mon reuf", "La daronne", "Le maire", "L'arbitre"];
+        const verbesHabitude = ["s'entraîne", "mange un grec", "check son tel", "bégaye devant le tableau", "prend le bus", "raconte des cracks"];
+        const tempsHabitude = ["tous les matins", "chaque soir", "le lundi sans faute", "comme d'habitude", "toujours dans ces moments-là"];
+
+        const faitsScientifiques = ["L'eau bout à 100 degrés", "La Terre tourne autour du Soleil", "Les plantes respirent la nuit", "Le feu ça brûle", "L'arc-en-ciel a sept couleurs"];
+        const proverbes = ["Rien ne sert de courir, il faut partir à point", "Qui dort dîne", "La nuit porte conseil", "Après la pluie vient le beau temps"];
+
+        const actionsImmediates = ["Il fait tarpin froid aujourd'hui", "Je t'écris ce message là tout de suite", "Le match commence à l'instant", "Tu parles trop fort frérot", "Regarde, le soleil se couche"];
+
+        const verbesFutur = ["Je finis mon match", "On termine la vaisselle", "Le train arrive en gare", "J'enfile mes baskets"];
+        const verbesPasse = ["Il sort à l'instant de la salle", "Le livreur vient de passer", "On commence à peine le cours", "Ils coupent le live à la seconde"];
+
+        // Les types de valeurs
+        const VALEURS = {
+            ENONCIATION: "Présent d'énonciation (En direct live 🎤)",
+            VERITE_GENERALE: "Présent de vérité générale (Vrai de tout temps 🌍)",
+            NARRATION: "Présent de narration (Récit stylé et vivant 🎬)",
+            HABITUDE: "Présent d'habitude / itératif (En boucle 🔁)",
+            PROCHE_RECENT: "Présent à valeur de futur proche / passé récent ⚡"
+        };
+
+        let score = 0;
+        let currentCorrectAnswer = "";
+
+        function startApp() {
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            generateQuestion();
+        }
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateQuestion() {
+            // Reset de l'interface
+            document.getElementById('feedback-message').innerHTML = "";
+            document.getElementById('next-button').style.display = "none";
+            
+            // Choisir un type de valeur au hasard
+            const types = Object.keys(VALEURS);
+            const chosenType = getRandomElement(types);
+            currentCorrectAnswer = VALEURS[chosenType];
+
+            let sentence = "";
+
+            // Génération dynamique de la phrase selon le type
+            switch(chosenType) {
+                case "ENONCIATION":
+                    sentence = getRandomElement(actionsImmediates);
+                    break;
+                case "VERITE_GENERALE":
+                    sentence = Math.random() > 0.5 ? getRandomElement(faitsScientifiques) : getRandomElement(proverbes);
+                    break;
+                case "NARRATION":
+                    const intros = ["La nuit était sombre. Soudain,", "Je marchais tranquille. D'un coup,", "Le silence régnait. Tout à coup,", "Le match était serré. À ce moment,"];
+                    const suites = ["un joueur surgit et marque un but de fou !", "mon téléphone sonne dans le vide.", "le prof se retourne et me capte !", "un éclair déchire le ciel noir."];
+                    sentence = `${getRandomElement(intros)} ${getRandomElement(suites)}`;
+                    break;
+                case "HABITUDE":
+                    sentence = Math.random() > 0.5 ? 
+                        `${getRandomElement(tempsHabitude)}, ${getRandomElement(sujets).toLowerCase()} ${getRandomElement(verbesHabitude)}.` :
+                        `${getRandomElement(sujets)} ${getRandomElement(verbesHabitude)} ${getRandomElement(tempsHabitude)}.`;
+                    break;
+                case "PROCHE_RECENT":
+                    if(Math.random() > 0.5) {
+                        sentence = `${getRandomElement(verbesFutur)} et j'arrive direct.`;
+                    } else {
+                        sentence = `${getRandomElement(verbesPasse)}.`;
+                    }
+                    break;
+            }
+
+            // Affichage de la phrase
+            document.getElementById('sentence-display').innerText = `« ${sentence} »`;
+
+            // Affichage des options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = "";
+
+            // On mélange les options pour pas que ce soit monotone
+            const shuffledValues = Object.values(VALEURS).sort(() => Math.random() - 0.5);
+
+            shuffledValues.forEach(valeurText => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerText = valeurText;
+                button.onclick = () => checkAnswer(button, valeurText);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedButton, selectedValue) {
+            const buttons = document.querySelectorAll('.option-btn');
+            // Désactiver tous les boutons après le clic
+            buttons.forEach(btn => btn.disabled = true);
+
+            const feedback = document.getElementById('feedback-message');
+
+            const punchlinesWin = [
+                "Ouuuuh tié un tigre ! 🐯 Net et sans bavure !",
+                "C'est carré le sang ! T'as le niveau international 🌍",
+                "Trop fort ! Tu les as éteints là ! ⚡",
+                "Masterclass ! Validé par la street 😎"
+            ];
+
+            const punchlinesLoose = [
+                "Ah là tu bégayes mon reuf ! 💀",
+                "Aïe la sentence est irrévocable... C'est pas ça ! ❌",
+                "Force à toi, mais c'est faux. Reste concentré ! 🧠",
+                "Tu t'es emmêlé les pinceaux gros ! 🔥"
+            ];
+
+            if (selectedValue === currentCorrectAnswer) {
+                selectedButton.classList.add('correct');
+                feedback.innerHTML = `<span style="color: var(--success);">${getRandomElement(punchlinesWin)}</span>`;
+                score++;
+                document.getElementById('score-count').innerText = score;
+            } else {
+                selectedButton.classList.add('wrong');
+                feedback.innerHTML = `<span style="color: var(--error);">${getRandomElement(punchlinesLoose)}</span><br><small style="color: var(--text-muted); font-size:0.9rem;">La bonne réponse c'était : ${currentCorrectAnswer}</small>`;
+                if (score > 0) score--; // Petit malus mais tranquille
+                document.getElementById('score-count').innerText = score;
+                
+                // Montrer la bonne réponse en vert quand même
+                buttons.forEach(btn => {
+                    if(btn.innerText === currentCorrectAnswer) btn.classList.add('correct');
+                });
+            }
+
+            document.getElementById('next-button').style.display = "block";
+        }
+    </script>
+</body>
+</html>

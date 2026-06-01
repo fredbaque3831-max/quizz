@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Révision Histoire-Géo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0e17;
+    --surface: #1a1928;
+    --surface2: #22213a;
+    --accent: #e8b44b;
+    --accent2: #c0392b;
+    --text: #ede8f5;
+    --text-muted: #9990bb;
+    --border: rgba(255,255,255,0.08);
+    --success: #2ecc71;
+    --fail: #e74c3c;
+    --card-radius: 16px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* --- HEADER --- */
+  header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    position: relative;
+  }
+  .title-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    padding: 4px 16px;
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--text-muted); margin-top: .6rem; font-size: 1rem; }
+
+  /* --- NAV MODES --- */
+  .modes {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 1rem 2rem;
+    flex-wrap: wrap;
+  }
+  .mode-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mode-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .mode-btn.active { background: var(--accent); border-color: var(--accent); color: #0f0e17; font-weight: 700; }
+  .mode-icon { font-size: 16px; }
+
+  /* --- STATS BAR --- */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 0 1rem 2rem;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-val { font-size: 1.6rem; font-weight: 700; color: var(--accent); font-family: 'Playfair Display', serif; }
+  .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+
+  /* --- MAIN CONTAINER --- */
+  .main { max-width: 820px; margin: 0 auto; padding: 0 1rem 4rem; }
+
+  /* ============================
+     MODE 1 — TIMELINE
+  ============================ */
+  #mode-timeline { display: block; }
+  #mode-flashcard, #mode-quiz { display: none; }
+
+  .timeline-filter {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 2rem;
+    justify-content: center;
+  }
+  .filter-btn {
+    font-size: 12px; padding: 6px 14px; border-radius: 20px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-muted); cursor: pointer; transition: all .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .filter-btn:hover, .filter-btn.active { background: var(--surface2); color: var(--text); border-color: var(--text-muted); }
+
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 14px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--accent), transparent);
+    opacity: .4;
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 1.4rem;
+    animation: fadeUp .3s ease both;
+  }
+  .tl-dot {
+    position: absolute;
+    left: -34px; top: 18px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    transition: transform .2s;
+  }
+  .tl-item:hover .tl-dot { transform: scale(1.5); }
+  .tl-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 1rem 1.25rem;
+    cursor: default;
+    transition: border-color .2s, transform .2s;
+  }
+  .tl-card:hover { border-color: rgba(232,180,75,.3); transform: translateX(4px); }
+  .tl-date {
+    font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
+  }
+  .tl-event { font-size: 15px; color: var(--text); line-height: 1.4; }
+  .tl-cat {
+    display: inline-block; margin-top: 8px;
+    font-size: 10px; padding: 3px 10px; border-radius: 10px;
+    font-weight: 500; letter-spacing: .5px;
+  }
+
+  /* ============================
+     MODE 2 — FLASHCARDS
+  ============================ */
+  #mode-flashcard { display: none; }
+  .fc-progress-wrap {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 2rem;
+  }
+  .fc-progress-bar {
+    flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden;
+  }
+  .fc-progress-fill {
+    height: 100%; background: var(--accent); border-radius: 2px;
+    transition: width .4s ease;
+  }
+  .fc-counter { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+  
+  .fc-scene {
+    perspective: 1200px;
+    margin: 0 auto 2rem;
+    max-width: 560px; min-height: 300px;
+    cursor: pointer;
+  }
+  .fc-inner {
+    position: relative;
+    width: 100%; min-height: 300px;
+    transform-style: preserve-3d;
+    transition: transform .6s cubic-bezier(.4,0,.2,1);
+  }
+  .fc-inner.flipped { transform: rotateY(180deg); }
+  .fc-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    border-radius: var(--card-radius);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2.5rem 2rem; text-align: center;
+  }
+  .fc-front {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+  }
+  .fc-back {
+    background: var(--surface2);
+    border: 1.5px solid rgba(232,180,75,.4);
+    transform: rotateY(180deg);
+  }
+  .fc-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 1.2rem;
+  }
+  .fc-question {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    font-weight: 700; color: var(--text); line-height: 1.3;
+  }
+  .fc-hint { font-size: 13px; color: var(--text-muted); margin-top: 1rem; }
+  .fc-answer-date {
+    font-size: 14px; font-weight: 700; letter-spacing: 2px; color: var(--accent);
+    text-transform: uppercase; margin-bottom: .8rem;
+  }
+  .fc-answer-event {
+    font-size: 1rem; color: var(--text); line-height: 1.5;
+  }
+  .fc-tap { font-size: 12px; color: var(--text-muted); margin-top: 2rem; display: flex; align-items: center; gap: 6px; }
+
+  .fc-controls {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .fc-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    padding: 12px 28px; border-radius: 50px;
+    border: 1.5px solid; cursor: pointer; transition: all .15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-prev { background: transparent; border-color: var(--border); color: var(--text-muted); }
+  .btn-prev:hover { border-color: var(--text-muted); color: var(--text); }
+  .btn-flip { background: var(--accent); border-color: var(--accent); color: #0f0e17; font-weight: 700; }
+  .btn-flip:hover { opacity: .85; }
+  .btn-next { background: transparent; border-color: var(--border); color: var(--text-muted); }
+  .btn-next:hover { border-color: var(--text-muted); color: var(--text); }
+  .btn-shuffle { background: transparent; border-color: var(--border); color: var(--text-muted); font-size: 13px; padding: 10px 20px; }
+  .btn-shuffle:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ============================
+     MODE 3 — QUIZ
+  ============================ */
+  #mode-quiz { display: none; }
+  .quiz-progress { display: flex; gap: 4px; margin-bottom: 2rem; flex-wrap: wrap; }
+  .qp-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    transition: background .3s;
+  }
+  .qp-dot.correct { background: var(--success); border-color: var(--success); }
+  .qp-dot.wrong { background: var(--fail); border-color: var(--fail); }
+  .qp-dot.current { background: var(--accent); border-color: var(--accent); }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .quiz-type-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 1rem;
+  }
+  .quiz-question {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    font-weight: 700; line-height: 1.4; color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    font-family: 'DM Sans', sans-serif;
+    text-align: left; font-size: 15px; font-weight: 400;
+    padding: 14px 18px; border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: transparent; color: var(--text);
+    cursor: pointer; transition: all .15s;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent); background: rgba(232,180,75,.06); }
+  .quiz-opt.correct { border-color: var(--success); background: rgba(46,204,113,.12); color: var(--success); }
+  .quiz-opt.wrong { border-color: var(--fail); background: rgba(231,76,60,.1); color: var(--fail); }
+  .quiz-opt.reveal-correct { border-color: var(--success); background: rgba(46,204,113,.08); }
+  .opt-letter {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+
+  .quiz-feedback {
+    display: none; padding: 1rem 1.25rem; border-radius: 12px;
+    font-size: 14px; line-height: 1.5; margin-bottom: 1rem;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.3); color: var(--success); }
+  .quiz-feedback.wrong { background: rgba(231,76,60,.1); border: 1px solid rgba(231,76,60,.25); color: var(--fail); }
+
+  .btn-next-q {
+    font-family: 'DM Sans', sans-serif;
+    display: none; width: 100%;
+    padding: 14px; border-radius: 12px;
+    background: var(--accent); border: none;
+    color: #0f0e17; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: opacity .15s;
+    align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-next-q:hover { opacity: .85; }
+  .btn-next-q.show { display: flex; }
+
+  /* Quiz results */
+  .quiz-result {
+    display: none; text-align: center; padding: 3rem 1rem;
+  }
+  .quiz-result.show { display: block; }
+  .result-emoji { font-size: 4rem; margin-bottom: 1rem; }
+  .result-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem; font-weight: 900; color: var(--accent);
+  }
+  .result-label { color: var(--text-muted); margin-bottom: 2rem; }
+  .btn-restart {
+    font-family: 'DM Sans', sans-serif;
+    padding: 14px 36px; border-radius: 50px;
+    background: var(--accent); border: none;
+    color: #0f0e17; font-size: 15px; font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-restart:hover { opacity: .85; }
+
+  /* CATEGORIES */
+  .cat-guerre { background: rgba(192,57,43,.18); color: #e74c3c; }
+  .cat-politique { background: rgba(52,152,219,.18); color: #3498db; }
+  .cat-social { background: rgba(46,204,113,.18); color: #2ecc71; }
+  .cat-europe { background: rgba(155,89,182,.18); color: #9b59b6; }
+  .cat-monde { background: rgba(230,126,34,.18); color: #e67e22; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 560px) {
+    .timeline { padding-left: 28px; }
+    .tl-dot { left: -22px; }
+    .fc-controls { gap: 8px; }
+    .fc-btn { padding: 10px 18px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-tag">✦ Histoire &amp; Géographie</div>
+  <h1>Les <span>32 dates</span> clés</h1>
+  <p class="subtitle">Programme brevet · 3 modes de révision</p>
+</header>
+
+<!-- MODES NAV -->
+<div class="modes">
+  <button class="mode-btn active" onclick="setMode('timeline')" id="btn-timeline">
+    <span class="mode-icon">📅</span> Frise chronologique
+  </button>
+  <button class="mode-btn" onclick="setMode('flashcard')" id="btn-flashcard">
+    <span class="mode-icon">🃏</span> Flashcards
+  </button>
+  <button class="mode-btn" onclick="setMode('quiz')" id="btn-quiz">
+    <span class="mode-icon">🎯</span> Quiz
+  </button>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-val">32</div>
+    <div class="stat-label">dates</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val" id="stat-score">—</div>
+    <div class="stat-label">meilleur quiz</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val" id="stat-fc">0</div>
+    <div class="stat-label">flashcards vues</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ===================== TIMELINE ===================== -->
+  <div id="mode-timeline">
+    <div class="timeline-filter">
+      <button class="filter-btn active" onclick="filterCat('all', this)">Tout</button>
+      <button class="filter-btn" onclick="filterCat('guerre', this)">🔴 Guerres</button>
+      <button class="filter-btn" onclick="filterCat('politique', this)">🔵 Politique</button>
+      <button class="filter-btn" onclick="filterCat('social', this)">🟢 Social</button>
+      <button class="filter-btn" onclick="filterCat('europe', this)">🟣 Europe</button>
+      <button class="filter-btn" onclick="filterCat('monde', this)">🟠 Monde</button>
+    </div>
+    <div class="timeline" id="timeline-list"></div>
+  </div>
+
+  <!-- ===================== FLASHCARDS ===================== -->
+  <div id="mode-flashcard">
+    <div class="fc-progress-wrap">
+      <div class="fc-progress-bar"><div class="fc-progress-fill" id="fc-fill" style="width:0%"></div></div>
+      <div class="fc-counter" id="fc-counter">1 / 32</div>
+    </div>
+
+    <div class="fc-scene" onclick="flipCard()">
+      <div class="fc-inner" id="fc-inner">
+        <div class="fc-face fc-front">
+          <div class="fc-label">Quelle est la date ?</div>
+          <div class="fc-question" id="fc-event">—</div>
+          <div class="fc-tap">👆 Toucher pour révéler</div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-label">Réponse</div>
+          <div class="fc-answer-date" id="fc-date-ans">—</div>
+          <div class="fc-answer-event" id="fc-event-ans">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc-controls">
+      <button class="fc-btn btn-prev" onclick="fcNav(-1)">← Préc.</button>
+      <button class="fc-btn btn-flip" onclick="flipCard()">🔄 Retourner</button>
+      <button class="fc-btn btn-next" onclick="fcNav(1)">Suiv. →</button>
+    </div>
+    <div style="display:flex;justify-content:center;margin-top:1rem;">
+      <button class="fc-btn btn-shuffle" onclick="shuffleFC()">🔀 Mélanger</button>
+    </div>
+  </div>
+
+  <!-- ===================== QUIZ ===================== -->
+  <div id="mode-quiz">
+    <div class="quiz-progress" id="quiz-dots"></div>
+
+    <div id="quiz-game">
+      <div class="quiz-card">
+        <div class="quiz-type-label" id="quiz-type-label">Question</div>
+        <div class="quiz-question" id="quiz-q">—</div>
+        <div class="quiz-options" id="quiz-opts"></div>
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="btn-next-q" id="btn-next-q" onclick="nextQuestion()">Question suivante →</button>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div class="result-emoji" id="result-emoji">🏆</div>
+      <div class="result-score" id="result-score">0/10</div>
+      <div class="result-label" id="result-label">Quiz terminé !</div>
+      <br>
+      <button class="btn-restart" onclick="startQuiz()">🔄 Recommencer</button>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+const DATES = [
+  { date: "1914–1918", event: "Grande Guerre (Première Guerre mondiale)", cat: "guerre" },
+  { date: "1916", event: "Bataille de Verdun", cat: "guerre" },
+  { date: "1917", event: "Révolutions russes", cat: "politique" },
+  { date: "11 novembre 1918", event: "Armistice de la Première Guerre mondiale", cat: "guerre" },
+  { date: "1924–1953", event: "Staline au pouvoir en URSS", cat: "politique" },
+  { date: "1933–1945", event: "L'Allemagne nazie d'Adolf Hitler", cat: "politique" },
+  { date: "1936", event: "Victoire du Front populaire & lois sociales", cat: "social" },
+  { date: "1939–1945", event: "Seconde Guerre mondiale", cat: "guerre" },
+  { date: "18 juin 1940", event: "Appel du général De Gaulle à la radio de Londres", cat: "politique" },
+  { date: "1940–1944", event: "Régime de Vichy", cat: "politique" },
+  { date: "6 juin 1944", event: "Débarquement allié en Normandie", cat: "guerre" },
+  { date: "1944–1945", event: "Libération de la France, GPRF et IVe République", cat: "politique" },
+  { date: "1944–1945", event: "Droit de vote des femmes en France", cat: "social" },
+  { date: "8 mai 1945", event: "Capitulation allemande – fin de la 2de Guerre mondiale en Europe", cat: "guerre" },
+  { date: "Août 1945", event: "Bombes atomiques sur Hiroshima et Nagasaki (Japon)", cat: "monde" },
+  { date: "1945", event: "Création de l'ONU", cat: "monde" },
+  { date: "1947–1991", event: "Guerre Froide", cat: "politique" },
+  { date: "1947–1962", event: "Principale phase de décolonisation", cat: "monde" },
+  { date: "1954–1962", event: "Guerre d'Algérie", cat: "guerre" },
+  { date: "1957", event: "Traité de Rome, création de la CEE (future UE)", cat: "europe" },
+  { date: "1958", event: "Naissance de la Ve République", cat: "politique" },
+  { date: "1958–1969", event: "Les années De Gaulle", cat: "politique" },
+  { date: "1962", event: "Indépendance de l'Algérie", cat: "monde" },
+  { date: "1962", event: "Élection du président de la République au suffrage universel direct", cat: "politique" },
+  { date: "1975", event: "Loi Veil sur l'IVG", cat: "social" },
+  { date: "1981–1995", event: "Les années Mitterrand et alternance", cat: "politique" },
+  { date: "9 novembre 1989", event: "Chute du mur de Berlin", cat: "europe" },
+  { date: "1991", event: "Éclatement et dislocation de l'URSS", cat: "politique" },
+  { date: "1992", event: "Traité de Maastricht", cat: "europe" },
+  { date: "1995–2007", event: "Les années Chirac", cat: "politique" },
+  { date: "2002", event: "L'Euro devient monnaie européenne", cat: "europe" },
+  { date: "11 septembre 2001", event: "Attentats terroristes aux États-Unis", cat: "monde" },
+];
+
+const CAT_LABELS = {
+  guerre: "Guerres", politique: "Politique", social: "Social", europe: "Europe", monde: "Monde"
+};
+
+/* ---- UTILS ---- */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function getRandDistinct(arr, n, exclude) {
+  const pool = arr.filter(x => x !== exclude);
+  return shuffle(pool).slice(0, n);
+}
+function setMode(mode) {
+  ['timeline','flashcard','quiz'].forEach(m => {
+    document.getElementById('mode-' + m).style.display = 'none';
+    document.getElementById('btn-' + m).classList.remove('active');
+  });
+  document.getElementById('mode-' + mode).style.display = 'block';
+  document.getElementById('btn-' + mode).classList.add('active');
+  if (mode === 'quiz') startQuiz();
+  if (mode === 'flashcard') initFC();
+}
+
+/* ==================== TIMELINE ==================== */
+let currentCat = 'all';
+function buildTimeline(cat) {
+  const list = document.getElementById('timeline-list');
+  list.innerHTML = '';
+  const filtered = cat === 'all' ? DATES : DATES.filter(d => d.cat === cat);
+  filtered.forEach((d, i) => {
+    const item = document.createElement('div');
+    item.className = 'tl-item';
+    item.style.animationDelay = (i * 0.04) + 's';
+    item.innerHTML = `
+      <div class="tl-dot"></div>
+      <div class="tl-card">
+        <div class="tl-date">${d.date}</div>
+        <div class="tl-event">${d.event}</div>
+        <span class="tl-cat cat-${d.cat}">${CAT_LABELS[d.cat]}</span>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  buildTimeline(cat);
+}
+buildTimeline('all');
+
+/* ==================== FLASHCARDS ==================== */
+let fcDeck = [...DATES];
+let fcIdx = 0;
+let fcSeen = 0;
+
+function initFC() {
+  fcDeck = [...DATES];
+  fcIdx = 0;
+  renderFC();
+}
+function renderFC() {
+  const card = fcDeck[fcIdx];
+  document.getElementById('fc-inner').classList.remove('flipped');
+  setTimeout(() => {
+    document.getElementById('fc-event').textContent = card.event;
+    document.getElementById('fc-date-ans').textContent = card.date;
+    document.getElementById('fc-event-ans').textContent = card.event;
+  }, 150);
+  const pct = Math.round((fcIdx / (fcDeck.length - 1)) * 100);
+  document.getElementById('fc-fill').style.width = pct + '%';
+  document.getElementById('fc-counter').textContent = (fcIdx + 1) + ' / ' + fcDeck.length;
+  fcSeen = Math.max(fcSeen, fcIdx + 1);
+  document.getElementById('stat-fc').textContent = fcSeen;
+}
+function flipCard() {
+  document.getElementById('fc-inner').classList.toggle('flipped');
+}
+function fcNav(dir) {
+  fcIdx = (fcIdx + dir + fcDeck.length) % fcDeck.length;
+  renderFC();
+}
+function shuffleFC() {
+  fcDeck = shuffle(fcDeck);
+  fcIdx = 0;
+  renderFC();
+}
+
+/* ==================== QUIZ ==================== */
+const QUIZ_COUNT = 10;
+let quizQuestions = [];
+let quizIdx = 0;
+let quizScore = 0;
+let answered = false;
+let bestScore = 0;
+
+function generateQuestion(d, all) {
+  const type = Math.random() < 0.5 ? 'dateToEvent' : 'eventToDate';
+  if (type === 'dateToEvent') {
+    const wrongs = getRandDistinct(all, 3, d).map(x => x.event);
+    const options = shuffle([d.event, ...wrongs]);
+    return {
+      question: `Que s'est-il passé en <strong>${d.date}</strong> ?`,
+      typeLabel: 'Retrouve l\'événement',
+      answer: d.event,
+      options,
+      optionType: 'event'
+    };
+  } else {
+    const wrongs = getRandDistinct(all, 3, d).map(x => x.date);
+    const options = shuffle([d.date, ...wrongs]);
+    return {
+      question: `Quelle est la date de :<br><em>${d.event}</em> ?`,
+      typeLabel: 'Retrouve la date',
+      answer: d.date,
+      options,
+      optionType: 'date'
+    };
+  }
+}
+
+function startQuiz() {
+  const picked = shuffle(DATES).slice(0, QUIZ_COUNT);
+  quizQuestions = picked.map(d => generateQuestion(d, DATES));
+  quizIdx = 0;
+  quizScore = 0;
+  answered = false;
+  document.getElementById('quiz-game').style.display = 'block';
+  document.getElementById('quiz-result').classList.remove('show');
+  buildDots();
+  renderQuestion();
+}
+
+function buildDots() {
+  const dotsEl = document.getElementById('quiz-dots');
+  dotsEl.innerHTML = '';
+  quizQuestions.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'qp-dot' + (i === 0 ? ' current' : '');
+    d.id = 'dot-' + i;
+    dotsEl.appendChild(d);
+  });
+}
+
+function renderQuestion() {
+  const q = quizQuestions[quizIdx];
+  answered = false;
+  document.getElementById('quiz-type-label').textContent = q.typeLabel;
+  document.getElementById('quiz-q').innerHTML = q.question;
+  document.getElementById('quiz-feedback').classList.remove('show', 'correct', 'wrong');
+  document.getElementById('btn-next-q').classList.remove('show');
+
+  const letters = ['A','B','C','D'];
+  const optsEl = document.getElementById('quiz-opts');
+  optsEl.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+    btn.onclick = () => answer(opt, btn, q);
+    optsEl.appendChild(btn);
+  });
+
+  document.querySelectorAll('.qp-dot').forEach((d, i) => {
+    d.classList.toggle('current', i === quizIdx);
+  });
+}
+
+function answer(chosen, btn, q) {
+  if (answered) return;
+  answered = true;
+  const isCorrect = chosen === q.answer;
+  if (isCorrect) {
+    quizScore++;
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.quiz-opt').forEach(b => {
+      if (b.textContent.includes(q.answer)) b.classList.add('reveal-correct');
+    });
+  }
+  document.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback show ' + (isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = isCorrect
+    ? `✅ <strong>Bravo !</strong> Bonne réponse.`
+    : `❌ <strong>Dommage.</strong> La bonne réponse était : <strong>${q.answer}</strong>`;
+
+  document.getElementById('dot-' + quizIdx).classList.remove('current');
+  document.getElementById('dot-' + quizIdx).classList.add(isCorrect ? 'correct' : 'wrong');
+
+  const nextBtn = document.getElementById('btn-next-q');
+  nextBtn.textContent = quizIdx < quizQuestions.length - 1 ? 'Question suivante →' : 'Voir les résultats →';
+  nextBtn.classList.add('show');
+}
+
+function nextQuestion() {
+  quizIdx++;
+  if (quizIdx >= quizQuestions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-game').style.display = 'none';
+  const res = document.getElementById('quiz-result');
+  res.classList.add('show');
+  const pct = Math.round((quizScore / QUIZ_COUNT) * 100);
+  const emojis = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '💪' : '📚';
+  const msgs = pct >= 90 ? 'Excellent ! Tu maîtrises ces dates !' : pct >= 70 ? 'Très bien ! Continue comme ça.' : pct >= 50 ? 'Pas mal, mais révise encore !' : 'Courage, la révision paie !';
+  document.getElementById('result-emoji').textContent = emojis;
+  document.getElementById('result-score').textContent = quizScore + '/' + QUIZ_COUNT;
+  document.getElementById('result-label').textContent = msgs;
+  if (quizScore > bestScore) {
+    bestScore = quizScore;
+    document.getElementById('stat-score').textContent = bestScore + '/' + QUIZ_COUNT;
+  }
+}
+</script>
+</body>
+</html>

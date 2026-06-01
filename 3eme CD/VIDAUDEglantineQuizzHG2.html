@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoGéo - Histoire & Géographie Brevet/Collège</title>
+    <style>
+        /* Thème entièrement Rose / Pastel chic */
+        :root {
+            --primary: #d81b60;          /* Rose intense */
+            --primary-hover: #ad1457;    /* Rose foncé */
+            --secondary: #f06292;        /* Rose intermédiaire */
+            --accent: #f8bbd0;           /* Rose très clair */
+            --bg: #fff0f5;               /* Fond de page Rose Lavande très doux */
+            --card-bg: #ffffff;
+            --text: #4a148c;             /* Texte violet très foncé pour un bon contraste */
+            --success: #2ecc71;
+            --danger: #e53e3e;
+            --light: #fce4ec;            /* Fond de bouton léger */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(216, 27, 96, 0.2);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* --- ÉCRAN D'ACCUEIL / PAGE DE GARDE --- */
+        #welcome-screen {
+            background: var(--card-bg);
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(216, 27, 96, 0.1);
+            text-align: center;
+        }
+
+        #welcome-screen h2 {
+            margin-bottom: 30px;
+            color: var(--primary);
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .home-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .btn-home {
+            padding: 30px 20px;
+            font-size: 1.3rem;
+            background-color: white;
+            color: var(--primary);
+            border: 3px solid var(--secondary);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .btn-home:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(216, 27, 96, 0.2);
+        }
+
+        /* --- ZONE APP (HISTOIRE / GÉO) --- */
+        .menu-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--primary);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-group:last-child {
+            margin-bottom: 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Bouton Retour Accueil */
+        .btn-back-home {
+            background-color: #fce4ec;
+            color: var(--primary);
+            border: 2px solid var(--secondary);
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .btn-back-home:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Variantes de Boutons */
+        .btn-mode { background-color: #fce4ec; color: var(--primary); }
+        .btn-mode.active { background-color: var(--primary); color: white; }
+
+        .btn-cat { background-color: #fff0f5; color: var(--text); border: 1px solid var(--accent); }
+        .btn-cat.active { background-color: var(--secondary); color: white; }
+
+        .interface-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+        }
+
+        /* --- Style Flashcards --- */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            height: 260px;
+            margin: 10px auto 20px auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.1);
+        }
+
+        .card-front {
+            background: var(--primary);
+            color: white;
+            border: 2px solid var(--primary);
+        }
+
+        .card-back {
+            background: #ffffff;
+            color: var(--primary);
+            transform: rotateY(180deg);
+            border: 3px solid var(--primary);
+        }
+
+        .card-tag {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .card-back .card-tag {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .card-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #f48fb1;
+            margin-top: 15px;
+        }
+        .card-back .hint { color: var(--secondary); }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        /* --- Style Quiz --- */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .options-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .option-btn {
+            background-color: #fff0f5;
+            color: var(--text);
+            text-align: left;
+            padding: 15px;
+            border: 2px solid var(--accent);
+            box-shadow: none;
+            font-size: 0.95rem;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #fce4ec;
+            border-color: var(--secondary);
+        }
+
+        .option-btn.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .option-btn.wrong {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .feedback {
+            font-weight: bold;
+            margin-bottom: 20px;
+            min-height: 24px;
+            font-size: 1.05rem;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-top: 10px;
+            color: var(--primary);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>ChronoGéo</h1>
+        <p>Révisez l'Histoire et la Géographie pour le Brevet & le Collège</p>
+    </header>
+
+    <div id="welcome-screen">
+        <h2>Choisissez une matière pour commencer à réviser :</h2>
+        <div class="home-grid">
+            <button class="btn-home" onclick="selectSubjectFromHome('histoire')">📜 Histoire<br><small style="font-size:0.9rem; font-weight:normal;">Grandes dates & Chronologie</small></button>
+            <button class="btn-home" onclick="selectSubjectFromHome('geographie')">🌍 Géographie<br><small style="font-size:0.9rem; font-weight:normal;">Repères spatiaux & Cartographie</small></button>
+        </div>
+    </div>
+
+    <div id="app-zone" class="hidden">
+        
+        <button class="btn-back-home" onclick="goBackToHome()">🏠 Retour à la page de garde</button>
+
+        <div class="menu-section">
+            <span class="label">Matière en cours : <span id="current-subject-title" style="color: var(--primary); font-size:1.1rem;">-</span></span>
+            
+            <span class="label">1. Choisissez votre mode d'apprentissage :</span>
+            <div class="btn-group">
+                <button class="btn-mode active" id="mode-flash" onclick="setMode('flash')">Flashcards</button>
+                <button class="btn-mode" id="mode-quiz" onclick="setMode('quiz')">Quiz QCM</button>
+            </div>
+
+            <span class="label">2. Filtrez par Catégorie / Période :</span>
+            <div class="btn-group" id="categories-container"></div>
+        </div>
+
+        <div id="flash-interface" class="interface-card">
+            <div class="flashcard-wrapper" onclick="flipCard()">
+                <div class="flashcard" id="card">
+                    <div class="card-face card-front">
+                        <span class="card-tag" id="front-tag">Catégorie</span>
+                        <div class="card-text" id="front-text">Question</div>
+                        <p class="hint">💡 Cliquez pour retourner la carte</p>
+                    </div>
+                    <div class="card-face card-back">
+                        <span class="card-tag" id="back-tag">Catégorie</span>
+                        <div class="card-text" id="back-text">Réponse</div>
+                        <p class="hint">💡 Cliquez pour retourner la carte</p>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button onclick="prevCard()" class="btn-mode">← Précédent</button>
+                <span id="flash-progress" style="font-weight: bold; color: var(--primary);">1 / 10</span>
+                <button onclick="nextCard()" class="btn-mode">Suivant →</button>
+            </div>
+        </div>
+
+        <div id="quiz-interface" class="interface-card hidden">
+            <div class="quiz-header">
+                <span id="quiz-tag">Catégorie</span>
+                <span id="quiz-progress">Question 1/10</span>
+            </div>
+            <div class="quiz-question" id="quiz-question-text">La question s'affiche ici ?</div>
+            <div class="options-grid" id="quiz-options"></div>
+            <div class="feedback" id="quiz-feedback"></div>
+            
+            <div class="controls">
+                <div class="score-display" id="quiz-score">Score : 0 / 0</div>
+                <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="btn-mode" style="background-color: var(--primary); color: white; display: none;">Suivant →</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // BASE DE DONNÉES UNIFIÉE
+    const database = [
+        // ====== HISTOIRE ======
+        { subject: 'histoire', cat: 'p1', tag: 'Histoire | 1914 - 1939', q: "1914-1918", a: "Grande Guerre (Première guerre mondiale)" },
+        { subject: 'histoire', cat: 'p1', tag: 'Histoire | 1914 - 1939', q: "1916", a: "Bataille de Verdun" },
+        { subject: 'histoire', cat: 'p1', tag: 'Histoire | 1914 - 1939', q: "1917", a: "Révolution(s) russe(s)" },
+        { subject: 'histoire', cat: 'p1', tag: 'Histoire | 1914 - 1939', q: "11 novembre 1918", a: "Armistice de la Première Guerre mondiale" },
+        { subject: 'histoire', cat: 'p1', tag: 'Histoire | 1914 - 1939', q: "1924-1953", a: "Staline au pouvoir en URSS" },
+        { subject: 'histoire', cat: 'p1', tag: 'Histoire | 1914 - 1939', q: "1933-1945", a: "L’Allemagne nazie d’Adolf Hitler" },
+        { subject: 'histoire', cat: 'p1', tag: 'Histoire | 1914 - 1939', q: "1936", a: "Victoire électorale et Lois sociales du Front populaire" },
+        
+        { subject: 'histoire', cat: 'p2', tag: 'Histoire | 1939 - 1945', q: "1939-1945", a: "Seconde Guerre mondiale" },
+        { subject: 'histoire', cat: 'p2', tag: 'Histoire | 1939 - 1945', q: "1940-1944", a: "Régime de Vichy" },
+        { subject: 'histoire', cat: 'p2', tag: 'Histoire | 1939 - 1945', q: "18 juin 1940", a: "Appel du général De Gaulle à la radio de Londres" },
+        { subject: 'histoire', cat: 'p2', tag: 'Histoire | 1939 - 1945', q: "6 juin 1944", a: "Débarquement allié en Normandie" },
+        { subject: 'histoire', cat: 'p2', tag: 'Histoire | 1939 - 1945', q: "1944-1945", a: "Libération de la France, GPRF et IVe République" },
+        { subject: 'histoire', cat: 'p2', tag: 'Histoire | 1939 - 1945', q: "1944-1945", a: "Droit de vote des femmes en France" },
+        { subject: 'histoire', cat: 'p2', tag: 'Histoire | 1939 - 1945', q: "8 mai 1945", a: "Capitulation de l'Allemagne nazie en Europe" },
+        { subject: 'histoire', cat: 'p2', tag: 'Histoire | 1939 - 1945', q: "Août 1945", a: "Bombes atomiques sur Hiroshima et Nagasaki" },
+        
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1945", a: "Création de l’ONU" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1947-1991", a: "Guerre Froide" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1947-1962", a: "Principale phase de décolonisation" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1954-1962", a: "Guerre d’Algérie" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1957", a: "Traité de Rome (création de la CEE)" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1958", a: "Naissance de la Ve République" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1958-1969", a: "Les années Charles de Gaulle" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1962", a: "Indépendance de l’Algérie" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1962", a: "Élection du président de la République au suffrage universel direct" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1975", a: "Loi Veil sur l’Interruption Volontaire de Grossesse (IVG)" },
+        { subject: 'histoire', cat: 'p3', tag: 'Histoire | 1945 - 1989', q: "1981-1995", a: "Les années François Mitterrand" },
+        
+        { subject: 'histoire', cat: 'p4', tag: 'Histoire | Époque contemporaine', q: "9 novembre 1989", a: "Chute du mur de Berlin" },
+        { subject: 'histoire', cat: 'p4', tag: 'Histoire | Époque contemporaine', q: "1991", a: "Éclatement et dislocation de l’URSS" },
+        { subject: 'histoire', cat: 'p4', tag: 'Histoire | Époque contemporaine', q: "1992", a: "Traité de Maastricht" },
+        { subject: 'histoire', cat: 'p4', tag: 'Histoire | Époque contemporaine', q: "1995-2007", a: "Les années Jacques Chirac" },
+        { subject: 'histoire', cat: 'p4', tag: 'Histoire | Époque contemporaine', q: "11 septembre 2001", a: "Attentats terroristes aux États-Unis" },
+        { subject: 'histoire', cat: 'p4', tag: 'Histoire | Époque contemporaine', q: "2002", a: "L'Euro devient la monnaie fiduciaire européenne" },
+
+        // ====== GÉOGRAPHIE ======
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Qu'est-ce que la France d'outre-mer (DROM-COM) ?", a: "Des territoires ultramarins hors du continent européen (ex: Guadeloupe, Réunion...)." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Citez les 3 aires urbaines les plus peuplées de France.", a: "Paris, Lyon et Marseille." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Où se situent les principales zones de forte densité en France ?", a: "Grandes aires urbaines, littoraux et vallées fluviales (Seine, Rhône, Garonne)." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Donnez un exemple d'espace productif français majeur intégré mondialement.", a: "L'aérospatiale à Toulouse (Airbus) ou l'agroalimentaire en Bretagne." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Quel est le premier port maritime et le premier aéroport de France ?", a: "Port : Marseille. Aéroport : Paris Charles-de-Gaulle." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Citez deux massifs anciens (moyenne) et deux récents (haute montagne) en France.", a: "Anciens : Massif central, Vosges. Récents : Alpes, Pyrénées." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Quels sont les 5 grands fleuves français ?", a: "La Seine, la Loire, la Garonne, le Rhône et le Rhin." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Combien y a-t-il de régions métropolitaines en France depuis 2016 ?", a: "Il y a 13 régions métropolitaines." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Quel schéma décrit la concentration des pouvoirs autour de la capitale ?", a: "Le macrocéphalisme urbain parisien." },
+        { subject: 'geographie', cat: 'france', tag: 'Géo | La France', q: "Citez deux États francophones hors d'Europe.", a: "Le Canada (Québec) et le Sénégal (ou RDC, Madagascar)." },
+        
+        { subject: 'geographie', cat: 'ue', tag: "Géo | L'Union Européenne", q: "Combien d'États membres compte l'UE et quelle est la capitale de l'Allemagne ?", a: "27 États membres. La capitale de l'Allemagne est Berlin." },
+        { subject: 'geographie', cat: 'ue', tag: "Géo | L'Union Européenne", q: "Qu'est-ce que la mégalopole européenne ?", a: "Une dorsale urbaine à forte activité s'étendant de Londres à Milan." },
+        { subject: 'geographie', cat: 'ue', tag: "Géo | L'Union Européenne", q: "Dans quelles villes siègent le Parlement et la Commission européenne ?", a: "Le Parlement à Strasbourg et la Commission à Bruxelles." },
+        { subject: 'geographie', cat: 'ue', tag: "Géo | L'Union Européenne", q: "Qu'est-ce qu'une région transfrontalière dans l'UE ?", a: "Un espace de coopération à cheval sur la frontière de 2 pays (ex: Strasbourg-Ortenau)." },
+        { subject: 'geographie', cat: 'ue', tag: "Géo | L'Union Européenne", q: "Quel fleuve long traverse plusieurs pays de l'UE pour se jeter dans la mer Noire ?", a: "Le Danube." },
+
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Quelles lignes séparent la zone chaude des zones tempérées au Nord et au Sud ?", a: "Le Tropique du Cancer (Nord) et le Tropique du Capricorne (Sud)." },
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Où se situe l'Himalaya et quel est son sommet le plus haut ?", a: "En Asie (Nord de l'Inde/Népal/Chine). Le sommet est l'Everest." },
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Où se situent les deux plus grandes forêts denses équatoriales du monde ?", a: "La forêt amazonienne (Amérique du Sud) et la forêt du bassin du Congo." },
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Quel est le plus grand désert chaud du monde et sa localisation ?", a: "Le Sahara, situé en Afrique du Nord." },
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Quel est le fleuve le plus long d'Afrique et le plus puissant d'Amérique du Sud ?", a: "Le Nil (Afrique) et l'Amazone (Amérique du Sud)." },
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Quels isthmes artificiels connectent Atlantique/Pacifique et Méditerranée/Mer Rouge ?", a: "Le canal de Panama et le canal de Suez (Égypte)." },
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Quels sont les trois grands foyers de population mondiaux ?", a: "L'Asie du Sud, l'Asie de l'Est et l'Europe." },
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Quelle est la capitale du Japon et celle des États-Unis ?", a: "Tokyo (Japon) et Washington D.C. (États-Unis)." },
+        { subject: 'geographie', cat: 'monde', tag: 'Géo | Repères Mondiaux', q: "Citez 3 mégapoles mondiales de plus de 20 millions d'habitants.", a: "Tokyo, New York et Shanghai (ou Mexico, São Paulo)." }
+    ];
+
+    const categoriesConfig = {
+        histoire: [
+            { id: 'all', label: 'Toutes les dates' },
+            { id: 'p1', label: '1914 - 1939' },
+            { id: 'p2', label: '1939 - 1945' },
+            { id: 'p3', label: '1945 - 1989' },
+            { id: 'p4', label: 'Époque contemporaine' }
+        ],
+        geographie: [
+            { id: 'all', label: 'Tous les repères' },
+            { id: 'france', label: 'La France' },
+            { id: 'ue', label: "L'Union Européenne" },
+            { id: 'monde', label: 'Repères Mondiaux' }
+        ]
+    };
+
+    // États globaux
+    let currentSubject = 'histoire';
+    let currentMode = 'flash';
+    let currentCategory = 'all';
+    
+    let filteredData = [];
+    let flashIndex = 0;
+    
+    let quizQuestions = [];
+    let quizIndex = 0;
+    let quizScore = 0;
+
+    // Déclenché depuis la page de garde
+    function selectSubjectFromHome(subject) {
+        currentSubject = subject;
+        currentCategory = 'all';
+        currentMode = 'flash'; // Par défaut commence en Flashcard
+
+        // Mise à jour visuelle du titre de la matière
+        document.getElementById('current-subject-title').innerText = 
+            subject === 'histoire' ? "📜 Histoire (Chronologie)" : "🌍 Géographie (Repères)";
+
+        // Basculer l'affichage des sections
+        document.getElementById('welcome-screen').classList.add('hidden');
+        document.getElementById('app-zone').classList.remove('hidden');
+
+        // Initialisation de l'espace d'étude
+        setMode('flash'); 
+        initSubjectCategories();
+        updateFilteredData();
+        renderFlashcard();
+    }
+
+    // Retour forcé à la page de garde
+    function goBackToHome() {
+        document.getElementById('app-zone').classList.add('hidden');
+        document.getElementById('welcome-screen').classList.remove('hidden');
+    }
+
+    // Génère les boutons de sous-catégories
+    function initSubjectCategories() {
+        const container = document.getElementById('categories-container');
+        container.innerHTML = '';
+        
+        categoriesConfig[currentSubject].forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = `btn-cat ${cat.id === currentCategory ? 'active' : ''}`;
+            btn.id = `cat-${cat.id}`;
+            btn.innerText = cat.label;
+            btn.onclick = () => setCategory(cat.id);
+            container.appendChild(btn);
+        });
+    }
+
+    // Gestion du mode (Flashcard / Quiz)
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('mode-flash').classList.toggle('active', mode === 'flash');
+        document.getElementById('mode-quiz').classList.toggle('active', mode === 'quiz');
+        
+        if (mode === 'flash') {
+            document.getElementById('flash-interface').classList.remove('hidden');
+            document.getElementById('quiz-interface').classList.add('hidden');
+            flashIndex = 0;
+            renderFlashcard();
+        } else {
+            document.getElementById('flash-interface').classList.add('hidden');
+            document.getElementById('quiz-interface').classList.remove('hidden');
+            setupQuiz();
+        }
+    }
+
+    // Gestion des catégories
+    function setCategory(cat) {
+        currentCategory = cat;
+        
+        categoriesConfig[currentSubject].forEach(c => {
+            const btn = document.getElementById(`cat-${c.id}`);
+            if(btn) btn.classList.toggle('active', c.id === cat);
+        });
+
+        updateFilteredData();
+        
+        if (currentMode === 'flash') {
+            flashIndex = 0;
+            renderFlashcard();
+        } else {
+            setupQuiz();
+        }
+    }
+
+    function updateFilteredData() {
+        const dataSubject = database.filter(item => item.subject === currentSubject);
+        if (currentCategory === 'all') {
+            filteredData = [...dataSubject];
+        } else {
+            filteredData = dataSubject.filter(item => item.cat === currentCategory);
+        }
+    }
+
+    // ====== LOGIQUE FLASHCARDS ======
+    function renderFlashcard() {
+        const card = document.getElementById('card');
+        card.classList.remove('flipped');
+        
+        if (filteredData.length === 0) {
+            document.getElementById('front-text').innerText = "Aucune donnée disponible.";
+            document.getElementById('back-text').innerText = "";
+            document.getElementById('flash-progress').innerText = "0 / 0";
+            return;
+        }
+
+        const item = filteredData[flashIndex];
+        setTimeout(() => {
+            document.getElementById('front-tag').innerText = item.tag;
+            document.getElementById('front-text').innerText = item.q;
+            document.getElementById('back-tag').innerText = item.tag;
+            document.getElementById('back-text').innerText = item.a;
+            document.getElementById('flash-progress').innerText = `${flashIndex + 1} / ${filteredData.length}`;
+        }, 120);
+    }
+
+    function flipCard() {
+        document.getElementById('card').classList.toggle('flipped');
+    }
+
+    function nextCard() {
+        if (filteredData.length === 0) return;
+        flashIndex = (flashIndex + 1) % filteredData.length;
+        renderFlashcard();
+    }
+
+    function prevCard() {
+        if (filteredData.length === 0) return;
+        flashIndex = (flashIndex - 1 + filteredData.length) % filteredData.length;
+        renderFlashcard();
+    }
+
+    // ====== LOGIQUE QUIZ ======
+    function setupQuiz() {
+        if (filteredData.length === 0) {
+            document.getElementById('quiz-question-text').innerText = "Pas de questions disponibles.";
+            document.getElementById('quiz-options').innerHTML = "";
+            document.getElementById('quiz-progress').innerText = "";
+            document.getElementById('quiz-score').innerText = "";
+            return;
+        }
+
+        quizQuestions = [...filteredData].sort(() => 0.5 - Math.random()).slice(0, 10);
+        quizIndex = 0;
+        quizScore = 0;
+        renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+        document.getElementById('quiz-next-btn').style.display = "none";
+        document.getElementById('quiz-feedback').innerText = "";
+        document.getElementById('quiz-score').innerText = `Score : ${quizScore} / ${quizIndex}`;
+        
+        if (quizIndex >= quizQuestions.length) {
+            document.getElementById('quiz-question-text').innerText = "Bravo ! Vous avez terminé ce questionnaire.";
+            document.getElementById('quiz-options').innerHTML = "";
+            document.getElementById('quiz-progress').innerText = "Quiz Terminé";
+            document.getElementById('quiz-score').innerText = `Score Final : ${quizScore} / ${quizQuestions.length}`;
+            return;
+        }
+
+        const currentQ = quizQuestions[quizIndex];
+        document.getElementById('quiz-tag').innerText = currentQ.tag;
+        document.getElementById('quiz-progress').innerText = `Question ${quizIndex + 1} / ${quizQuestions.length}`;
+        document.getElementById('quiz-question-text').innerText = currentSubject === 'histoire' 
+            ? `À quel événement correspond la date : ${currentQ.q} ?` 
+            : currentQ.q;
+
+        let distractors = database
+            .filter(item => item.subject === currentSubject && item.a !== currentQ.a)
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 3)
+            .map(item => item.a);
+
+        while(distractors.length < 3) {
+            distractors.push("Option alternative incorrecte");
+        }
+
+        let choices = [currentQ.a, ...distractors].sort(() => 0.5 - Math.random());
+
+        const optionsGrid = document.getElementById('quiz-options');
+        optionsGrid.innerHTML = "";
+
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = "option-btn";
+            btn.innerText = choice;
+            btn.onclick = () => checkAnswer(btn, choice, currentQ.a);
+            optionsGrid.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedBtn, chosenAnswer, correctAnswer) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (chosenAnswer === correctAnswer) {
+            selectedBtn.classList.add('correct');
+            document.getElementById('quiz-feedback').innerHTML = "<span style='color: var(--success);'>🎉 Très bonne réponse !</span>";
+            quizScore++;
+        } else {
+            selectedBtn.classList.add('wrong');
+            document.getElementById('quiz-feedback').innerHTML = `<span style='color: var(--danger);'>❌ Mauvaise réponse.</span> La réponse attendue était : <br><strong>${correctAnswer}</strong>`;
+            
+            buttons.forEach(btn => {
+                if (btn.innerText === correctAnswer) btn.classList.add('correct');
+            });
+        }
+        
+        document.getElementById('quiz-score').innerText = `Score : ${quizScore} / ${quizIndex + 1}`;
+        document.getElementById('quiz-next-btn').style.display = "block";
+    }
+
+    function nextQuizQuestion() {
+        quizIndex++;
+        renderQuizQuestion();
+    }
+</script>
+</body>
+</html>

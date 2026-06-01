@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Révisions Brevet — Histoire-Géo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0d0b;
+    --surface: #1a1814;
+    --card: #221f1a;
+    --border: #2e2b24;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --red: #b94040;
+    --green: #4a9b6f;
+    --blue: #4a7fb5;
+    --text: #f0ead8;
+    --muted: #8a8070;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 20% 20%, #1f1a0e22 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, #0e1a1f18 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 40px 20px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  header .eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.1;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  header p { color: var(--muted); font-size: 14px; margin-top: 8px; font-weight: 300; }
+
+  /* TABS */
+  .tabs { display: flex; justify-content: center; gap: 8px; padding: 20px; position: relative; z-index: 10; }
+  .tab-btn {
+    padding: 10px 28px; border-radius: 40px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500; cursor: pointer; transition: all .25s; letter-spacing: .5px;
+  }
+  .tab-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .tab-btn.active { background: var(--gold); color: #0e0d0b; border-color: var(--gold); font-weight: 700; }
+
+  /* SECTIONS */
+  .section { display: none; padding: 0 16px 60px; max-width: 900px; margin: 0 auto; position: relative; z-index: 5; }
+  .section.active { display: block; }
+
+  /* ===================== FLASHCARDS ===================== */
+  .fc-controls { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .fc-controls select {
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; outline: none;
+  }
+  .fc-progress { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+  .flashcard-scene { perspective: 1200px; width: 100%; max-width: 600px; margin: 0 auto 32px; cursor: pointer; }
+  .flashcard-inner { position: relative; width: 100%; height: 260px; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.4,0,.2,1); }
+  .flashcard-scene.flipped .flashcard-inner { transform: rotateY(180deg); }
+  .fc-face {
+    position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px; text-align: center; border: 1px solid var(--border);
+  }
+  .fc-front { background: linear-gradient(145deg, var(--card), var(--surface)); box-shadow: 0 8px 40px #00000066; }
+  .fc-back { background: linear-gradient(145deg, #1a1a10, #1e1c14); transform: rotateY(180deg); border-color: var(--gold); box-shadow: 0 8px 40px #00000066, 0 0 30px #c9a84c18; }
+  .fc-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; font-weight: 500; }
+  .fc-content { font-size: clamp(1.1rem, 2.5vw, 1.5rem); font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1.4; color: var(--text); }
+  .fc-hint { margin-top: 14px; font-size: 12px; color: var(--muted); font-style: italic; }
+  .fc-nav { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--gold); color: var(--gold); }
+  .btn.primary { background: var(--gold); color: #0e0d0b; border-color: var(--gold); font-weight: 700; }
+  .btn.primary:hover { background: var(--gold-light); }
+  .btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+
+  /* ===================== QCM ===================== */
+  .qcm-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px; flex-wrap: wrap; gap: 10px;
+  }
+  .cat-filter { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cat-btn {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--muted); font-size: 12px; cursor: pointer;
+    transition: all .2s; font-family: 'DM Sans', sans-serif;
+  }
+  .cat-btn:hover, .cat-btn.active { border-color: var(--gold); color: var(--gold); }
+
+  .qcm-badges { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .score-badge {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 40px; padding: 6px 16px; font-size: 13px; font-weight: 500; white-space: nowrap;
+  }
+  .score-badge span { color: var(--gold); font-weight: 700; }
+
+  /* CHRONOMÈTRE — seulement dans QCM */
+  .timer-badge {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 40px; padding: 6px 16px; font-size: 13px; font-weight: 700;
+    white-space: nowrap; font-variant-numeric: tabular-nums;
+    display: flex; align-items: center; gap: 6px; color: var(--muted);
+    transition: border-color .3s, color .3s;
+  }
+  .timer-badge.running { border-color: var(--gold); color: var(--gold); }
+  .timer-badge.done { border-color: var(--green); color: var(--green); }
+
+  .progress-bar { width: 100%; height: 4px; background: var(--border); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width .4s ease; }
+
+  /* Layout 2 colonnes : options à gauche, boutons à droite */
+  .question-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 4px 24px #00000044;
+  }
+  .question-num { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .question-text {
+    font-family: 'Playfair Display', serif; font-size: clamp(.95rem, 2vw, 1.1rem);
+    font-weight: 700; line-height: 1.5; color: var(--text); margin-bottom: 18px;
+  }
+
+  /* Zone principale : options + sidebar boutons */
+  .qcm-body {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .options {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .option {
+    display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+    border-radius: 10px; border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; transition: all .2s; font-size: 14px;
+  }
+  .option:hover:not(.disabled) { border-color: var(--gold); background: #221f14; }
+  .option.selected { border-color: var(--blue); background: #111e2d; }
+  .option.correct { border-color: var(--green); background: #0e1f16; color: var(--green); }
+  .option.wrong { border-color: var(--red); background: #1f0e0e; color: var(--red); }
+  .option.disabled { cursor: default; }
+  .option-letter {
+    width: 26px; height: 26px; min-width: 26px; border-radius: 50%;
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--muted); transition: all .2s; flex-shrink: 0;
+  }
+  .option.correct .option-letter { border-color: var(--green); color: var(--green); }
+  .option.wrong .option-letter { border-color: var(--red); color: var(--red); }
+  .option.selected .option-letter { border-color: var(--blue); color: var(--blue); }
+
+  /* Colonne boutons à droite */
+  .qcm-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+    width: 130px;
+  }
+  .qcm-sidebar .btn {
+    width: 100%;
+    text-align: center;
+    padding: 11px 10px;
+    font-size: 13px;
+  }
+
+  /* Feedback sous tout */
+  .feedback-box {
+    padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5;
+    display: none; margin-top: 14px;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct { background: #0e1f16; border: 1px solid var(--green); color: var(--green); }
+  .feedback-box.wrong { background: #1f0e0e; border: 1px solid var(--red); color: var(--red); }
+  .feedback-box.skipped { background: #1a1814; border: 1px solid var(--muted); color: var(--muted); }
+
+  /* RÉSULTATS */
+  .result-screen { text-align: center; padding: 50px 20px; display: none; }
+  .result-screen.show { display: block; }
+  .result-screen h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--gold); margin-bottom: 8px; }
+  .result-grid { display: flex; justify-content: center; gap: 16px; margin: 24px 0; flex-wrap: wrap; }
+  .result-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 28px; min-width: 130px;
+  }
+  .result-box .rb-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .result-box .rb-val { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900; line-height: 1; }
+  .result-box .rb-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .result-screen > p { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+
+  /* RESPONSIVE mobile */
+  @media (max-width: 520px) {
+    .qcm-body { flex-direction: column; }
+    .qcm-sidebar { flex-direction: row; width: 100%; }
+    .qcm-sidebar .btn { flex: 1; }
+    .fc-face { padding: 22px 16px; }
+    .question-wrap { padding: 18px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">✦ Révisions Brevet 2025 ✦</div>
+  <h1>Histoire · Géographie</h1>
+  <p>Flashcards &amp; QCM pour maîtriser tes repères</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('flashcards', this)">📇 Flashcards</button>
+  <button class="tab-btn" onclick="switchTab('qcm', this)">📝 QCM</button>
+</div>
+
+<!-- ===================== FLASHCARDS (pas de chrono ici) ===================== -->
+<div id="flashcards" class="section active">
+  <div class="fc-controls">
+    <select id="fc-category" onchange="loadFlashcards()">
+      <option value="all">Toutes les catégories</option>
+      <option value="histoire">Histoire</option>
+      <option value="geo">Géographie</option>
+    </select>
+    <div class="fc-progress">Carte <span id="fc-current">1</span> / <span id="fc-total">0</span></div>
+  </div>
+
+  <div class="flashcard-scene" id="flashcard-scene" onclick="flipCard()">
+    <div class="flashcard-inner">
+      <div class="fc-face fc-front">
+        <div class="fc-label">📅 Date / Repère</div>
+        <div class="fc-content" id="fc-front-text">Chargement…</div>
+        <div class="fc-hint">Cliquer pour révéler la réponse</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-label">✦ Événement</div>
+        <div class="fc-content" id="fc-back-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-nav">
+    <button class="btn" onclick="prevCard()">← Précédente</button>
+    <button class="btn primary" onclick="shuffleCards()">🔀 Mélanger</button>
+    <button class="btn" onclick="nextCard()">Suivante →</button>
+  </div>
+</div>
+
+<!-- ===================== QCM (chrono ici seulement) ===================== -->
+<div id="qcm" class="section">
+  <div id="qcm-game">
+    <div class="qcm-topbar">
+      <div class="cat-filter">
+        <button class="cat-btn active" onclick="setQcmCat('all', this)">Tout</button>
+        <button class="cat-btn" onclick="setQcmCat('histoire', this)">Histoire</button>
+        <button class="cat-btn" onclick="setQcmCat('geo', this)">Géographie</button>
+      </div>
+      <div class="qcm-badges">
+        <div class="timer-badge" id="timer-badge">
+          <span>⏱</span>
+          <span id="timer-display">0:00</span>
+        </div>
+        <div class="score-badge">Score : <span id="score-val">0</span> / <span id="score-total">0</span></div>
+      </div>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+    <div class="question-wrap">
+      <div class="question-num" id="q-num">QUESTION 1</div>
+      <div class="question-text" id="q-text">Chargement…</div>
+
+      <!-- Options à gauche, boutons à droite -->
+      <div class="qcm-body">
+        <div class="options" id="options"></div>
+
+        <div class="qcm-sidebar">
+          <button class="btn primary" id="btn-valider" onclick="valider()" disabled>✓ Valider</button>
+          <button class="btn" id="btn-suivant" onclick="nextQuestion()" style="display:none">→ Suivant</button>
+          <button class="btn" id="btn-passer" onclick="passerQuestion()">⤭ Passer</button>
+        </div>
+      </div>
+
+      <div class="feedback-box" id="feedback"></div>
+    </div>
+  </div>
+
+  <div class="result-screen" id="result-screen">
+    <div style="font-size:2.5rem">🏆</div>
+    <h2>Résultats</h2>
+    <div class="result-grid">
+      <div class="result-box">
+        <div class="rb-label">Note</div>
+        <div class="rb-val" id="note-20" style="color:var(--gold)">—</div>
+        <div class="rb-sub">sur 20</div>
+      </div>
+      <div class="result-box">
+        <div class="rb-label">Réponses</div>
+        <div class="rb-val" id="final-score" style="color:var(--blue)">—</div>
+        <div class="rb-sub" id="final-score-sub">bonnes / total</div>
+      </div>
+      <div class="result-box">
+        <div class="rb-label">Passées</div>
+        <div class="rb-val" id="final-skipped" style="color:var(--muted)">—</div>
+        <div class="rb-sub">questions</div>
+      </div>
+      <div class="result-box">
+        <div class="rb-label">Temps</div>
+        <div class="rb-val" id="final-time" style="color:var(--muted)">—</div>
+        <div class="rb-sub">mm:ss</div>
+      </div>
+    </div>
+    <p id="result-comment"></p>
+    <button class="btn primary" onclick="restartQcm()">🔄 Recommencer</button>
+  </div>
+</div>
+
+<script>
+// =================== FLASHCARDS DATA ===================
+const FLASHCARDS_HISTOIRE = [
+  { front: "1914 – 1918", back: "Grande Guerre (Première Guerre mondiale)" },
+  { front: "1916", back: "Bataille de Verdun" },
+  { front: "1917", back: "Révolution(s) russe(s)" },
+  { front: "11 novembre 1918", back: "Armistice de la Première Guerre mondiale" },
+  { front: "1924 – 1953", back: "Staline au pouvoir en URSS" },
+  { front: "1933 – 1945", back: "L'Allemagne nazie d'Adolf Hitler" },
+  { front: "1936", back: "Victoire électorale du Front populaire — lois sociales" },
+  { front: "1939 – 1945", back: "Seconde Guerre mondiale" },
+  { front: "18 juin 1940", back: "Appel du général De Gaulle à la radio de Londres" },
+  { front: "6 juin 1944", back: "Débarquement allié en Normandie" },
+  { front: "1940 – 1944", back: "Régime de Vichy" },
+  { front: "1944 – 1945", back: "Libération de la France, GPRF et rétablissement de la République (IVe République)" },
+  { front: "1944 – 1945", back: "Droit de vote des femmes en France" },
+  { front: "8 mai 1945", back: "Capitulation allemande — fin de la 2nde GM en Europe" },
+  { front: "Août 1945", back: "Bombes atomiques sur Hiroshima et Nagasaki (Japon)" },
+  { front: "1945", back: "Création de l'ONU" },
+  { front: "1947 – 1991", back: "Guerre Froide" },
+  { front: "1947 – 1962", back: "Principale phase de décolonisation" },
+  { front: "1957", back: "Traité de Rome — création de l'UE" },
+  { front: "1958", back: "Naissance de la Ve République" },
+  { front: "1958 – 1969", back: "Les années De Gaulle" },
+  { front: "1954 – 1962", back: "Guerre d'Algérie" },
+  { front: "1962", back: "Indépendance de l'Algérie" },
+  { front: "1962", back: "Élection du président de la République au suffrage universel direct" },
+  { front: "1975", back: "Loi Veil sur l'IVG (Interruption Volontaire de Grossesse)" },
+  { front: "9 novembre 1989", back: "Chute du mur de Berlin" },
+  { front: "1981 – 1995", back: "Les années Mitterrand et alternance" },
+  { front: "1991", back: "Éclatement / dislocation de l'URSS" },
+  { front: "1992", back: "Traité de Maastricht" },
+  { front: "1995 – 2007", back: "Les années Chirac" },
+  { front: "2002", back: "L'euro devient la monnaie européenne" },
+  { front: "11 septembre 2001", back: "Attentats terroristes aux États-Unis" },
+];
+const FLASHCARDS_GEO = [
+  { front: "Territoire de la France", back: "Métropole + territoires ultramarins (DOM-ROM-COM-TOM)" },
+  { front: "Les 13 régions métropolitaines", back: "Île-de-France, Grand Est, Hauts-de-France, Normandie, Bretagne, Pays de la Loire, Centre-Val de Loire, Bourgogne-Franche-Comté, Auvergne-Rhône-Alpes, Nouvelle-Aquitaine, Occitanie, PACA, Corse" },
+  { front: "Principales aires urbaines françaises", back: "Paris, Lyon, Marseille, Toulouse, Bordeaux, Lille, Nice, Nantes, Strasbourg, Rennes…" },
+  { front: "Grands repères physiques de France", back: "Massifs : Alpes, Pyrénées, Massif Central, Vosges, Jura ; Fleuves : Loire, Rhône, Garonne, Seine, Rhin" },
+  { front: "Façades maritimes françaises", back: "Manche/Mer du Nord, Atlantique, Méditerranée" },
+  { front: "27 États membres de l'UE", back: "Allemagne, France, Italie, Espagne, Pologne, Pays-Bas, Belgique, Suède, Portugal, Autriche, Tchéquie, Hongrie, Roumanie, Bulgarie, Grèce, Finlande, Danemark, Slovaquie, Irlande, Croatie, Slovénie, Estonie, Lettonie, Lituanie, Luxembourg, Malte, Chypre" },
+  { front: "Mégalopole européenne", back: "Axe de fortes densités de Londres à Milan, via Paris, Bruxelles, Amsterdam, Rhin-Ruhr" },
+  { front: "Institutions européennes", back: "Parlement européen (Strasbourg/Bruxelles), Conseil de l'UE (Bruxelles), Commission européenne (Bruxelles), Cour de Justice (Luxembourg)" },
+  { front: "Équateur, Tropiques, Cercles polaires", back: "Équateur : 0° — Tropique du Cancer : 23,5°N — Tropique du Capricorne : 23,5°S — Cercles polaires : 66,5°N et S" },
+  { front: "Grandes chaînes de montagnes mondiales", back: "Himalaya (Asie), Andes (Amérique du Sud), Rocheuses (Amérique du Nord), Alpes (Europe)" },
+  { front: "Grands fleuves du monde", back: "Nil, Congo, Gange, Yangzi (Fleuve Bleu), Amazone, Mississippi" },
+  { front: "Isthmes et détroit stratégiques", back: "Isthme de Suez, Isthme de Panama, Détroit de Gibraltar" },
+  { front: "Grands déserts et forêts denses", back: "Désert du Sahara — Forêts denses : Amazonie (Brésil), Afrique centrale (Congo)" },
+  { front: "Mégalopoles mondiales", back: "Tokyo, Le Caire, Pékin, Shanghai, Bombay, Calcutta, New York, Dakka, São Paulo, Mexico" },
+  { front: "Grands États à connaître", back: "Égypte, Inde, Chine, Japon, États-Unis, Canada, Mexique, Brésil, Indonésie…" },
+  { front: "Foyers de fortes densités humaines", back: "Asie du Sud et du Sud-Est, Europe de l'Ouest, Nord-Est des États-Unis (Mégalopolis), Japon" },
+  { front: "Zones climatiques mondiales", back: "Zone chaude (intertropicale), zones tempérées (nord et sud), zones froides (polaires)" },
+  { front: "Territoires ultra-marins français (exemples)", back: "Guadeloupe, Martinique, Guyane, La Réunion, Mayotte (DOM) ; Polynésie française, Nouvelle-Calédonie, Saint-Pierre-et-Miquelon…" },
+  { front: "États francophones dans le monde", back: "France, Belgique, Suisse, Canada (Québec), Sénégal, Côte d'Ivoire, Maroc, Algérie, Tunisie, Madagascar…" },
+  { front: "Grands pôles économiques mondiaux", back: "Triade : Amérique du Nord, Europe occidentale, Asie orientale (Japon, Chine, Corée du Sud)" },
+];
+
+// =================== FLASHCARDS LOGIC ===================
+let allCards = [], currentIdx = 0, isFlipped = false;
+function getAllCards(cat) {
+  if (cat === 'histoire') return [...FLASHCARDS_HISTOIRE];
+  if (cat === 'geo') return [...FLASHCARDS_GEO];
+  return [...FLASHCARDS_HISTOIRE, ...FLASHCARDS_GEO];
+}
+function loadFlashcards() {
+  const cat = document.getElementById('fc-category').value;
+  allCards = getAllCards(cat); currentIdx = 0; isFlipped = false;
+  document.getElementById('flashcard-scene').classList.remove('flipped');
+  updateCard();
+}
+function updateCard() {
+  const c = allCards[currentIdx];
+  document.getElementById('fc-front-text').textContent = c.front;
+  document.getElementById('fc-back-text').textContent = c.back;
+  document.getElementById('fc-current').textContent = currentIdx + 1;
+  document.getElementById('fc-total').textContent = allCards.length;
+  isFlipped = false;
+  document.getElementById('flashcard-scene').classList.remove('flipped');
+}
+function flipCard() { isFlipped = !isFlipped; document.getElementById('flashcard-scene').classList.toggle('flipped', isFlipped); }
+function nextCard() { currentIdx = (currentIdx + 1) % allCards.length; updateCard(); }
+function prevCard() { currentIdx = (currentIdx - 1 + allCards.length) % allCards.length; updateCard(); }
+function shuffleCards() {
+  for (let i = allCards.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [allCards[i],allCards[j]]=[allCards[j],allCards[i]]; }
+  currentIdx = 0; updateCard();
+}
+
+// =================== QCM DATA ===================
+const QCM_HISTOIRE = [
+  { q: "Quelle est la date de la bataille de Verdun ?", a: "1916", opts: ["1914","1916","1918","1917"] },
+  { q: "Quand a eu lieu l'Armistice de la Première Guerre mondiale ?", a: "11 novembre 1918", opts: ["8 mai 1918","11 novembre 1918","28 juin 1919","4 août 1914"] },
+  { q: "Quand De Gaulle lance-t-il son célèbre appel depuis Londres ?", a: "18 juin 1940", opts: ["8 mai 1945","6 juin 1944","18 juin 1940","11 novembre 1942"] },
+  { q: "En quelle année a lieu le Débarquement allié en Normandie ?", a: "6 juin 1944", opts: ["8 mai 1945","11 novembre 1943","6 juin 1944","18 juin 1940"] },
+  { q: "La loi Veil sur l'IVG date de :", a: "1975", opts: ["1968","1981","1975","1962"] },
+  { q: "Quand le mur de Berlin tombe-t-il ?", a: "9 novembre 1989", opts: ["1991","9 novembre 1989","3 octobre 1990","1985"] },
+  { q: "L'URSS éclate en :", a: "1991", opts: ["1989","1991","1985","1993"] },
+  { q: "Quelle date correspond à la capitulation allemande (fin de la 2e GM en Europe) ?", a: "8 mai 1945", opts: ["6 août 1945","8 mai 1945","2 septembre 1945","11 novembre 1945"] },
+  { q: "Quand l'Algérie devient-elle indépendante ?", a: "1962", opts: ["1954","1960","1962","1958"] },
+  { q: "Le Traité de Rome, fondateur de l'UE, est signé en :", a: "1957", opts: ["1949","1951","1957","1963"] },
+  { q: "En quelle année naît la Ve République française ?", a: "1958", opts: ["1944","1958","1962","1968"] },
+  { q: "Le Traité de Maastricht est signé en :", a: "1992", opts: ["1985","1989","1992","1997"] },
+  { q: "Hitler est au pouvoir en Allemagne de :", a: "1933 – 1945", opts: ["1929 – 1945","1933 – 1945","1935 – 1945","1933 – 1944"] },
+  { q: "Les attentats terroristes aux États-Unis ont lieu le :", a: "11 septembre 2001", opts: ["11 mars 2004","7 juillet 2005","11 septembre 2001","15 avril 2013"] },
+  { q: "L'euro devient la monnaie européenne en :", a: "2002", opts: ["1999","2001","2002","2004"] },
+  { q: "La Guerre Froide s'étend de :", a: "1947 – 1991", opts: ["1945 – 1989","1947 – 1991","1950 – 1991","1947 – 1989"] },
+  { q: "Le Front populaire remporte les élections et adopte des lois sociales en :", a: "1936", opts: ["1932","1934","1936","1938"] },
+  { q: "Les bombes atomiques sont lâchées sur le Japon en :", a: "Août 1945", opts: ["Juin 1945","Juillet 1945","Août 1945","Septembre 1945"] },
+  { q: "L'ONU est créée en :", a: "1945", opts: ["1919","1944","1945","1948"] },
+  { q: "Staline est au pouvoir en URSS de :", a: "1924 – 1953", opts: ["1917 – 1953","1921 – 1950","1924 – 1953","1922 – 1956"] },
+];
+const QCM_GEO = [
+  { q: "Combien la France métropolitaine compte-t-elle de régions ?", a: "13", opts: ["10","13","18","22"] },
+  { q: "Lequel de ces fleuves n'est PAS en France ?", a: "Le Congo", opts: ["La Loire","Le Rhône","La Garonne","Le Congo"] },
+  { q: "L'Union européenne compte actuellement :", a: "27 États membres", opts: ["25 États membres","27 États membres","28 États membres","30 États membres"] },
+  { q: "Où siège le Parlement européen ?", a: "Strasbourg (et Bruxelles)", opts: ["Bruxelles seulement","Luxembourg","Strasbourg (et Bruxelles)","Paris"] },
+  { q: "Quel est l'axe de la mégalopole européenne ?", a: "De Londres à Milan", opts: ["De Paris à Moscou","De Londres à Milan","De Madrid à Varsovie","D'Amsterdam à Rome"] },
+  { q: "Quelle grande chaîne de montagnes se trouve en Amérique du Sud ?", a: "Les Andes", opts: ["Les Rocheuses","L'Himalaya","Les Andes","Les Alpes"] },
+  { q: "Quel détroit relie l'Atlantique à la Méditerranée ?", a: "Le détroit de Gibraltar", opts: ["Le détroit de Malacca","Le détroit de Bering","Le détroit de Gibraltar","Le détroit d'Ormuz"] },
+  { q: "Où se trouve le désert du Sahara ?", a: "Afrique du Nord", opts: ["Asie centrale","Amérique du Sud","Afrique du Nord","Australie"] },
+  { q: "Quel fleuve traverse l'Égypte ?", a: "Le Nil", opts: ["Le Congo","Le Nil","Le Gange","L'Amazone"] },
+  { q: "Les foyers de très fortes densités humaines sont :", a: "Asie du Sud, Europe de l'Ouest, NE des États-Unis", opts: ["Amérique du Sud, Australie, Europe de l'Est","Asie centrale, Afrique du Nord, Canada","Asie du Sud, Europe de l'Ouest, NE des États-Unis","Océanie, Amérique centrale, Europe du Nord"] },
+  { q: "La latitude de l'Équateur est :", a: "0°", opts: ["23,5°N","0°","66,5°N","45°N"] },
+  { q: "L'isthme de Panama relie :", a: "Amérique du Nord et Amérique du Sud", opts: ["Asie et Afrique","Europe et Asie","Amérique du Nord et Amérique du Sud","Afrique et Asie"] },
+  { q: "Quelle est la principale forêt dense d'Amérique du Sud ?", a: "L'Amazonie", opts: ["Le Congo","La Taïga","L'Amazonie","Le Pantanal"] },
+  { q: "Parmi ces villes, laquelle est une mégalopole mondiale ?", a: "Tokyo", opts: ["Lyon","Sydney","Tokyo","Amsterdam"] },
+  { q: "Quelle façade maritime est au nord de la France ?", a: "Manche / Mer du Nord", opts: ["Océan Atlantique","Méditerranée","Manche / Mer du Nord","Mer Baltique"] },
+];
+
+// =================== TIMER ===================
+let timerInterval = null, timerSeconds = 0, timerStarted = false, finalTimeStr = '—';
+
+function startTimerOnFirstClick() {
+  if (timerStarted) return;
+  timerStarted = true;
+  document.getElementById('timer-badge').classList.add('running');
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    document.getElementById('timer-display').textContent = fmt(timerSeconds);
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  finalTimeStr = fmt(timerSeconds);
+  document.getElementById('timer-badge').classList.remove('running');
+  document.getElementById('timer-badge').classList.add('done');
+}
+function resetTimer() {
+  clearInterval(timerInterval); timerSeconds = 0; timerStarted = false;
+  document.getElementById('timer-display').textContent = '0:00';
+  document.getElementById('timer-badge').className = 'timer-badge';
+}
+function fmt(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
+
+// =================== QCM LOGIC ===================
+let qcmCards = [], qIdx = 0, score = 0, skipped = 0, answered = false, qcmCat = 'all';
+let selectedOption = null; // l'élément DOM sélectionné
+
+function setQcmCat(cat, btn) {
+  qcmCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  restartQcm();
+}
+
+function getQcmPool() {
+  let pool = [];
+  if (qcmCat === 'all' || qcmCat === 'histoire') pool = pool.concat(QCM_HISTOIRE);
+  if (qcmCat === 'all' || qcmCat === 'geo') pool = pool.concat(QCM_GEO);
+  for (let i = pool.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  return pool;
+}
+
+function restartQcm() {
+  qcmCards = getQcmPool(); qIdx = 0; score = 0; skipped = 0; answered = false; selectedOption = null;
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('qcm-game').style.display = 'block';
+  resetTimer();
+  updateScoreDisplay();
+  renderQuestion();
+}
+
+function updateScoreDisplay() {
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('score-total').textContent = qIdx;
+  const pct = qcmCards.length ? (qIdx / qcmCards.length * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function renderQuestion() {
+  answered = false; selectedOption = null;
+  const q = qcmCards[qIdx];
+  document.getElementById('q-num').textContent = `QUESTION ${qIdx + 1} / ${qcmCards.length}`;
+  document.getElementById('q-text').textContent = q.q;
+
+  const shuffled = [...q.opts].sort(() => Math.random() - .5);
+  const letters = ['A','B','C','D'];
+  const optEl = document.getElementById('options');
+  optEl.innerHTML = '';
+  shuffled.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<div class="option-letter">${letters[i]}</div><span>${opt}</span>`;
+    div.onclick = () => selectOption(div, opt);
+    optEl.appendChild(div);
+  });
+
+  document.getElementById('feedback').className = 'feedback-box';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('btn-valider').disabled = true;
+  document.getElementById('btn-valider').style.display = '';
+  document.getElementById('btn-suivant').style.display = 'none';
+  document.getElementById('btn-passer').style.display = '';
+  updateScoreDisplay();
+}
+
+function selectOption(el, opt) {
+  if (answered) return;
+  // démarrer le chrono au 1er clic
+  startTimerOnFirstClick();
+  // reset sélection visuelle
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedOption = { el, opt };
+  document.getElementById('btn-valider').disabled = false;
+}
+
+function valider() {
+  if (answered || !selectedOption) return;
+  answered = true;
+  const correct = qcmCards[qIdx].a;
+  const { el, opt } = selectedOption;
+
+  document.querySelectorAll('.option').forEach(o => {
+    o.classList.add('disabled');
+    const txt = o.querySelector('span').textContent;
+    if (txt === correct) o.classList.add('correct');
+    if (o === el && txt !== correct) o.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  if (opt === correct) {
+    score++;
+    fb.className = 'feedback-box correct show';
+    fb.textContent = '✓ Bonne réponse !';
+  } else {
+    fb.className = 'feedback-box wrong show';
+    fb.textContent = `✗ Mauvaise réponse. La bonne réponse était : « ${correct} »`;
+  }
+
+  document.getElementById('btn-valider').style.display = 'none';
+  document.getElementById('btn-passer').style.display = 'none';
+
+  qIdx++;
+  updateScoreDisplay();
+
+  if (qIdx >= qcmCards.length) {
+    stopTimer();
+    setTimeout(showResults, 900);
+  } else {
+    document.getElementById('btn-suivant').style.display = '';
+  }
+}
+
+function passerQuestion() {
+  if (answered) return;
+  skipped++;
+  const correct = qcmCards[qIdx].a;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback-box skipped show';
+  fb.textContent = `⤭ Question passée. La réponse était : « ${correct} »`;
+
+  document.querySelectorAll('.option').forEach(o => {
+    o.classList.add('disabled');
+    if (o.querySelector('span').textContent === correct) o.classList.add('correct');
+  });
+
+  answered = true;
+  document.getElementById('btn-valider').style.display = 'none';
+  document.getElementById('btn-passer').style.display = 'none';
+
+  qIdx++;
+  updateScoreDisplay();
+
+  if (qIdx >= qcmCards.length) {
+    stopTimer();
+    setTimeout(showResults, 900);
+  } else {
+    document.getElementById('btn-suivant').style.display = '';
+  }
+}
+
+function nextQuestion() { renderQuestion(); }
+
+function showResults() {
+  document.getElementById('qcm-game').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.classList.add('show');
+
+  const total = qcmCards.length;
+  const noteSur20 = Math.round((score / total) * 200) / 10;
+  const pct = Math.round(score / total * 100);
+
+  document.getElementById('final-score').textContent = `${score}/${total}`;
+  document.getElementById('note-20').textContent = noteSur20.toString().replace('.', ',');
+  document.getElementById('final-skipped').textContent = skipped;
+  document.getElementById('final-time').textContent = finalTimeStr;
+
+  let color = 'var(--gold)', comment = '';
+  if (pct >= 80) { comment = '🎉 Excellent ! Tu maîtrises très bien tes repères.'; color = 'var(--green)'; }
+  else if (pct >= 60) { comment = '👍 Pas mal ! Encore quelques révisions et tu seras au top.'; color = 'var(--gold)'; }
+  else { comment = '📚 Il faut réviser davantage. Utilise les flashcards pour t\'entraîner !'; color = 'var(--red)'; }
+
+  document.getElementById('note-20').style.color = color;
+  document.getElementById('result-comment').textContent = comment;
+}
+
+// =================== TAB SWITCH ===================
+function switchTab(tab, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// =================== INIT ===================
+loadFlashcards();
+restartQcm();
+</script>
+</body>
+</html>

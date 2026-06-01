@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Révisions Histoire</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #ffd6e7; /* rose pastel */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #ff4d88;
+}
+
+button {
+    background: #ff7aa2;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    width: 100%;
+    border-radius: 10px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #ff4d88;
+}
+
+#result {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.good {
+    color: green;
+}
+
+.bad {
+    color: red;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Quiz Histoire 📚</h1>
+    <div id="question">Chargement...</div>
+    <div id="answers"></div>
+    <div id="result"></div>
+    <button onclick="nextQuestion()" id="nextBtn" style="display:none;">Question suivante</button>
+    <button onclick="restart()" id="restartBtn" style="display:none;">Recommencer</button>
+</div>
+
+<script>
+const questions = [
+    {q:"1914-1918", a:"Grande Guerre (Première guerre mondiale)"},
+    {q:"1916", a:"Verdun"},
+    {q:"1917", a:"Révolution(s) russe(s)"},
+    {q:"11 novembre 1918", a:"Armistice de la Première Guerre mondiale"},
+    {q:"1924-1953", a:"Staline au pouvoir en URSS"},
+    {q:"1933-1945", a:"L’Allemagne nazie d’Adolf Hitler"},
+    {q:"1936", a:"Victoire du Front populaire et lois sociales"},
+    {q:"1939-1945", a:"Seconde Guerre mondiale"},
+    {q:"18 juin 1940", a:"Appel de De Gaulle à Londres"},
+    {q:"6 juin 1944", a:"Débarquement allié en Normandie"},
+    {q:"1945", a:"Création de l’ONU"},
+    {q:"1947-1991", a:"Guerre froide"},
+    {q:"1958", a:"Naissance de la Ve République"},
+    {q:"9 novembre 1989", a:"Chute du mur de Berlin"},
+    {q:"11 septembre 2001", a:"Attentats aux États-Unis"}
+];
+
+let current = 0;
+let shuffled = [];
+
+function shuffle(array){
+    return array.sort(() => Math.random() - 0.5);
+}
+
+function loadQuestion(){
+    if(current >= shuffled.length){
+        document.getElementById("question").innerText = "🎉 Fin du quiz !";
+        document.getElementById("answers").innerHTML = "";
+        document.getElementById("nextBtn").style.display = "none";
+        document.getElementById("restartBtn").style.display = "block";
+        return;
+    }
+
+    const q = shuffled[current];
+    document.getElementById("question").innerText = "Que correspond à : " + q.q + " ?";
+    document.getElementById("result").innerText = "";
+
+    let options = [q.a];
+
+    // faux choix aléatoires
+    while(options.length < 4){
+        let rand = questions[Math.floor(Math.random() * questions.length)].a;
+        if(!options.includes(rand)) options.push(rand);
+    }
+
+    options = shuffle(options);
+
+    let html = "";
+    options.forEach(opt => {
+        html += `<button onclick="checkAnswer('${opt.replace(/'/g,"\\'")}')">${opt}</button>`;
+    });
+
+    document.getElementById("answers").innerHTML = html;
+}
+
+function checkAnswer(answer){
+    const correct = shuffled[current].a;
+    const result = document.getElementById("result");
+
+    if(answer === correct){
+        result.innerHTML = "🎉 bravo champion !";
+        result.className = "good";
+    } else {
+        result.innerHTML = "❌ nonnn domage<br>Bonne réponse : " + correct;
+        result.className = "bad";
+    }
+
+    document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion(){
+    current++;
+    loadQuestion();
+    document.getElementById("nextBtn").style.display = "none";
+}
+
+function restart(){
+    current = 0;
+    shuffled = shuffle([...questions]);
+    document.getElementById("restartBtn").style.display = "none";
+    loadQuestion();
+}
+
+shuffled = shuffle([...questions]);
+loadQuestion();
+</script>
+
+</body>
+</html>

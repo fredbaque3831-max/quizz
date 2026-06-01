@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GéoRévis - L'Appli des Repères de Géographie</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <nav class="gradient-bg text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="showSection('accueil')">
+                <i data-lucide="globe" class="w-8 h-8 text-teal-300"></i>
+                <span class="text-xl font-bold tracking-wider">GéoRévis</span>
+            </div>
+            <div class="flex space-x-1 md:space-x-4">
+                <button onclick="showSection('accueil')" class="px-3 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-1">
+                    <i data-lucide="home" class="w-4 h-4"></i> <span class="hidden md:inline">Accueil</span>
+                </button>
+                <button onclick="showSection('revisions')" class="px-3 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-1">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> <span class="hidden md:inline">Fiches</span>
+                </button>
+                <button onclick="showSection('quiz-section')" class="px-3 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-1">
+                    <i data-lucide="trophy" class="w-4 h-4"></i> <span class="hidden md:inline">Quiz</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-8">
+
+        <section id="accueil" class="space-y-8 animate-fade-in">
+            <div class="text-center py-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h1 class="text-4xl md:text-5xl font-black text-slate-800 mb-4">Maîtrisez vos repères de Géographie</h1>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto mb-8">Brevet, Bac, ou simple culture générale : révisez efficacement la France, l'Europe et le Monde grâce à nos fiches claires et testez-vous avec le quiz.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="showSection('revisions')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i data-lucide="book-open" class="w-5 h-5"></i> Voir les fiches de révision
+                    </button>
+                    <button onclick="showSection('quiz-section'); startQuiz();" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i data-lucide="play" class="w-5 h-5"></i> Lancer un Quiz Express
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 flex flex-col items-center text-center">
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-full mb-4"><i data-lucide="map" class="w-6 h-6"></i></div>
+                    <h3 class="font-bold text-lg mb-2">La France</h3>
+                    <p class="text-gray-500 text-sm">Du territoire ultramarin aux reliefs métropolitains, en passant par les dynamiques urbaines.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 flex flex-col items-center text-center">
+                    <div class="p-3 bg-teal-100 text-teal-600 rounded-full mb-4"><i data-lucide="milestone" class="w-6 h-6"></i></div>
+                    <h3 class="font-bold text-lg mb-2">L'Union Européenne</h3>
+                    <p class="text-gray-500 text-sm">Les 27 États membres, les institutions, la mégalopole et les façades maritimes.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 flex flex-col items-center text-center">
+                    <div class="p-3 bg-indigo-100 text-indigo-600 rounded-full mb-4"><i data-lucide="earth" class="w-6 h-6"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Repères Mondiaux</h3>
+                    <p class="text-gray-500 text-sm">Grands fleuves, déserts, lignes imaginaires, grandes puissances et mégalopoles globales.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="revisions" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="book-open" class="text-blue-600"></i> Fiches de révision
+                </h2>
+                <div class="flex bg-gray-200 p-1 rounded-xl w-full md:w-auto">
+                    <button onclick="switchTab('tab-france')" id="btn-tab-france" class="tab-btn flex-1 md:flex-none text-sm font-medium px-4 py-2 rounded-lg bg-white text-blue-700 shadow-xs transition">La France</button>
+                    <button onclick="switchTab('tab-ue')" id="btn-tab-ue" class="tab-btn flex-1 md:flex-none text-sm font-medium px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 transition">Union Européenne</button>
+                    <button onclick="switchTab('tab-monde')" id="btn-tab-monde" class="tab-btn flex-1 md:flex-none text-sm font-medium px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 transition">Repères Mondiaux</button>
+                </div>
+            </div>
+
+            <div id="tab-france" class="tab-content grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 space-y-4">
+                    <h3 class="font-bold text-xl text-blue-700 border-b pb-2 flex items-center gap-2"><i data-lucide="map-pin"></i> Territoires & Population</h3>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Le Territoire National :</h4>
+                        <p class="text-sm text-gray-600">Composé de la <strong>Métropole</strong> (située en Europe) et des <strong>territoires ultra-marins</strong> (DROM-COM comme la Guadeloupe, Martinique, Guyane, La Réunion, Mayotte, Polynésie française...).</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Aires urbaines majeures :</h4>
+                        <p class="text-sm text-gray-600">Paris (la mégapole macrocéphale), Lyon, Marseille, Toulouse, Lille, Bordeaux, Nice, Nantes, Strasbourg, Rennes.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Répartition de la population :</h4>
+                        <p class="text-sm text-gray-600">La population se concentre dans les grandes aires urbaines, le long des grandes vallées fluviales (Seine, Rhône, Garonne) et sur les littoraux (littoralisation). Les espaces de faible densité correspondent à la "diagonale du vide".</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Les 13 Régions métropolitaines :</h4>
+                        <p class="text-sm text-gray-500 text-xs italic mb-1">Auvergne-Rhône-Alpes, Bourgogne-Franche-Comté, Bretagne, Centre-Val de Loire, Corse, Grand Est, Hauts-de-France, Île-de-France, Normandie, Nouvelle-Aquitaine, Occitanie, Pays de la Loire, PACA.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 space-y-4">
+                    <h3 class="font-bold text-xl text-blue-700 border-b pb-2 flex items-center gap-2"><i data-lucide="anchor"></i> Mondialisation, Reliefs & Réseaux</h3>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Points d'entrée & Interfaces :</h4>
+                        <p class="text-sm text-gray-600"><strong>Ports :</strong> Grand Port Maritime de Marseille, Le Havre. <strong>Aéroports :</strong> Paris Roissy-CDG et Orly. <strong>Interfaces :</strong> Les frontières du Nord et de l'Est intégrées à la mégalopoloe européenne.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Grands Repères Physiques :</h4>
+                        <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                            <li><strong>Fleuves :</strong> Seine, Loire, Garonne, Rhône, Rhin.</li>
+                            <li><strong>Montagnes :</strong> Alpes, Pyrénées, Massif Central, Vosges, Jura.</li>
+                            <li><strong>Forêts :</strong> Les Landes, les Vosges.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Organisation du Territoire & Axes :</h4>
+                        <p class="text-sm text-gray-600">Le réseau de transport (TGV, autoroutes) est fortement **centralisé autour de Paris**. Les métropoles régionales captent l'essentiel des activités dynamiques et de l'innovation.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Francophonie :</h4>
+                        <p class="text-sm text-gray-600">Des États partagent la langue française : Canada (Québec), Belgique, Suisse, Sénégal, Côte d'Ivoire, Madagascar, etc.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-ue" class="tab-content hidden grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 space-y-4">
+                    <h3 class="font-bold text-xl text-teal-700 border-b pb-2 flex items-center gap-2"><i data-lucide="landmark"></i> Institutions & États</h3>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Les 27 États membres & Capitales clés :</h4>
+                        <p class="text-sm text-gray-600">L'UE compte 27 pays. Exemples majeurs : France (Paris), Allemagne (Berlin), Italie (Rome), Espagne (Madrid), Belgique (Bruxelles), Pologne (Varsovie).</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Sièges des Institutions Européennes :</h4>
+                        <p class="text-sm text-gray-600"><strong>Bruxelles</strong> (Commission européenne et Conseil de l'UE), <strong>Strasbourg</strong> (Parlement européen) et <strong>Luxembourg</strong> (Cour de justice de l'UE).</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 space-y-4">
+                    <h3 class="font-bold text-xl text-teal-700 border-b pb-2 flex items-center gap-2"><i data-lucide="trending-up"></i> Économie & Territoires</h3>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">La Mégalopole Européenne :</h4>
+                        <p class="text-sm text-gray-600">Aussi appelée "Dorsale européenne", c'est une zone de très forte concentration de population, de villes et d'activités économiques qui s'étend du sud-est de l'Angleterre au nord de l'Italie, en passant par le Benelux et la vallée du Rhin.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Façades maritimes & Axes :</h4>
+                        <p class="text-sm text-gray-600">La <strong>Northern Range</strong> est la principale façade maritime (du Havre à Hambourg, dominée par Rotterdam). Fleuves majeurs : le Rhin et le Danube.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-monde" class="tab-content hidden grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 space-y-4">
+                    <h3 class="font-bold text-xl text-indigo-700 border-b pb-2 flex items-center gap-2"><i data-lucide="compass"></i> Repères Géographiques & Naturels</h3>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Lignes imaginaires & Zones :</h4>
+                        <p class="text-sm text-gray-600">L'<strong>Équateur</strong>, les <strong>Tropiques</strong> (Cancer au Nord, Capricorne au Sud), les <strong>Cercles polaires</strong>. Ils délimitent les zones froides, tempérées et chaudes.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Géants de la Nature :</h4>
+                        <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
+                            <li><strong>Montagnes :</strong> Himalaya, Andes, Rocheuses, Alpes.</li>
+                            <li><strong>Fleuves :</strong> Nil, Amazone, Mississippi, Congo, Gange, Yangzi.</li>
+                            <li><strong>Milieux :</strong> Forêts denses (Amazonie, Afrique centrale), Désert du Sahara.</li>
+                            <li><strong>Passages clés :</strong> Isthmes de Suez et de Panama, Détroit de Gibraltar.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 space-y-4">
+                    <h3 class="font-bold text-xl text-indigo-700 border-b pb-2 flex items-center gap-2"><i data-lucide="users"></i> Démographie & Grandes Puissances</h3>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Foyers de population & Mégalopoles :</h4>
+                        <p class="text-sm text-gray-600">Les plus grands foyers mondiaux sont l'Asie du Sud (Inde), l'Asie de l'Est (Chine) et l'Europe. Les grandes mégalopoles se trouvent aux USA (BosWash) et au Japon (Tokaido).</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Grandes Métropoles Mondiales :</h4>
+                        <p class="text-sm text-gray-600">Tokyo (la plus peuplée), New York, Pékin, Shanghai, Le Caire, Bombay, Sao Paulo, Mexico, Dacca.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700">Grands États à situer :</h4>
+                        <p class="text-sm text-gray-600">États-Unis, Canada, Mexique, Brésil, Chine, Inde, Japon, Égypte, Indonésie.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="quiz-section" class="hidden max-w-2xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-md p-6 md:p-8 border border-gray-100">
+                
+                <div id="quiz-start" class="text-center space-y-4 py-6">
+                    <div class="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i data-lucide="help-circle" class="w-8 h-8"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Prêt pour le Quiz ?</h2>
+                    <p class="text-gray-500 text-sm">Le quiz comporte 10 questions aléatoires sur l'ensemble de vos repères géographiques.</p>
+                    <button onclick="startQuiz()" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2 rounded-xl transition shadow-xs">
+                        Commencer le Test
+                    </button>
+                </div>
+
+                <div id="quiz-play" class="hidden space-y-6">
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <span id="quiz-progress" class="text-xs font-bold uppercase tracking-wider text-gray-400">Question 1/10</span>
+                        <span id="quiz-timer" class="text-sm font-semibold bg-amber-100 text-amber-800 px-3 py-1 rounded-full flex items-center gap-1">
+                            <i data-lucide="timer" class="w-4 h-4"></i> Chrono actif
+                        </span>
+                    </div>
+
+                    <div>
+                        <h3 id="quiz-question" class="text-xl font-bold text-slate-800 leading-snug">La question s'affiche ici...</h3>
+                    </div>
+
+                    <div id="quiz-options" class="grid gap-3">
+                        </div>
+
+                    <div class="flex justify-end pt-4">
+                        <button id="btn-next" onclick="nextQuestion()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-semibold px-6 py-2 rounded-xl transition flex items-center gap-1">
+                            Suivant <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quiz-results" class="hidden text-center space-y-6 py-6">
+                    <div id="result-icon" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto">
+                        </div>
+                    <div>
+                        <h2 class="text-3xl font-black text-slate-800">Quiz Terminé !</h2>
+                        <p id="result-comment" class="text-gray-500 mt-1">Excellent travail !</p>
+                    </div>
+                    <div class="bg-gray-50 max-w-xs mx-auto py-4 rounded-xl border border-gray-100">
+                        <span class="block text-gray-400 text-xs uppercase font-bold tracking-widest">Votre Score</span>
+                        <span id="result-score" class="text-5xl font-black text-teal-600">0/10</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row justify-center gap-3">
+                        <button onclick="startQuiz()" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2 rounded-xl transition shadow-xs flex items-center justify-center gap-1">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Recommencer
+                        </button>
+                        <button onclick="showSection('revisions')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-xl transition flex items-center justify-center gap-1">
+                            <i data-lucide="book-open" class="w-4 h-4"></i> Relire les fiches
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-100 py-6 mt-12 text-center text-xs text-gray-400">
+        <div class="max-w-6xl mx-auto px-4">
+            &copy; 2026 GéoRévis Application - Conçu avec soin pour réviser la géographie.
+        </div>
+    </footer>
+
+    <script>
+        // Initialisation des icônes Lucide
+        lucide.createIcons();
+
+        // --- SYSTEME DE NAVIGATION ---
+        function showSection(sectionId) {
+            document.getElementById('accueil').classList.add('hidden');
+            document.getElementById('revisions').classList.add('hidden');
+            document.getElementById('quiz-section').classList.add('hidden');
+            
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        function switchTab(tabId) {
+            // Masquer tous les contenus d'onglets
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Réinitialiser le style des boutons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn flex-1 md:flex-none text-sm font-medium px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 transition";
+            });
+
+            // Activer l'onglet choisi
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            // Appliquer le style au bouton cliqué (différencié selon l'onglet pour matcher les couleurs)
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (tabId === 'tab-france') {
+                activeBtn.className = "tab-btn flex-1 md:flex-none text-sm font-medium px-4 py-2 rounded-lg bg-blue-100 text-blue-700 font-semibold shadow-xs transition";
+            } else if (tabId === 'tab-ue') {
+                activeBtn.className = "tab-btn flex-1 md:flex-none text-sm font-medium px-4 py-2 rounded-lg bg-teal-100 text-teal-700 font-semibold shadow-xs transition";
+            } else if (tabId === 'tab-monde') {
+                activeBtn.className = "tab-btn flex-1 md:flex-none text-sm font-medium px-4 py-2 rounded-lg bg-indigo-100 text-indigo-700 font-semibold shadow-xs transition";
+            }
+        }
+
+        // --- BANQUE DE QUESTIONS DU QUIZ ---
+        const questionsDatabase = [
+            // France
+            { q: "Quel territoire ultra-marin français est situé en Amérique du Sud ?", a: ["La Guyane", "La Réunion", "La Guadeloupe", "Mayotte"], c: 0 },
+            { q: "Quelle est l'aire urbaine la plus peuplée de France ?", a: ["Lyon", "Marseille", "Paris", "Lille"], c: 2 },
+            { q: "Où se concentre principalement la population française ?", a: ["Dans la diagonale du vide", "Dans les montagnes", "Dans les grandes aires urbaines et littoraux", "Dans le centre de la France"], c: 2 },
+            { q: "Quel est le plus grand port maritime de France situé sur la Méditerranée ?", a: ["Le Havre", "Marseille", "Bordeaux", "Nantes"], c: 1 },
+            { q: "Lequel de ces fleuves NE coule PAS en France ?", a: ["La Loire", "La Garonne", "Le Danube", "Le Rhône"], c: 2 },
+            { q: "Combien y a-t-il de régions administratives en France métropolitaine ?", a: ["10", "13", "15", "22"], c: 1 },
+            { q: "Lequel de ces pays est un État francophone mondial ?", a: ["Le Mexique", "Le Japon", "Le Sénégal", "L'Indonésie"], c: 2 },
+            // Union Européenne
+            { q: "Combien d'États membres compte l'Union européenne actuellement ?", a: ["25", "27", "28", "30"], c: 1 },
+            { q: "Quelle ville accueille le siège du Parlement Européen ?", a: ["Bruxelles", "Strasbourg", "Luxembourg", "Berlin"], c: 1 },
+            { q: "Qu'est-ce que la mégalopole européenne ?", a: ["Une très grande ville de 20 millions d'habitants", "Une région de forte concentration urbaine s'étendant de l'Angleterre à l'Italie", "Le syndicat des maires d'Europe", "La façade maritime du Nord"], c: 1 },
+            { q: "Quelle est la principale façade maritime européenne ?", a: ["La façade méditerranéenne", "La Northern Range (Le Havre à Hambourg)", "La façade atlantique", "La mer Baltique"], c: 1 },
+            { q: "Quelle est la capitale de la Pologne ?", a: ["Varsovie", "Cracovie", "Berlin", "Prague"], c: 0 },
+            // Repères Terrestres Mondiaux
+            { q: "Où se situe la ligne imaginaire de l'Équateur ?", a: ["Au pôle Nord", "Au milieu de la Terre (0° de latitude)", "Au niveau des tropiques", "Au pôle Sud"], c: 1 },
+            { q: "Quelle est la chaîne de montagnes la plus haute du monde ?", a: ["Les Andes", "Les Rocheuses", "Les Alpes", "L'Himalaya"], c: 3 },
+            { q: "Où se trouve la plus grande forêt dense tropicale du monde ?", a: ["En Afrique Centrale", "En Amazonie", "En Sibérie", "En Indonésie"], c: 1 },
+            { q: "Quel est le plus long fleuve du monde (ou le plus puissant) traversant le Brésil ?", a: ["Le Nil", "Le Mississippi", "L'Amazone", "Le Yangzi"], c: 2 },
+            { q: "Quel canal artificiel relie la Mer Méditerranée à la Mer Rouge ?", a: ["Le canal de Panama", "Le canal de Suez", "Le détroit de Gibraltar", "Le détroit de Malacca"], c: 1 },
+            { q: "Lequel de ces pays abrite une immense mégalopole appelée le Tokaido ?", a: ["La Chine", "Les États-Unis", "Le Japon", "L'Inde"], c: 2 },
+            { q: "Quelle métropole mondiale est la plus peuplée de la planète ?", a: ["New York", "Le Caire", "Tokyo", "Bombay"], c: 2 }
+        ];
+
+        // Éléments & variables du Quiz
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hasAnswered = false;
+
+        function startQuiz() {
+            // Mélanger et sélectionner 10 questions aléatoires
+            const shuffled = [...questionsDatabase].sort(() => 0.5 - Math.random());
+            currentQuestions = shuffled.slice(0, 10);
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            hasAnswered = false;
+
+            document.getElementById('quiz-start').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-play').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasAnswered = false;
+            document.getElementById('btn-next').classList.add('hidden');
+            
+            const qData = currentQuestions[currentQuestionIndex];
+            document.getElementById('quiz-progress').innerText = `Question ${currentQuestionIndex + 1}/10`;
+            document.getElementById('quiz-question').innerText = qData.q;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            qData.a.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = "w-full text-left p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition font-medium focus:outline-none flex justify-between items-center bg-white";
+                button.innerHTML = `<span>${option}</span><span class="icon-holder"></span>`;
+                button.onclick = () => selectOption(index, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectOption(selectedIndex, clickedButton) {
+            if (hasAnswered) return; // Évite de répondre plusieurs fois à la même question
+            hasAnswered = true;
+
+            const qData = currentQuestions[currentQuestionIndex];
+            const optionsContainer = document.getElementById('quiz-options');
+            const buttons = optionsContainer.querySelectorAll('button');
+
+            buttons.forEach((btn, index) => {
+                btn.disabled = true; // Désactive les boutons après le choix
+                
+                if (index === qData.c) {
+                    // La bonne réponse passe au vert
+                    btn.classList.remove('border-gray-200', 'bg-white');
+                    btn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-900');
+                    btn.querySelector('.icon-holder').innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>`;
+                }
+                
+                if (selectedIndex === index && selectedIndex !== qData.c) {
+                    // Mauvaise réponse sélectionnée passe au rouge
+                    btn.classList.remove('border-gray-200', 'bg-white');
+                    btn.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-900');
+                    btn.querySelector('.icon-holder').innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i>`;
+                }
+            });
+
+            if (selectedIndex === qData.c) {
+                score++;
+            }
+
+            lucide.createIcons();
+            document.getElementById('btn-next').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-play').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+
+            document.getElementById('result-score').innerText = `${score}/10`;
+
+            const iconContainer = document.getElementById('result-icon');
+            const comment = document.getElementById('result-comment');
+
+            if (score >= 8) {
+                iconContainer.className = "w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto";
+                iconContainer.innerHTML = `<i data-lucide="award" class="w-12 h-12"></i>`;
+                comment.innerText = "Excellent ! Vous maîtrisez parfaitement les repères géographiques !";
+            } else if (score >= 5) {
+                iconContainer.className = "w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto";
+                iconContainer.innerHTML = `<i data-lucide="thumbs-up" class="w-12 h-12"></i>`;
+                comment.innerText = "Pas mal ! Encore un petit effort de relecture sur les fiches.";
+            } else {
+                iconContainer.className = "w-20 h-20 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto";
+                iconContainer.innerHTML = `<i data-lucide="alert-triangle" class="w-12 h-12"></i>`;
+                comment.innerText = "Il faut réviser ! Prenez le temps de relire les fiches thématiques.";
+            }
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

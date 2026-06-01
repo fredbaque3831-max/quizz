@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reviz+ - Histoire & Géographie & EMC</title>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #d4c5a3;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Lapin personnage dans le coin */
+    .rabbit-character {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      font-size: 80px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      animation: bounce 2s infinite;
+    }
+
+    .rabbit-character:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Bulle de conseil du lapin */
+    .rabbit-tips {
+      position: fixed;
+      bottom: 110px;
+      right: 20px;
+      background: #fff;
+      border: 3px solid #8b6a3a;
+      border-radius: 15px;
+      padding: 15px 20px;
+      max-width: 280px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      font-size: 0.95rem;
+      color: #3b240b;
+    }
+
+    .rabbit-tips::before {
+      content: "🐰";
+      font-size: 1.5rem;
+      margin-right: 10px;
+    }
+
+    .rabbit-tips.show {
+      display: block;
+      animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      text-align: center;
+      font-family: "IM Fell English", serif;
+      font-size: 3.5rem;
+      color: #3b240b;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.4);
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #5a4a2a;
+      font-style: italic;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+    }
+
+    .paper {
+      background: #fdf6e3;
+      background-image: linear-gradient(#fdf6e3 0%, #f5e6c8 100%);
+      border: 1px solid #c9b896;
+      padding: 40px;
+      box-shadow: 0 0 0 6px #e8d5b5, 0 0 0 8px #c9b896, 5px 5px 15px rgba(0,0,0,0.25);
+      border-radius: 2px;
+      text-align: center;
+      position: relative;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .theme-choice {
+      display: inline-block;
+      width: 200px;
+      padding: 20px;
+      margin: 15px;
+      border: 3px solid #c9b896;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fffbf0;
+      transition: all 0.3s;
+    }
+
+    .theme-choice:hover {
+      background: #f5e6c8;
+      border-color: #8b6a3a;
+      transform: scale(1.05);
+    }
+
+    .theme-choice.selected {
+      background: #8b6a3a;
+      border-color: #a67c52;
+      color: #fff;
+    }
+
+    .theme-choice h3 {
+      font-family: "IM Fell English", serif;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .theme-choice p {
+      font-size: 0.95rem;
+    }
+
+    .number-choice {
+      display: inline-block;
+      width: 120px;
+      padding: 15px;
+      margin: 10px;
+      border: 3px solid #c9b896;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fffbf0;
+      font-size: 1.3rem;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .number-choice:hover {
+      background: #f5e6c8;
+      border-color: #8b6a3a;
+      transform: scale(1.05);
+    }
+
+    .number-choice.selected {
+      background: #8b6a3a;
+      color: #fff;
+      border-color: #a67c52;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      background: #8b6a3a;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border-radius: 6px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #a67c52;
+    }
+
+    .btn:disabled {
+      background: #c9b896;
+      color: #7a6a4a;
+      cursor: not-allowed;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: #c9b896;
+      color: #3b240b;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      background: #8b6a3a;
+      color: #fff;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .quiz-paper {
+      background: #fdf6e3;
+      background-image: linear-gradient(#fdf6e3 0%, #f5e6c8 100%);
+      border: 1px solid #c9b896;
+      padding: 40px;
+      padding-top: 70px;
+      box-shadow: 0 0 0 6px #e8d5b5, 0 0 0 8px #c9b896, 5px 5px 15px rgba(0,0,0,0.25);
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .question-number {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      padding: 6px 12px;
+      font-weight: bold;
+      border-radius: 3px;
+      font-size: 0.95rem;
+      z-index: 10;
+      color: #fff;
+      background: #8b6a3a;
+    }
+
+    .question-count {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 6px 12px;
+      font-weight: bold;
+      border-radius: 3px;
+      font-size: 0.95rem;
+      z-index: 10;
+      color: #3b240b;
+      background: #f5e6c8;
+      border: 2px solid #8b6a3a;
+    }
+
+    .question {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #2b1d0e;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .choices {
+      display: grid;
+      gap: 12px;
+    }
+
+    .choice {
+      padding: 14px 16px;
+      border: 2px solid #c9b896;
+      background: #fffbf0;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1.05rem;
+      color: #2b1d0e;
+      font-family: Arial, Helvetica, sans-serif;
+      transition: 0.2s;
+      text-align: left;
+    }
+
+    .choice:hover {
+      background: #f5e6c8;
+      border-color: #8b6a3a;
+    }
+
+    .choice.correct {
+      background: #c8e6c9;
+      border-color: #2e7d32;
+    }
+
+    .choice.wrong {
+      background: #ffcdd2;
+      border-color: #c62828;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .score {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #3b240b;
+    }
+
+    .quiz-review {
+      margin-top: 25px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .review-item {
+      padding: 12px 16px;
+      border-radius: 4px;
+      font-weight: bold;
+      line-height: 1.5;
+      font-size: 1rem;
+      border: 2px solid #c9b896;
+    }
+
+    .review-correct {
+      background: #c8e6c9;
+      color: #1b5e20;
+    }
+
+    .review-wrong {
+      background: #ffcdd2;
+      color: #b71c1c;
+    }
+
+    .flashcard-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .flashcard {
+      width: 100%;
+      max-width: 650px;
+      min-height: 220px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      min-height: 220px;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 1.25rem;
+      background: #fdf6e3;
+      border: 2px solid #c9b896;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: Arial, Helvetica, sans-serif;
+      color: #2b1d0e;
+    }
+
+    .flashcard-back {
+      transform: rotateY(180deg);
+      background: #f5e6c8;
+      font-weight: bold;
+    }
+
+    .flash-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .progress {
+      font-weight: bold;
+      color: #5a4a2a;
+    }
+
+    .hint {
+      font-style: italic;
+      color: #7a6a4a;
+      font-size: 0.95rem;
+    }
+
+    .back-btn {
+      background: #c9b896;
+      margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+      background: #b8a585;
+    }
+
+    /* Icône Reviz+ dans le titre */
+    .reviz-icon {
+      display: inline-block;
+      font-size: 2.5rem;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Lapin personnage -->
+  <div class="rabbit-character" id="rabbit" onclick="toggleRabbitTip()">🐰</div>
+  <div class="rabbit-tips" id="rabbitTips">
+    <span id="rabbitTipText">Salut ! Je suis Reviz le lapin ! 🐰<br>Je vais t'aider à réviser pour le brevet !</span>
+  </div>
+
+  <div class="container">
+    <h1><span class="reviz-icon">📚</span>Reviz+</h1>
+    <p class="subtitle">Ton assistant de révision pour le brevet</p>
+
+    <!-- PAGE 1 : CHOIX DU THÈME -->
+    <div id="pageTheme" class="page active">
+      <div class="paper">
+        <h2 style="font-family: 'IM Fell English', serif; font-size: 2rem; margin-bottom: 30px;">Choisis ton thème</h2>
+        
+        <div class="theme-choice" id="themeHistoire" onclick="selectTheme('histoire')">
+          <h3>📜 Histoire</h3>
+          <p>Seulement des questions d'histoire</p>
+        </div>
+        
+        <div class="theme-choice" id="themeGeographie" onclick="selectTheme('geographie')">
+          <h3>🌍 Géographie</h3>
+          <p>Seulement des questions de géographie</p>
+        </div>
+        
+        <div class="theme-choice" id="themeEMC" onclick="selectTheme('emc')">
+          <h3>⚖️ EMC</h3>
+          <p>Enseignement Moral et Civique</p>
+        </div>
+        
+        <div class="theme-choice" id="themeLesDeux" onclick="selectTheme('lesdeux')">
+          <h3>📚 Histoire & Géo</h3>
+          <p>Histoire et Géographie mélangées</p>
+        </div>
+
+        <div class="theme-choice" id="themeTout" onclick="selectTheme('tout')">
+          <h3>🎯 Tout</h3>
+          <p>Histoire, Géographie et EMC</p>
+        </div>
+
+        <button class="btn" id="btnValiderTheme" onclick="goToPageNombre()" disabled>Valider</button>
+      </div>
+    </div>
+
+    <!-- PAGE 2 : CHOIX DU NOMBRE DE QUESTIONS -->
+    <div id="pageNombre" class="page">
+      <div class="paper">
+        <button class="btn back-btn" onclick="goToPageTheme()">← Retour</button>
+        
+        <h2 style="font-family: 'IM Fell English', serif; font-size: 2rem; margin-bottom: 30px;">Choisis le nombre de questions</h2>
+        
+        <div class="number-choice" id="nb10" onclick="selectNombre(10)">10</div>
+        <div class="number-choice" id="nb20" onclick="selectNombre(20)">20</div>
+        <div class="number-choice" id="nb30" onclick="selectNombre(30)">30</div>
+
+        <button class="btn" id="btnValiderNombre" onclick="startQuiz()" disabled>Commencer le quiz</button>
+      </div>
+    </div>
+
+    <!-- PAGE 3 : QUIZ ET FLASHCARDS -->
+    <div id="pageQuiz" class="page">
+      <button class="btn back-btn" onclick="goToPageTheme()">← Nouveau quiz</button>
+
+      <div class="tabs">
+        <button class="tab-btn active" id="btnQuiz" onclick="showSection('quiz')">QCM</button>
+        <button class="tab-btn" id="btnFlash" onclick="showSection('flashcards')">Flashcards</button>
+      </div>
+
+      <div id="quiz" class="section active">
+        <div class="quiz-paper">
+          <div id="questionNumber" class="question-number"></div>
+          <div id="questionCount" class="question-count"></div>
+          <div id="quizQuestion" class="question"></div>
+          <div id="quizChoices" class="choices"></div>
+          <div class="controls">
+            <button class="btn" id="prevBtn" onclick="prevQuestion()">Précédent</button>
+            <button class="btn" id="nextBtn" onclick="nextQuestion()">Suivant</button>
+            <button class="btn" onclick="restartQuiz()">Recommencer</button>
+          </div>
+          <div id="quizScore" class="score"></div>
+          <div id="quizReview" class="quiz-review"></div>
+        </div>
+      </div>
+
+      <div id="flashcards" class="section">
+        <div class="quiz-paper">
+          <div id="questionNumberFlash" class="question-number"></div>
+          <div id="questionCountFlash" class="question-count"></div>
+          <div class="flashcard-area">
+            <div id="flashcard" class="flashcard" onclick="flipCard()">
+              <div class="flashcard-inner">
+                <div id="flashcardFront" class="flashcard-face"></div>
+                <div id="flashcardBack" class="flashcard-face flashcard-back"></div>
+              </div>
+            </div>
+            <div class="flash-controls">
+              <button class="btn" onclick="prevCard()">Carte précédente</button>
+              <button class="btn" onclick="nextCard()">Carte suivante</button>
+            </div>
+            <div id="flashProgress" class="progress"></div>
+            <div class="hint">Clique sur la carte pour voir la réponse.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DONNÉES HISTOIRE - QCM
+    const histoireQuizData = [
+      // PERSONNAGES
+      { type: "personnage", nom: "Charles de Gaulle", detail: "Chef de la France Libre, appelle à la résistance le 18 juin 1940, président de la Ve République de 1958 à 1969", answer: "Charles de Gaulle", theme: "histoire" },
+      { type: "personnage", nom: "Adolf Hitler", detail: "Dictateur nazi, chancelier puis Führer de l'Allemagne (1933-1945)", answer: "Hitler", theme: "histoire" },
+      { type: "personnage", nom: "Joseph Staline", detail: "Dictateur soviétique (1924-1953), totalitarisme, purges", answer: "Staline", theme: "histoire" },
+      { type: "personnage", nom: "Philippe Pétain", detail: "Chef de l'État français (1940-1944), régime de Vichy, collaboration", answer: "Pétain", theme: "histoire" },
+      { type: "personnage", nom: "Winston Churchill", detail: "Premier ministre britannique pendant la Seconde Guerre mondiale", answer: "Churchill", theme: "histoire" },
+      { type: "personnage", nom: "François Mitterrand", detail: "Président de 1981 à 1995, première alternance pacifique", answer: "Mitterrand", theme: "histoire" },
+      { type: "personnage", nom: "Jacques Chirac", detail: "Président de 1995 à 2007, fin du septennat", answer: "Chirac", theme: "histoire" },
+      { type: "personnage", nom: "Robert Schuman", detail: "Père de l'Europe, déclaration du 9 mai 1950", answer: "Schuman", theme: "histoire" },
+      { type: "personnage", nom: "Mikhaïl Gorbatchev", detail: "Dernier dirigeant soviétique (1985-1991), chute de l'URSS", answer: "Gorbatchev", theme: "histoire" },
+      { type: "personnage", nom: "Jean Moulin", detail: "Résistant français, unificateur des mouvements de résistance", answer: "Moulin", theme: "histoire" },
+      
+      // LIEUX
+      { type: "lieu", nom: "Verdun", detail: "Bataille de 1916, 300 000 morts, symbole de l'horreur de la guerre", answer: "Verdun", theme: "histoire" },
+      { type: "lieu", nom: "Rethondes", detail: "Lieu de signature de l'armistice du 11 novembre 1918", answer: "Rethondes", theme: "histoire" },
+      { type: "lieu", nom: "Londres", detail: "Ville où De Gaulle lance l'appel de la France Libre le 18 juin 1940", answer: "Londres", theme: "histoire" },
+      { type: "lieu", nom: "Normandie", detail: "Région du Débarquement allié du 6 juin 1944", answer: "Normandie", theme: "histoire" },
+      { type: "lieu", nom: "Berlin", detail: "Ville où le mur tombe le 9 novembre 1989", answer: "Berlin", theme: "histoire" },
+      { type: "lieu", nom: "Rome", detail: "Ville où est signé le Traité de Rome en 1957 créant la CEE", answer: "Rome", theme: "histoire" },
+      { type: "lieu", nom: "Maastricht", detail: "Ville où est signé le Traité de Maastricht en 1992 créant l'UE", answer: "Maastricht", theme: "histoire" },
+      
+      // BATAILLES
+      { type: "bataille", nom: "Verdun", detail: "1916, 700 000 victimes, 'on ne passe pas'", answer: "Verdun", theme: "histoire" },
+      { type: "bataille", nom: "Normandie", detail: "6 juin 1944, Opération Overlord, libération de la France", answer: "Normandie", theme: "histoire" },
+      { type: "bataille", nom: "Stalingrad", detail: "1942-1943, tournant de la Seconde Guerre mondiale", answer: "Stalingrad", theme: "histoire" },
+      
+      // TRAITÉS
+      { type: "traité", nom: "Versailles", detail: "1919, traité de paix après la Première Guerre mondiale", answer: "Versailles", theme: "histoire" },
+      { type: "traité", nom: "Rome", detail: "1957, création de la CEE", answer: "Rome", theme: "histoire" },
+      { type: "traité", nom: "Maastricht", detail: "1992, création de l'Union européenne", answer: "Maastricht", theme: "histoire" },
+      { type: "traité", nom: "Évian", detail: "1962, cessez-le-feu en Algérie", answer: "Évian", theme: "histoire" },
+      
+      // DATES
+      { type: "date", nom: "1914-1918", detail: "Première Guerre mondiale", answer: "1914-1918", theme: "histoire" },
+      { type: "date", nom: "1939-1945", detail: "Seconde Guerre mondiale", answer: "1939-1945", theme: "histoire" },
+      { type: "date", nom: "1947-1991", detail: "Guerre Froide", answer: "1947-1991", theme: "histoire" },
+      { type: "date", nom: "1958", detail: "Naissance de la Ve République", answer: "1958", theme: "histoire" },
+      { type: "date", nom: "1989", detail: "Chute du mur de Berlin", answer: "1989", theme: "histoire" },
+      { type: "date", nom: "1991", detail: "Dislocation de l'URSS", answer: "1991", theme: "histoire" },
+      { type: "date", nom: "2002", detail: "Introduction de l'euro", answer: "2002", theme: "histoire" }
+    ];
+
+    // DONNÉES HISTOIRE - FLASHCARDS
+    const histoireFlashData = [
+      { concept: "Général de Gaulle", detail: "Chef de la France Libre, appelle à la résistance le 18 juin 1940", theme: "histoire" },
+      { concept: "Adolf Hitler", detail: "Dictateur nazi, chancelier puis Führer de l'Allemagne (1933-1945)", theme: "histoire" },
+      { concept: "Joseph Staline", detail: "Dictateur soviétique (1924-1953)", theme: "histoire" },
+      { concept: "Front populaire", detail: "Alliance de gauche (1936), vacances payées, 40 heures", theme: "histoire" },
+      { concept: "Régime de Vichy", detail: "État français (1940-1944), Pétain, collaboration", theme: "histoire" },
+      { concept: "France Libre", detail: "Résistance extérieure dirigée par De Gaulle depuis Londres", theme: "histoire" },
+      { concept: "Ve République", detail: "République actuelle depuis 1958", theme: "histoire" },
+      { concept: "Guerre Froide", detail: "Confrontation USA-URSS (1947-1991)", theme: "histoire" },
+      { concept: "URSS", detail: "Union des Républiques Socialistes Soviétiques (1922-1991)", theme: "histoire" },
+      { concept: "OTAN", detail: "Alliance militaire occidentale créée en 1949", theme: "histoire" },
+      { concept: "Décolonisation", detail: "Indépendances en Afrique et Asie (1947-1962)", theme: "histoire" },
+      { concept: "Guerre d'Algérie", detail: "Conflit 1954-1962, indépendance en 1962", theme: "histoire" },
+      { concept: "Union européenne", detail: "UE officialisée par le Traité de Maastricht en 1992", theme: "histoire" },
+      { concept: "Shoah", detail: "Génocide des Juifs d'Europe par les nazis", theme: "histoire" },
+      { concept: "Résistance", detail: "Mouvement intérieur contre l'occupation nazie", theme: "histoire" },
+      { concept: "Totalitarisme", detail: "Régimes qui contrôlent tout (nazisme, stalinisme)", theme: "histoire" },
+      { concept: "ONU", detail: "Organisation des Nations Unies, créée en 1945", theme: "histoire" },
+      { concept: "Euro", detail: "Monnaie européenne introduite en 2002", theme: "histoire" }
+    ];
+
+    // DONNÉES GÉOGRAPHIE
+    const geographieData = [
+      { concept: "Bruxelles", detail: "Capitale de la Belgique et siège de la Commission européenne", theme: "geographie" },
+      { concept: "Strasbourg", detail: "Siège du Parlement européen", theme: "geographie" },
+      { concept: "Francfort", detail: "Siège de la Banque centrale européenne", theme: "geographie" },
+      { concept: "Paris", detail: "Capitale de la France et métropole mondiale de rang 1", theme: "geographie" },
+      { concept: "Londres", detail: "Métropole mondiale de rang 1, capitale du Royaume-Uni", theme: "geographie" },
+      { concept: "New York", detail: "Métropole mondiale de rang 1, capitale financière", theme: "geographie" },
+      { concept: "Tokyo", detail: "Plus grande aire urbaine du monde", theme: "geographie" },
+      { concept: "Shanghai", detail: "Mégalopole chinoise, premier port conteneurisé", theme: "geographie" },
+      { concept: "MÉGAPOLE", detail: "Ville de plus de 10 millions d'habitants", theme: "geographie" },
+      { concept: "MÉGALOPOLIS", detail: "Regroupement de plusieurs mégalopoles", theme: "geographie" },
+      { concept: "Randstad", detail: "Mégalopole néerlandaise (Amsterdam-Rotterdam-La Haye)", theme: "geographie" },
+      { concept: "Mezzogiorno", detail: "Sud de l'Italie, espace en retard", theme: "geographie" },
+      { concept: "BRICS", detail: "Pays émergents : Brésil, Russie, Inde, Chine, Afrique du Sud", theme: "geographie" },
+      { concept: "PMA", detail: "Pays les Moins Avancés", theme: "geographie" },
+      { concept: "IDE", detail: "Investissement Direct à l'Étranger", theme: "geographie" },
+      { concept: "MERCOSUR", detail: "Zone de libre-échange sud-américaine", theme: "geographie" },
+      { concept: "ASEAN", detail: "Association des nations de l'Asie du Sud-Est", theme: "geographie" },
+      { concept: "Gentrification", detail: "Transformation d'un quartier populaire en quartier aisé", theme: "geographie" },
+      { concept: "Désertification", detail: "Déclin démographique des espaces ruraux isolés", theme: "geographie" },
+      { concept: "LVN", detail: "Littoral à très forte valeur ajoutée", theme: "geographie" },
+      { concept: "Bassin de la Ruhr", detail: "Ancien bassin industriel allemand", theme: "geographie" },
+      { concept: "Façade maritime Mer du Nord", detail: "Rotterdam, Anvers, Hambourg, Londres", theme: "geographie" },
+      { concept: "Zones économiques spéciales", detail: "Shenzhen, Zhuhai, Shantou en Chine", theme: "geographie" },
+      { concept: "Nouvelle Route de la Soie", detail: "Belt and Road Initiative chinoise", theme: "geographie" },
+      { concept: "ALENA/USMCA", detail: "Zone de libre-échange nord-américaine", theme: "geographie" },
+      { concept: "CEDEAO", detail: "Communauté économique des États de l'Afrique de l'Ouest", theme: "geographie" },
+      { concept: "Délhi", detail: "Seconde métropole indienne", theme: "geographie" },
+      { concept: "Sao Paulo", detail: "Plus grande métropole d'Amérique du Sud", theme: "geographie" },
+      { concept: "Mégalopole japonaise", detail: "Tokyo-Nagoya-Osaka-Kobe-Kyoto", theme: "geographie" },
+      { concept: "Boston-Washington", detail: "Mégalopole américaine", theme: "geographie" },
+      { concept: "Luxembourg", detail: "Siège de la Cour de justice de l'UE", theme: "geographie" }
+    ];
+
+    // DONNÉES EMC - 30 QUESTIONS (CYCLE 4)
+    const emcData = [
+      // 1. SENSIBILITÉ : SOI ET LES AUTRES
+      { concept: "Empathie", detail: "Capacité à comprendre et partager les sentiments d'autrui", theme: "emc" },
+      { concept: "Respect d'autrui", detail: "Reconnaître la dignité de chaque personne, accepter les différences", theme: "emc" },
+      { concept: "Discrimination", detail: "Traitement inégal et défavorable basé sur l'origine, le sexe, la religion, etc.", theme: "emc" },
+      { concept: "Harcèlement scolaire", detail: "Violence répétée entre élèves, physique, verbale ou psychologique", theme: "emc" },
+      { concept: "Stéréotype", detail: "Idée reçue généralisée sur un groupe de personnes", theme: "emc" },
+      { concept: "Prejugé", detail: "Opinion préconçue, souvent négative, sans connaissance réelle", theme: "emc" },
+      
+      // 2. DROIT ET RÈGLE
+      { concept: "Déclaration des droits de l'homme 1789", detail: "Texte fondamental de la Révolution française, liberté, propriété, sûreté, résistance à l'oppression", theme: "emc" },
+      { concept: "Déclaration universelle 1948", detail: "Droits de l'homme adoptés par l'ONU après la Seconde Guerre mondiale", theme: "emc" },
+      { concept: "Laïcité", detail: "Neutralité de l'État, liberté de conscience, égalité de tous devant la loi indépendamment de la religion", theme: "emc" },
+      { concept: "Loi de 1905", detail: "Loi française sur la séparation des Églises et de l'État", theme: "emc" },
+      { concept: "Règlement intérieur", detail: "Document qui définit les droits et obligations dans un établissement scolaire", theme: "emc" },
+      { concept: "État de droit", detail: "Régime où tous, y compris les gouvernants, sont soumis au droit", theme: "emc" },
+      { concept: "Justice", detail: "Institution qui applique la loi et règle les conflits", theme: "emc" },
+      { concept: "Tribunal", detail: "Lieu où se rend la justice, différents types selon les affaires", theme: "emc" },
+      { concept: "Droit de l'enfant", detail: "Convention de Genève 1989, droits spécifiques aux enfants (éducation, protection)", theme: "emc" },
+      
+      // 3. JUGEMENT : PENSER PAR SOI-MÊME
+      { concept: "Démocratie", detail: "Régime politique où le pouvoir appartient au peuple, élections, libertés", theme: "emc" },
+      { concept: "République", detail: "Régime où le chef n'est pas monarque, principe 'Liberté, Égalité, Fraternité'", theme: "emc" },
+      { concept: "Citation", detail: "Capacité à voter à partir de 18 ans en France", theme: "emc" },
+      { concept: "Opinion personnelle", detail: "Point de vue propre à chacun, à exprimer de manière argumentée", theme: "emc" },
+      { concept: "Esprit critique", detail: "Capacité à analyser de manière raisonnée l'information", theme: "emc" },
+      { concept: "Fake news", detail: "Information fausse diffusée intentionnellement pour tromper", theme: "emc" },
+      { concept: "Liberté d'expression", detail: "Droit de s'exprimer librement, dans les limites de la loi", theme: "emc" },
+      
+      // 4. ENGAGEMENT : AGIR INDIVIDUELLEMENT ET COLLECTIVEMENT
+      { concept: "Citoyenneté", detail: "Appartenance à une nation, droits et devoirs du citoyen", theme: "emc" },
+      { concept: "Droits de vote", detail: "Droit d'élire ses représentants, à 18 ans en France", theme: "emc" },
+      { concept: "Engagement associatif", detail: "Participation à une association pour agir collectivement", theme: "emc" },
+      { concept: "Volontariat", detail: "Engagement libre et gratuit pour une cause", theme: "emc" },
+      { concept: "JDC", detail: "Journée Défense et Citoyenneté, obligatoire pour les 17-25 ans", theme: "emc" },
+      { concept: "Égalité femmes-hommes", detail: "Droits égaux entre femmes et hommes, lutte contre les discriminations", theme: "emc" },
+      { concept: "Développement durable", detail: "Développement qui répond aux besoins présents sans compromettre les générations futures", theme: "emc" },
+      { concept: "Responsabilité", detail: "Capacité à répondre de ses actes et en assumer les conséquences", theme: "emc" },
+      { concept: "Droits sociaux", detail: "Droit au travail, à la santé, à la protection sociale, à l'éducation", theme: "emc" }
+    ];
+
+    // DONNÉES EMC - FLASHCARDS
+    const emcFlashData = [
+      { concept: "Valeurs de la République", detail: "Liberté, Égalité, Fraternité, laïcité, solidarité", theme: "emc" },
+      { concept: "Symboles République", detail: "Drapeau tricolore, Marianne, La Marseillaise, cocarde", theme: "emc" },
+      { concept: "Droits fondamentaux", detail: "Droit à la vie, liberté, sécurité, propriété, égalité", theme: "emc" },
+      { concept: "Devoirs citoyen", detail: "Voter, payer impôts, respecter la loi, défense nationale", theme: "emc" },
+      { concept: "Conseil de classe", detail: "Instance où élèves, parents et professeurs discutent de la vie scolaire", theme: "emc" },
+      { concept: "Délégation citoyens", detail: "Élèves élus pour représenter les élèves dans l'établissement", theme: "emc" },
+      { concept: "Médiation", detail: "Résolution de conflit par un tiers neutre", theme: "emc" },
+      { concept: "Égalité des chances", detail: "Tous ont les mêmes possibilités de réussite indépendamment de leur origine", theme: "emc" },
+      { concept: "Mixité sociale", detail: "Mélange de personnes de différentes origines sociales", theme: "emc" },
+      { concept: "Racisme", detail: "Idéologie qui prétend la supériorité d'une race sur une autre", theme: "emc" },
+      { concept: "Sexisme", detail: "Discrimination basée sur le sexe, surtout envers les femmes", theme: "emc" },
+      { concept: "LGBTQIA+", detail: "Communauté lesbienne, gay, bisexuel, trans, queer, etc.", theme: "emc" },
+      { concept: "Capacité", detail: "Droit de vote à 18 ans en France", theme: "emc" },
+      { concept: "Scrutin", detail: "Mode de vote : majoritaire ou proportionnel", theme: "emc" },
+      { concept: "Parti politique", detail: "Organisation qui cherche à exercer le pouvoir", theme: "emc" },
+      { concept: "Société civile", detail: "Ensemble des organisations non gouvernementales", theme: "emc" },
+      { concept: "OING", detail: "Organisation Non Gouvernementale Internationale (ex: Amnesty, Greenpeace)", theme: "emc" },
+      { concept: "Urgence climatique", detail: "Changement climatique qui menace la planète", theme: "emc" },
+      { concept: "Biodiversité", detail: "Diversité du vivant, à préserver pour l'avenir", theme: "emc" },
+      { concept: "Économie circulaire", detail: "Système où les déchets sont réutilisés, recyclés", theme: "emc" },
+      { concept: "Consommation responsable", detail: "Acheter en pensant à l'impact environnemental et social", theme: "emc" },
+      { concept: "Engagement européen", detail: "France engagée dans l'UE pour la paix et la coopération", theme: "emc" },
+      { concept: "Paix", detail: "Absence de guerre, à défendre par la diplomatie", theme: "emc" },
+      { concept: "Droit d'asile", detail: "Protection accordée aux personnes persécutées", theme: "emc" },
+      { concept: "Refugié", detail: "Personne fuyant son pays pour échapper à la persécution", theme: "emc" },
+      { concept: "Solidarité", detail: "Entraide entre les personnes, principe républicain", theme: "emc" },
+      { concept: "Fraternité", detail: "Valeur républicaine, lien entre les citoyens", theme: "emc" },
+      { concept: "Dignité", detail: "Valeur inhérente à tout être humain, à respecter", theme: "emc" },
+      { concept: "Intégrité", detail: "Respect de l'intégrité physique et morale de la personne", theme: "emc" },
+      { concept: "Zéro abandon", detail: "Principe de ne laisser personne de côté", theme: "emc" }
+    ];
+
+    // CONSEILS DU LAPIN
+    const rabbitTips = [
+      "🐰 Salut ! Je suis Reviz le lapin ! Je vais t'aider à réviser pour le brevet !",
+      "🐰 Astuce : Lis bien toutes les réponses avant de choisir !",
+      "🐰 N'oublie pas : la répétition est la clé de la mémoire !",
+      "🐰 Bonne réponse ! Tu fais des progrès ! 🎉",
+      "🐰 Pas de souci, l'erreur est normale dans l'apprentissage !",
+      "🐰 Astuce : Utilise les flashcards pour réviser les defines !",
+      "🐰 Tu peux cliquer sur moi pour avoir un conseil ! 🐰",
+      "🐰 Astuce : Révise par petits groupes de 10 questions !",
+      "🐰 G~~~~, tu vas y arriver ! Continue comme ça ! 💪",
+      "🐰 Astuce : Concentre-toi sur tes erreurs pour progresser !",
+      "🐰 Souviens-toi : comprendre > mémoriser bêtement !",
+      "🐰 Astuce : Fais des pauses toutes les 20-30 minutes !",
+      "🐰 Bravo ! Tu es sur la bonne voie ! 🌟",
+      "🐰 Astuce : Relis tes cours après chaque quiz !",
+      "🐰 Tu es fort/se ! Continue tes révisions ! 📚"
+    ];
+
+    // VARIABLES GLOBALES
+    let selectedTheme = null;
+    let selectedNombre = null;
+    let quizData = [];
+    let flashData = [];
+    let quizIndex = 0;
+    let flashIndex = 0;
+    let score = 0;
+    let answered = [];
+    let userAnswers = [];
+
+    function shuffleArray(arr) {
+      return arr.sort(() => Math.random() - 0.5);
+    }
+
+    // === GESTION DU LAPIN ===
+    function toggleRabbitTip() {
+      const tipsDiv = document.getElementById("rabbitTips");
+      const tipText = document.getElementById("rabbitTipText");
+      
+      // Choisir un conseil aléatoire
+      const randomTip = rabbitTips[Math.floor(Math.random() * rabbitTips.length)];
+      tipText.innerHTML = randomTip;
+      
+      if (tipsDiv.classList.contains("show")) {
+        tipsDiv.classList.remove("show");
+        setTimeout(() => tipsDiv.classList.add("show"), 100);
+      } else {
+        tipsDiv.classList.add("show");
+      }
+    }
+
+    function showRabbitTipOnQuestion() {
+      const tipsDiv = document.getElementById("rabbitTips");
+      const tipText = document.getElementById("rabbitTipText");
+      
+      // Conseil aléatoire à chaque nouvelle question
+      const randomTip = rabbitTips[Math.floor(Math.random() * rabbitTips.length)];
+      tipText.innerHTML = randomTip;
+      
+      tipsDiv.classList.add("show");
+      
+      // Masquer après 5 secondes
+      setTimeout(() => {
+        tipsDiv.classList.remove("show");
+      }, 5000);
+    }
+
+    // === GESTION PAGE THÈME ===
+    function selectTheme(theme) {
+      selectedTheme = theme;
+      
+      document.getElementById("themeHistoire").classList.remove("selected");
+      document.getElementById("themeGeographie").classList.remove("selected");
+      document.getElementById("themeEMC").classList.remove("selected");
+      document.getElementById("themeLesDeux").classList.remove("selected");
+      document.getElementById("themeTout").classList.remove("selected");
+      
+      if (theme === "histoire") {
+        document.getElementById("themeHistoire").classList.add("selected");
+      } else if (theme === "geographie") {
+        document.getElementById("themeGeographie").classList.add("selected");
+      } else if (theme === "emc") {
+        document.getElementById("themeEMC").classList.add("selected");
+      } else if (theme === "lesdeux") {
+        document.getElementById("themeLesDeux").classList.add("selected");
+      } else if (theme === "tout") {
+        document.getElementById("themeTout").classList.add("selected");
+      }
+      
+      document.getElementById("btnValiderTheme").disabled = false;
+    }
+
+    function goToPageNombre() {
+      document.getElementById("pageTheme").classList.remove("active");
+      document.getElementById("pageNombre").classList.add("active");
+      showRabbitTipOnQuestion();
+    }
+
+    function goToPageTheme() {
+      document.getElementById("pageQuiz").classList.remove("active");
+      document.getElementById("pageTheme").classList.add("active");
+      selectedTheme = null;
+      selectedNombre = null;
+      document.getElementById("themeHistoire").classList.remove("selected");
+      document.getElementById("themeGeographie").classList.remove("selected");
+      document.getElementById("themeEMC").classList.remove("selected");
+      document.getElementById("themeLesDeux").classList.remove("selected");
+      document.getElementById("themeTout").classList.remove("selected");
+      document.getElementById("btnValiderTheme").disabled = true;
+    }
+
+    // === GESTION PAGE NOMBRE ===
+    function selectNombre(nb) {
+      selectedNombre = nb;
+      
+      document.getElementById("nb10").classList.remove("selected");
+      document.getElementById("nb20").classList.remove("selected");
+      document.getElementById("nb30").classList.remove("selected");
+      
+      document.getElementById("nb" + nb).classList.add("selected");
+      document.getElementById("btnValiderNombre").disabled = false;
+    }
+
+    function startQuiz() {
+      let quizAllData = [];
+      let flashAllData = [];
+      
+      if (selectedTheme === "histoire") {
+        quizAllData = [...histoireQuizData];
+        flashAllData = [...histoireFlashData];
+      } else if (selectedTheme === "geographie") {
+        quizAllData = [...geographieData];
+        flashAllData = [...geographieData];
+      } else if (selectedTheme === "emc") {
+        quizAllData = [...emcData];
+        flashAllData = [...emcFlashData];
+      } else if (selectedTheme === "lesdeux") {
+        quizAllData = [...histoireQuizData, ...geographieData];
+        flashAllData = [...histoireFlashData, ...geographieData];
+      } else if (selectedTheme === "tout") {
+        quizAllData = [...histoireQuizData, ...geographieData, ...emcData];
+        flashAllData = [...histoireFlashData, ...geographieData, ...emcFlashData];
+      }
+      
+      quizData = shuffleArray([...quizAllData]).slice(0, selectedNombre);
+      flashData = shuffleArray([...flashAllData]).slice(0, selectedNombre);
+      
+      quizIndex = 0;
+      flashIndex = 0;
+      score = 0;
+      answered = Array(quizData.length).fill(false);
+      userAnswers = Array(quizData.length).fill(null);
+      
+      document.getElementById("pageNombre").classList.remove("active");
+      document.getElementById("pageQuiz").classList.add("active");
+      
+      buildQuizQuestion(quizIndex);
+      renderFlashcard();
+      showRabbitTipOnQuestion();
+    }
+
+    // === GESTION QUIZ ===
+    function updateQuestionNumber() {
+      document.getElementById("questionNumber").textContent = `Question ${quizIndex + 1} / ${quizData.length}`;
+      document.getElementById("questionCount").textContent = `${quizData.length} questions`;
+    }
+
+    function buildQuizQuestion(index) {
+      const current = quizData[index];
+      const choicesDiv = document.getElementById("quizChoices");
+      choicesDiv.innerHTML = "";
+
+      let correctAnswer = "";
+      let options = [];
+
+      if (current.theme === "histoire") {
+        correctAnswer = current.answer;
+        const allAnswers = histoireQuizData.map(item => item.answer);
+        const otherAnswers = [...new Set(allAnswers.filter(a => a !== correctAnswer))];
+        const distractors = shuffleArray(otherAnswers).slice(0, 3);
+        options = shuffleArray([correctAnswer, ...distractors]);
+        
+        if (current.type === "lieu") {
+          document.getElementById("quizQuestion").textContent = `Quel est ce lieu : ${current.detail} ?`;
+        } else if (current.type === "bataille") {
+          document.getElementById("quizQuestion").textContent = `Quel est cette bataille : ${current.detail} ?`;
+        } else if (current.type === "traité") {
+          document.getElementById("quizQuestion").textContent = `Quel est ce traité : ${current.detail} ?`;
+        } else if (current.type === "personnage") {
+          document.getElementById("quizQuestion").textContent = `Quel est ce personnage : ${current.detail} ?`;
+        } else {
+          document.getElementById("quizQuestion").textContent = `Quel est la date/événement : ${current.detail} ?`;
+        }
+      } else if (current.theme === "geographie") {
+        correctAnswer = current.concept;
+        const allConcepts = geographieData.map(item => item.concept);
+        const otherConcepts = [...new Set(allConcepts.filter(c => c !== correctAnswer))];
+        const distractors = shuffleArray(otherConcepts).slice(0, 3);
+        options = shuffleArray([correctAnswer, ...distractors]);
+        document.getElementById("quizQuestion").textContent = `Quel est ce concept : ${current.detail} ?`;
+      } else if (current.theme === "emc") {
+        correctAnswer = current.concept;
+        const allConcepts = emcData.map(item => item.concept);
+        const otherConcepts = [...new Set(allConcepts.filter(c => c !== correctAnswer))];
+        const distractors = shuffleArray(otherConcepts).slice(0, 3);
+        options = shuffleArray([correctAnswer, ...distractors]);
+        document.getElementById("quizQuestion").textContent = `Quel est ce concept EMC : ${current.detail} ?`;
+      }
+
+      options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "choice";
+        btn.textContent = option;
+
+        btn.onclick = () => selectAnswer(btn, option, correctAnswer);
+
+        if (answered[index]) {
+          btn.disabled = true;
+          const savedAnswer = userAnswers[index];
+          if (option === correctAnswer) btn.classList.add("correct");
+          if (option === savedAnswer && savedAnswer !== correctAnswer) btn.classList.add("wrong");
+        }
+
+        choicesDiv.appendChild(btn);
+      });
+
+      updateQuestionNumber();
+      document.getElementById("quizScore").textContent = `Score : ${score} / ${quizData.length}`;
+      document.getElementById("prevBtn").disabled = quizIndex === 0;
+      document.getElementById("nextBtn").disabled = false;
+      document.getElementById("nextBtn").textContent = quizIndex === quizData.length - 1 ? "Terminer" : "Suivant";
+      document.getElementById("quizReview").innerHTML = "";
+    }
+
+    function selectAnswer(button, selected, correct) {
+      if (answered[quizIndex]) return;
+
+      const buttons = document.querySelectorAll(".choice");
+      buttons.forEach(btn => btn.disabled = true);
+
+      userAnswers[quizIndex] = selected;
+
+      if (selected === correct) {
+        score++;
+        button.classList.add("correct");
+        showRabbitTipOnQuestion(); // Lapin donne un conseil de félicitations
+      } else {
+        button.classList.add("wrong");
+        buttons.forEach(btn => {
+          if (btn.textContent === correct) btn.classList.add("correct");
+        });
+      }
+
+      answered[quizIndex] = true;
+      document.getElementById("quizScore").textContent = `Score : ${score} / ${quizData.length}`;
+    }
+
+    function showReview() {
+      const reviewDiv = document.getElementById("quizReview");
+      reviewDiv.innerHTML = "";
+      
+      quizData.forEach((item, index) => {
+        const userAnswer = userAnswers[index];
+        let isCorrect;
+        if (item.theme === "histoire") isCorrect = userAnswer === item.answer;
+        else isCorrect = userAnswer === item.concept;
+        
+        const div = document.createElement("div");
+        div.className = `review-item ${isCorrect ? "review-correct" : "review-wrong"}`;
+        
+        div.innerHTML = `
+          <div>${index + 1}. ${item.detail}</div>
+          <div>Ta réponse : ${userAnswer ? userAnswer : "Aucune"}</div>
+          <div>Bonne réponse : ${item.theme === "histoire" ? item.answer : item.concept}</div>
+        `;
+        
+        reviewDiv.appendChild(div);
+      });
+    }
+
+    function nextQuestion() {
+      if (!answered[quizIndex]) return;
+
+      if (quizIndex < quizData.length - 1) {
+        quizIndex++;
+        buildQuizQuestion(quizIndex);
+        showRabbitTipOnQuestion(); // Lapin donne un conseil à chaque nouvelle question
+      } else {
+        document.getElementById("quizQuestion").textContent = "Quiz terminé !";
+        document.getElementById("quizChoices").innerHTML = "";
+        document.getElementById("quizScore").textContent = `Score final : ${score} / ${quizData.length}`;
+        document.getElementById("nextFun").disabled = true;
+        document.getElementById("prevBtn").disabled = true;
+        document.getElementById("questionNumber").textContent = "";
+        showReview();
+        showRabbitTipOnQuestion();
+      }
+    }
+
+    function prevQuestion() {
+      if (quizIndex > 0) {
+        quizIndex--;
+        buildQuizQuestion(quizIndex);
+        showRabbitTipOnQuestion();
+      }
+    }
+
+    function restartQuiz() {
+      quizIndex = 0;
+      score = 0;
+      answered = Array(quizData.length).fill(false);
+      userAnswers = Array(quizData.length).fill(null);
+      document.getElementById("nextBtn").disabled = false;
+      document.getElementById("prevBtn").disabled = true;
+      buildQuizQuestion(quizIndex);
+      showRabbitTipOnQuestion();
+    }
+
+    // === GESTION FLASHCARDS ===
+    function updateFlashcardNumber() {
+      document.getElementById("questionNumberFlash").textContent = `Carte ${flashIndex + 1} / ${flashData.length}`;
+      document.getElementById("questionCountFlash").textContent = `${flashData.length} cartes`;
+    }
+
+    function renderFlashcard() {
+      const card = flashData[flashIndex];
+      document.getElementById("flashcardFront").textContent = card.concept;
+      document.getElementById("flashcardBack").textContent = card.detail;
+      updateFlashcardNumber();
+      document.getElementById("flashProgress").textContent = `Carte ${flashIndex + 1} / ${flashData.length}`;
+      document.getElementById("flashcard").classList.remove("flipped");
+    }
+
+    function flipCard() {
+      document.getElementById("flashcard").classList.toggle("flipped");
+    }
+
+    function nextCard() {
+      if (flashIndex < flashData.length - 1) {
+        flashIndex++;
+        renderFlashcard();
+      }
+    }
+
+    function prevCard() {
+      if (flashIndex > 0) {
+        flashIndex--;
+        renderFlashcard();
+      }
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(sectionId).classList.add("active");
+      
+      const btnQuiz = document.getElementById("btnQuiz");
+      const btnFlash = document.getElementById("btnFlash");
+      
+      if (sectionId === "quiz") {
+        btnQuiz.classList.add("active");
+        btnFlash.classList.remove("active");
+      } else {
+        btnFlash.classList.add("active");
+        btnQuiz.classList.remove("active");
+      }
+    }
+  </script>
+</body>
+</html>

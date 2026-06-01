@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Révisions - Histoire & Géographie</title>
+    <style>
+        :root {
+            --bg-color: #f7f9fa;
+            --sidebar-bg: #eef2f5;
+            --card-front: #e3effd;
+            --card-back: #e8f5e9;
+            --text-color: #334e68;
+            --accent-color: #627d98;
+            --accent-hover: #486581;
+            --success-color: #a3e635;
+            --wrong-color: #fca5a5;
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Volet Dépliant Gauche */
+        #sidebar {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #d9e2ec;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        h2.title {
+            font-size: 1.3rem;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #243b53;
+        }
+
+        .menu-category {
+            background: #fff;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .category-header {
+            background-color: #d9e2ec;
+            padding: 12px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .category-content {
+            display: none;
+            padding: 5px 0;
+            background-color: #fff;
+        }
+
+        .category-content.active {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: #f0f4f8;
+            color: #102a43;
+            font-weight: 600;
+        }
+
+        /* Zone de contenu principal */
+        #main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #view-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #243b53;
+            text-align: center;
+        }
+
+        /* Onglets Mode d'apprentissage */
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            background-color: #bcccdc;
+            color: #243b53;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Conteneurs d'activités */
+        .workspace {
+            width: 100%;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 300px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .card-front {
+            background-color: var(--card-front);
+            color: #102a43;
+            border: 2px solid #bcd4e6;
+        }
+
+        .card-back {
+            background-color: var(--card-back);
+            color: #1b4332;
+            transform: rotateY(180deg);
+            border: 2px solid #c7e9b0;
+            font-size: 1.1rem;
+            overflow-y: auto;
+        }
+
+        /* QCM */
+        .qcm-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .qcm-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #243b53;
+        }
+
+        .qcm-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: #f0f4f8;
+            border: 2px solid #d9e2ec;
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #e1e8ed;
+        }
+
+        .option-btn.selected {
+            border-color: var(--accent-color);
+            background-color: #e3effd;
+        }
+
+        .option-btn.correct {
+            background-color: #d2f4ea !important;
+            border-color: #81e6d9 !important;
+            color: #134e4a;
+        }
+
+        .option-btn.wrong {
+            background-color: #ffeded !important;
+            border-color: #feb2b2 !important;
+            color: #742a2a;
+        }
+
+        /* Contrôles globaux */
+        .controls {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            background-color: var(--accent-hover);
+        }
+
+        .action-btn:disabled {
+            background-color: #e1e8ed;
+            color: #9fb3c8;
+            cursor: not-allowed;
+        }
+
+        .progression {
+            font-size: 0.9rem;
+            color: #627d98;
+        }
+
+        #timer-display {
+            font-weight: bold;
+            color: #ef4444;
+            height: 20px;
+        }
+
+        /* Section Leçons */
+        .lesson-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .lesson-block {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #d9e2ec;
+        }
+
+        .lesson-block:last-child {
+            border: none;
+        }
+
+        .lesson-block h3 {
+            color: #102a43;
+            margin-bottom: 8px;
+            font-size: 1.15rem;
+        }
+
+        .lesson-block p {
+            line-height: 1.6;
+            color: #486581;
+        }
+
+        /* Responsive Utilities */
+        @media(max-width: 768px) {
+            body { flex-direction: column; }
+            #sidebar { width: 100%; height: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+        <h2 class="title">📚 Brevet Révisions</h2>
+        
+        <!-- Histoire -->
+        <div class="menu-category">
+            <div class="category-header" onclick="toggleCategory('hist-content')">
+                <span>⏱️ Histoire</span> <span>▼</span>
+            </div>
+            <div id="hist-content" class="category-content active">
+                <div class="menu-item active" onclick="selectSection('hist', 'dates', this)">Dates</div>
+                <div class="menu-item" onclick="selectSection('hist', 'notions', this)">Notions</div>
+                <div class="menu-item" onclick="selectSection('hist', 'all', this)">Dates & Notions</div>
+            </div>
+        </div>
+
+        <!-- Géographie -->
+        <div class="menu-category">
+            <div class="category-header" onclick="toggleCategory('geo-content')">
+                <span>🌍 Géographie</span> <span>▼</span>
+            </div>
+            <div id="geo-content" class="category-content">
+                <div class="menu-item" onclick="selectSection('geo', 'france', this)">La France</div>
+                <div class="menu-item" onclick="selectSection('geo', 'ue', this)">L'Union Européenne</div>
+                <div class="menu-item" onclick="selectSection('geo', 'reperes', this)">Repères terrestres</div>
+            </div>
+        </div>
+
+        <!-- Leçons -->
+        <div class="menu-category">
+            <div class="category-header" onclick="toggleCategory('lessons-content')">
+                <span>📖 Leçons</span> <span>▼</span>
+            </div>
+            <div id="lessons-content" class="category-content">
+                <div class="menu-item" onclick="selectSection('lessons', 'hist', this)">Synthèse Histoire</div>
+                <div class="menu-item" onclick="selectSection('lessons', 'geo', this)">Synthèse Géographie</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main-content">
+        <h1 id="view-title">Histoire - Dates</h1>
+
+        <!-- Selecteur de mode (Flashcards / QCM) -->
+        <div class="mode-selector" id="mode-selector-block">
+            <button class="mode-btn active" id="btn-mode-flash" onclick="setMode('flash')">Flashcards</button>
+            <button class="mode-btn" id="btn-mode-qcm" onclick="setMode('qcm')">QCM</button>
+        </div>
+
+        <!-- Espace de révision -->
+        <div class="workspace" id="workspace">
+            <!-- Injecté de manière dynamique par JS -->
+        </div>
+    </div>
+
+    <script>
+        /*************************************************************
+         * BASE DE DONNÉES DE L'APPLICATION
+         *************************************************************/
+        const dataSet = {
+            hist: {
+                dates: [
+                    { q: "1914-1918", a: "Grande Guerre (Première guerre mondiale)" },
+                    { q: "1916", a: "Bataille de Verdun" },
+                    { q: "1917", a: "Révolution(s) russe(s)" },
+                    { q: "11 novembre 1918", a: "Armistice de la Première Guerre mondiale" },
+                    { q: "1924-1953", a: "Staline au pouvoir en URSS" },
+                    { q: "1933-1945", a: "L’Allemagne nazie d’Adolf Hitler" },
+                    { q: "1936", a: "Victoire électorale et lois sociales du Front populaire" },
+                    { q: "1939-1945", a: "Seconde Guerre mondiale" },
+                    { q: "18 juin 1940", a: "Appel du général De Gaulle à la radio de Londres" },
+                    { q: "6 juin 1944", a: "Débarquement allié en Normandie" },
+                    { q: "1944-1945", a: "Libération de la France, GPRF et rétablissement de la République (IVe République)" },
+                    { q: "1944-1945", a: "Droit de vote des femmes en France" },
+                    { q: "8 mai 1945", a: "Capitulation allemande - fin de la Seconde Guerre mondiale en Europe" },
+                    { q: "Août 1945", a: "Bombes atomiques sur Hiroshima et Nagasaki (Japon)" },
+                    { q: "1940-1944", a: "Régime de Vichy" },
+                    { q: "1945", a: "Création de l’ONU" },
+                    { q: "1947-1991", a: "Guerre Froide" },
+                    { q: "1947-1962", a: "Principale phase de décolonisation" },
+                    { q: "1957", a: "Traité de Rome - création de la CEE / UE" },
+                    { q: "1958", a: "Naissance de la Ve République" },
+                    { q: "1958-1969", a: "Les années de GAULLE" },
+                    { q: "1954-1962", a: "Guerre d’Algérie" },
+                    { q: "1962", a: "Indépendance de l’Algérie et élection du président au suffrage universel direct" },
+                    { q: "1975", a: "Loi Veil sur l’Interruption Volontaire de Grossesse (IVG)" },
+                    { q: "9 novembre 1989", a: "Chute du mur de Berlin" },
+                    { q: "11 septembre 2001", a: "Attentats terroristes aux Etats-Unis" },
+                    { q: "1992", a: "Traité de Maastricht" },
+                    { q: "1981-1995", a: "Les années MITTERRAND et l'alternance" },
+                    { q: "1995-2007", a: "Les années CHIRAC" },
+                    { q: "1991", a: "Éclatement et dislocation de l’URSS" },
+                    { q: "2002", a: "Mise en circulation de l’Euro, monnaie européenne" }
+                ],
+                notions: [
+                    { q: "Civils / Militaires", a: "Les civils sont les non-combattants (à l'arrière). Les militaires sont les membres des forces armées se battant sur le front." },
+                    { q: "Guerre de tranchées", a: "Phase défensive de la guerre où les soldats s'enterrent dans des réseaux de fossés creusés (tranchées) face à l'ennemi." },
+                    { q: "Guerre totale", a: "Conflit mobilisant l'ensemble des ressources d'un État (humaines, économiques, culturelles) pour remporter la victoire." },
+                    { q: "Mobilisation / Économie de guerre", a: "Ralliement de toute la population pour l'effort de guerre. L'économie est réorientée entièrement vers la production d'armements." },
+                    { q: "Propagande / Censure", a: "Contrôle de l'information par l'État. La propagande diffuse des idées ciblées pour orienter l'opinion, la censure bloque les informations critiques." },
+                    { q: "Culte de la personnalité", a: "Adoration organisée et excessive d'un dirigeant politique par une propagande d'État intensive (ex: Staline, Hitler)." },
+                    { q: "Génocide / Shoah / Solution finale", a: "Extermination programmée, systématique et organisée d'un peuple. La Shoah désigne le génocide des Juifs par les nazis." },
+                    { q: "Totalitarisme / Régime totalitaire", a: "Régime politique dictatorial qui cherche à contrôler l'ensemble de la société et de la vie des individus par la terreur et l'idéologie." },
+                    { q: "Stalinisme / Nazisme", a: "Stalinisme : communisme d'État totalitaire en URSS centré sur la collectivisation. Nazisme : idéologie raciste, antisémite et expansionniste d'Hitler." },
+                    { q: "Antisémitisme", a: "Haine, discrimination ou persécution dirigée de manière spécifique contre les Juifs." },
+                    { q: "Collectivisation / Communisme", a: "Mise en commun des moyens de production (notamment les terres agricoles en URSS). Idéologie visant une société sans classes sociales." },
+                    { q: "Camp de concentration / Centre de mise à mort", a: "Camp de détention et de travail forcé pour les opposants. Le centre de mise à mort est spécifiquement conçu pour l'extermination de masse." },
+                    { q: "Goulag", a: "Organisme gérant les camps de travail forcé en URSS où Staline déportait les opposants politiques ou réels." },
+                    { q: "Guerre d'anéantissement / Violence de masse", a: "Guerre visant la destruction totale des capacités militaires et des populations de l'ennemi. Brutalisation extrême des comportements." },
+                    { q: "Front populaire", a: "Coalition des partis de gauche en France (SFIO, PCF, Radicaux) vainqueur en 1936, instigateur des congés payés et de la semaine de 40 heures." },
+                    { q: "Résistance / Maquis / Réseau", a: "Lutte clandestine contre l'occupant nazi et le régime de Vichy. Le maquis désigne les refuges de résistants dans les zones isolées." },
+                    { q: "Régime de Vichy / Collaboration", a: "Régime autoritaire dirigé par le Maréchal Pétain (1940-1944) qui fait le choix de coopérer activement avec l'occupant nazi." },
+                    { q: "Guerre froide / Monde bipolaire", a: "Période de tensions de 1947 à 1991 sans affrontement direct entre deux superpuissances : les USA (Bloc Ouest) et l'URSS (Bloc Est)." },
+                    { q: "Construction européenne", a: "Processus d'unification économique puis politique des pays d'Europe débuté en 1957 pour garantir la paix et la prospérité." },
+                    { q: "Tiers Monde / Décolonisation", a: "Émancipation des colonies vis-à-vis des métropoles européennes. Le Tiers-Monde désigne l'ensemble de ces nouveaux pays en développement." },
+                    { q: "Monde multipolaire", a: "Organisation du monde actuel marquée par la présence de plusieurs puissances influentes (USA, Chine, UE, Inde...) au lieu d'une ou deux." }
+                ]
+            },
+            geo: {
+                france: [
+                    { q: "Territoire de la France", a: "Composé de la métropole (en Europe) et des territoires ultramarins (DROM-COM) répartis dans les océans mondiaux." },
+                    { q: "Aires urbaines françaises", a: "Espaces constitués d'un pôle urbain (ville-centre + banlieues) et d'une couronne périurbaine (ex: Paris, Lyon, Marseille, Toulouse)." },
+                    { q: "Répartition de la population", a: "Inégale. Fortes densités sur les littoraux, les vallées fluviales, les frontières et dans les grandes aires urbaines ; faibles densités dans la 'diagonale du vide'." },
+                    { q: "Espaces insérés dans la mondialisation", a: "Métropoles dynamiques (Paris, ville mondiale), quartiers d'affaires (La Défense) et espaces agricoles ou industriels haut de gamme reliés aux marchés mondiaux." },
+                    { q: "Points d'entrée / Interfaces", a: "Grands ports (Marseille, Le Havre), aéroports internationaux (Roissy-CDG) et régions transfrontalières dynamiques reliées par des axes de transport rapides." },
+                    { q: "Grands repères physiques de la France", a: "Fleuves : Seine, Loire, Garonne, Rhône. Montagnes : Alpes, Pyrénées, Massif Central. Climats : océanique, méditerranéen, continental, montagnard." },
+                    { q: "13 Régions métropolitaines", a: "Collectivités territoriales majeures depuis la réforme. Exemples : Île-de-France, Auvergne-Rhône-Alpes, Nouvelle-Aquitaine, Occitanie..." },
+                    { q: "Territoires ultra-marins & Francophonie", a: "DROM (Guadeloupe, Martinique, Guyane, Réunion, Mayotte) et COM. Ils offrent une présence mondiale et l'accès à la francophonie sur tous les continents." }
+                ],
+                ue: [
+                    { q: "L'Union européenne à 27", a: "Association économique et politique unique de 27 États souverains d'Europe. Sièges majeurs : Bruxelles (Commission), Strasbourg (Parlement)." },
+                    { q: "Mégalopole européenne", a: "Espace à forte concentration humaine et économique s'étendant de Londres à Milan, passant par la vallée du Rhin." },
+                    { q: "Grands pôles et axes européens", a: "L'UE est l'un des 3 pôles de la Triade économique mondiale. Ses axes majeurs intègrent le réseau autoroutier et ferroviaire transeuropéen." },
+                    { q: "Régions transfrontalières & Façades", a: "Espaces de coopération intense entre pays voisins (ex: Eurorégions). Façade maritime majeure : la Northern Range (mer du Nord)." }
+                ],
+                reperes: [
+                    { q: "Lignes de repère mondiales", a: "Équateur, Tropique du Cancer, Tropique du Capricorne, Cercle polaire arctique et antarctique. Ils définissent les zones chaudes, tempérées et froides." },
+                    { q: "Grandes chaînes de montagnes mondiales", a: "Himalaya (Asie), les Andes (Amérique du Sud), les Rocheuses (Amérique du Nord), les Alpes (Europe)." },
+                    { q: "Déserts et Grandes Forêts", a: "Désert principal : Le Sahara. Forêts denses majeures : Amazonie (Amérique du Sud) et forêt du Bassin du Congo (Afrique centrale)." },
+                    { q: "Les grands fleuves mondiaux", a: "Nil, Congo (Afrique) ; Gange, Yangzi (Asie) ; Amazone (Amérique du Sud) ; Mississippi (Amérique du Nord)." },
+                    { q: "Isthmes et Détroits majeurs", a: "Isthme de Suez, Isthme de Panama (canaux stratégiques) ; Détroit de Gibraltar (passage Méditerranée / Atlantique)." },
+                    { q: "Foyers de population & Mégalopoles", a: "Foyers majeurs : Asie du Sud, Asie de l'Est, Europe. Grandes mégalopoles : Américaine (BosWash) et Japonaise (Tokyo-Osaka)." },
+                    { q: "Exemples de grands États mondiaux", a: "États-Unis, Canada, Brésil, Chine, Union Indienne, Russie, Japon, Égypte, Mexique, Indonésie..." },
+                    { q: "Grandes métropoles mondiales", a: "Tokyo, New-York, Shanghai, Pékin, Bombay, Le Caire, Sao Paulo, Mexico, Calcutta, Dakka..." }
+                ]
+            }
+        };
+
+        // Base de leçons simplifiées
+        const lessonsData = {
+            hist: [
+                { t: "1. L'Europe, un théâtre majeur des guerres totales (1914-1945)", d: "La Première et la Seconde Guerre mondiale transforment les sociétés. Elles mobilisent militaires et civils à travers l'économie de guerre, la propagande et la censure. La violence atteint son paroxysme avec l'anéantissement de l'ennemi et les génocides des Juifs et des Tziganes (Shoah) menés par le régime totalitaire nazi." },
+                { t: "2. Les régimes totalitaires de l'entre-deux-guerres", d: "En URSS, Staline met en place une dictature basée sur la collectivisation des terres, le Goulag et le culte de la personnalité. En Allemagne, Hitler impose le nazisme, un régime raciste, antisémite et belliqueux à partir de 1933." },
+                { t: "3. La France dans la tourmente (1936-1945)", d: "Après les avancées sociales du Front Populaire en 1936, la France sombre dans la défaite en 1940. Le Régime de Vichy choisit la Collaboration avec l'Allemagne, tandis que la Résistance s'organise autour de De Gaulle (Appel du 18 juin) et sur le territoire (Maquis) pour aboutir à la Libération et au rétablissement de la République." },
+                { t: "4. Un monde bipolaire à multipolaire (1945 à nos jours)", d: "Dès 1947, la Guerre Froide divise le monde en deux blocs (USA contre URSS), marquée par la décolonisation. Après la chute de l'URSS en 1991 et la création de l'Union européenne, le monde devient multipolaire, secoué par de nouvelles menaces terroristes (11 septembre 2001)." }
+            ],
+            geo: [
+                { t: "1. Les dynamiques territoriales de la France", d: "La population française se concentre majoritairement dans les grandes aires urbaines, dynamisées par la métropolisation et la mondialisation. Les territoires ultramarins (DROM-COM) confèrent à la France une présence mondiale unique, bien que structurellement éloignés de la métropole." },
+                { t: "2. L'Union européenne, un nouvel espace d'intégration", d: "Composée de 27 États, l'UE s'appuie sur sa mégalopole centrale et des frontières ouvertes favorisant les coopérations transfrontalières. Elle s'inscrit comme un pôle majeur de la mondialisation." },
+                { t: "3. Les grands repères géographiques mondiaux", d: "Le monde se structure autour de zones bioclimatiques (chaude, tempérée, froide), de grandes contraintes naturelles (Sahara, Himalaya, Amazonie) et d'immenses foyers de population connectés par de grandes métropoles mondiales interconnectées (Tokyo, New York, Shanghai)." }
+            ]
+        };
+
+        /*************************************************************
+         * GESTION DE L'ÉTAT DE L'APPLICATION
+         *************************************************************/
+        let currentCategory = 'hist'; 
+        let currentSection = 'dates';  
+        let currentMode = 'flash';     
+        let currentItems = [];         
+        let currentIndex = 0;          
+        let qcmTimer = null;           
+
+        /*************************************************************
+         * LOGIQUE D'AFFICHAGE & NAVIGATION
+         *************************************************************/
+        function toggleCategory(id) {
+            const content = document.getElementById(id);
+            const isOpen = content.style.display === "block";
+            
+            // Ferme toutes les catégories
+            document.querySelectorAll('.category-content').forEach(c => c.style.display = 'none');
+            
+            // Bascule celle cliquée
+            content.style.display = isOpen ? "none" : "block";
+        }
+
+        function selectSection(cat, sec, element) {
+            // Mise à jour de la charte graphique active dans la sidebar
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            currentCategory = cat;
+            currentSection = sec;
+
+            // Titre de l'activité
+            const labelMap = {
+                dates: "Histoire - Dates",
+                notions: "Histoire - Notions",
+                all: "Histoire - Dates & Notions",
+                france: "Géographie - La France",
+                ue: "Géographie - L'Union Européenne",
+                reperes: "Géographie - Repères terrestres",
+                hist: "Leçon - Histoire",
+                geo: "Leçon - Géographie"
+            };
+            document.getElementById('view-title').innerText = labelMap[sec] || "Révisions";
+
+            // Gestion de l'affichage du sélecteur de mode (caché pour les leçons)
+            if (cat === 'lessons') {
+                document.getElementById('mode-selector-block').style.style = "none";
+                document.getElementById('mode-selector-block').style.visibility = "hidden";
+                loadLessons();
+            } else {
+                document.getElementById('mode-selector-block').style.display = "flex";
+                document.getElementById('mode-selector-block').style.visibility = "visible";
+                initActivity();
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-mode-flash').classList.toggle('active', mode === 'flash');
+            document.getElementById('btn-mode-qcm').classList.toggle('active', mode === 'qcm');
+            if (currentCategory !== 'lessons') initActivity();
+        }
+
+        /*************************************************************
+         * CHARGEMENT ET PRÉPARATION DES DONNÉES
+         *************************************************************/
+        function initActivity() {
+            if (qcmTimer) clearTimeout(qcmTimer);
+            
+            // Collecte des items
+            if (currentSection === 'all') {
+                currentItems = [...dataSet.hist.dates, ...dataSet.hist.notions];
+            } else {
+                currentItems = [...dataSet[currentCategory][currentSection]];
+            }
+            
+            currentIndex = 0;
+            renderWorkspace();
+        }
+
+        function resetActivity() {
+            initActivity();
+        }
+
+        function renderWorkspace() {
+            const ws = document.getElementById('workspace');
+            ws.innerHTML = '';
+
+            if (!currentItems || currentItems.length === 0) {
+                ws.innerHTML = "<p>Aucune donnée disponible.</p>";
+                return;
+            }
+
+            if (currentMode === 'flash') {
+                renderFlashcard(ws);
+            } else {
+                renderQCM(ws);
+            }
+        }
+
+        /*************************************************************
+         * COMPOSANT FLASHCARD
+         *************************************************************/
+        function renderFlashcard(container) {
+            const item = currentItems[currentIndex];
+            
+            const cardContainer = document.createElement('div');
+            cardContainer.className = 'flashcard-container';
+            
+            const card = document.createElement('div');
+            card.className = 'flashcard';
+            
+            const front = document.createElement('div');
+            front.className = 'card-face card-front';
+            front.innerText = item.q;
+            
+            const back = document.createElement('div');
+            back.className = 'card-face card-back';
+            back.innerText = item.a;
+            
+            card.appendChild(front);
+            card.appendChild(back);
+            cardContainer.appendChild(card);
+            
+            // Retourner la carte au clic
+            cardContainer.onclick = () => {
+                card.classList.toggle('flipped');
+            };
+
+            container.appendChild(cardContainer);
+            container.appendChild(createControlsBlock());
+        }
+
+        /*************************************************************
+         * COMPOSANT QCM (AVEC PASSAGE AUTO 5 SECONDES)
+         *************************************************************/
+        function renderQCM(container) {
+            if (qcmTimer) clearTimeout(qcmTimer);
+            
+            const item = currentItems[currentIndex];
+            
+            const qcmBox = document.createElement('div');
+            qcmBox.className = 'qcm-container';
+            
+            const questionText = document.createElement('div');
+            questionText.className = 'qcm-question';
+            questionText.innerText = `Que signifie ou à quoi correspond : "${item.q}" ?`;
+            qcmBox.appendChild(questionText);
+
+            // Génération des mauvaises réponses alternatives
+            const options = generateDistractors(item.a);
+            
+            const optionsBlock = document.createElement('div');
+            optionsBlock.className = 'qcm-options';
+
+            let selectedBtn = null;
+
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = option;
+                
+                btn.onclick = () => {
+                    if (selectedBtn) selectedBtn.classList.remove('selected');
+                    btn.classList.add('selected');
+                    selectedBtn = btn;
+                    document.getElementById('validate-qcm-btn').disabled = false;
+                };
+
+                optionsBlock.appendChild(btn);
+            });
+
+            qcmBox.appendChild(optionsBlock);
+            container.appendChild(qcmBox);
+
+            // Bloc de contrôle spécifique QCM
+            const controlsBlock = document.createElement('div');
+            controlsBlock.className = 'controls';
+
+            const leftGroup = document.createElement('div');
+            leftGroup.className = 'progression';
+            leftGroup.innerText = `${currentIndex + 1} / ${currentItems.length}`;
+
+            const timerDisplay = document.createElement('div');
+            timerDisplay.id = 'timer-display';
+
+            const actionBtn = document.createElement('button');
+            actionBtn.className = 'action-btn';
+            actionBtn.id = 'validate-qcm-btn';
+            actionBtn.innerText = 'Valider';
+            actionBtn.disabled = true;
+
+            actionBtn.onclick = () => {
+                // Désactivation immédiate des boutons d'options
+                const buttons = optionsBlock.querySelectorAll('.option-btn');
+                buttons.forEach(b => b.disabled = true);
+                actionBtn.disabled = true;
+
+                let hasRightAnswer = false;
+
+                buttons.forEach(b => {
+                    if (b.innerText === item.a) {
+                        b.classList.add('correct');
+                    }
+                    if (b.classList.contains('selected') && b.innerText !== item.a) {
+                        b.classList.add('wrong');
+                    }
+                });
+
+                // Lancement du compte à rebours auto de 5 secondes
+                let timeLeft = 5;
+                timerDisplay.innerText = `Suivant dans ${timeLeft}s...`;
+                
+                qcmTimer = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft <= 0) {
+                        clearInterval(qcmTimer);
+                        nextItem();
+                    } else {
+                        timerDisplay.innerText = `Suivant dans ${timeLeft}s...`;
+                    }
+                }, 1000);
+            };
+
+            // Bouton de remise à zéro à droite
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'action-btn';
+            resetBtn.style.backgroundColor = '#cfd8dc';
+            resetBtn.style.color = '#455a64';
+            resetBtn.innerText = 'Remise à zéro';
+            resetBtn.onclick = resetActivity;
+
+            leftGroup.appendChild(timerDisplay);
+            controlsBlock.appendChild(leftGroup);
+            controlsBlock.appendChild(resetBtn);
+            controlsBlock.appendChild(actionBtn);
+            container.appendChild(controlsBlock);
+        }
+
+        // Génère 2 mauvaises réponses aléatoires cohérentes
+        function generateDistractors(correctAnswer) {
+            let pool = [];
+            // Rassemblement de toutes les réponses possibles de la section actuelle pour servir de faux choix
+            if (currentSection === 'all') {
+                pool = [...dataSet.hist.dates, ...dataSet.hist.notions].map(i => i.a);
+            } else {
+                pool = dataSet[currentCategory][currentSection].map(i => i.a);
+            }
+
+            // Filtrer la bonne réponse
+            pool = pool.filter(ans => ans !== correctAnswer);
+            
+            // Mélanger le pool
+            pool.sort(() => 0.5 - Math.random());
+            
+            // Prendre 2 distracteurs max
+            let distractors = pool.slice(0, Math.min(2, pool.length));
+            
+            // Combiner et mélanger la finale
+            let finalOptions = [correctAnswer, ...distractors];
+            finalOptions.sort(() => 0.5 - Math.random());
+            
+            return finalOptions;
+        }
+
+        /*************************************************************
+         * COMPOSANT DE NAVIGATION DES CONTRÔLES
+         *************************************************************/
+        function createControlsBlock() {
+            const block = document.createElement('div');
+            block.className = 'controls';
+
+            const prog = document.createElement('div');
+            prog.className = 'progression';
+            prog.innerText = `${currentIndex + 1} / ${currentItems.length}`;
+            block.appendChild(prog);
+
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'action-btn';
+            resetBtn.style.backgroundColor = '#cfd8dc';
+            resetBtn.style.color = '#455a64';
+            resetBtn.innerText = 'Remise à zéro';
+            resetBtn.onclick = resetActivity;
+            block.appendChild(resetBtn);
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'action-btn';
+            nextBtn.innerText = 'Suivant';
+            nextBtn.onclick = nextItem;
+            block.appendChild(nextBtn);
+
+            return block;
+        }
+
+        function nextItem() {
+            if (currentIndex < currentItems.length - 1) {
+                currentIndex++;
+            } else {
+                currentIndex = 0; // Boucle de fin
+            }
+            renderWorkspace();
+        }
+
+        /*************************************************************
+         * CHARGEMENT DU MODE LEÇON
+         *************************************************************/
+        function loadLessons() {
+            const ws = document.getElementById('workspace');
+            ws.innerHTML = '';
+
+            const container = document.createElement('div');
+            container.className = 'lesson-container';
+
+            const activeLessons = lessonsData[currentSection]; // 'hist' ou 'geo'
+
+            activeLessons.forEach(lesson => {
+                const block = document.createElement('div');
+                block.className = 'lesson-block';
+
+                const title = document.createElement('h3');
+                title.innerText = lesson.t;
+
+                const desc = document.createElement('p');
+                desc.innerText = lesson.d;
+
+                block.appendChild(title);
+                block.appendChild(desc);
+                container.appendChild(block);
+            });
+
+            ws.appendChild(container);
+        }
+
+        // Démarrage initial par défaut
+        initActivity();
+    </script>
+</body>
+</html>

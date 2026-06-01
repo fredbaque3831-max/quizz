@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GéoBrevet Quest - Révisions Ultimes</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #10b981;
+            --accent-danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark), #1e1b4b);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(to right, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        /* Accueil / Menu principal */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .grid-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .btn-mode {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid var(--primary);
+            color: var(--text-main);
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-mode:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Thèmes Selector */
+        .theme-select-container {
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px dashed var(--text-muted);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* Infos de jeu (Chrono & Progression) */
+        .game-status {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: rgba(0,0,0,0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        /* Quiz & Vrai/Faux */
+        .question-box {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+
+        .btn-opt {
+            background: #334155;
+            border: none;
+            color: var(--text-main);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-opt:hover { background: #475569; }
+        .btn-opt.correct { background: var(--accent) !important; }
+        .btn-opt.wrong { background: var(--accent-danger) !important; }
+
+        /* Flashcards */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border: 2px solid var(--primary);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #064e3b, #10b981);
+            transform: rotateY(180deg);
+        }
+
+        /* Jeu de Paires */
+        .pairs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .pair-tile {
+            background: #334155;
+            padding: 15px 5px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            user-select: none;
+        }
+
+        .pair-tile.selected { border-color: var(--primary); background: #475569;}
+        .pair-tile.matched { background: rgba(16, 185, 129, 0.2); border-color: var(--accent); color: var(--accent); pointer-events: none;}
+
+        /* Mode Survie Spécifique */
+        .hearts { color: var(--accent-danger); font-size: 1.3rem;}
+        .level-badge { background: #f59e0b; color: #000; padding: 2px 8px; border-radius: 5px; font-size: 0.9rem;}
+
+        /* Écran de résultats */
+        .results-box {
+            text-align: center;
+        }
+        .score-big {
+            font-size: 4rem;
+            color: var(--accent);
+            margin: 20px 0;
+            font-weight: 800;
+        }
+
+        .btn-nav {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .btn-nav:hover { background: var(--primary-hover); }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>GéoBrevet Quest 🌍</h1>
+        <p>Deviens un as de la géographie pour ton diplôme !</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="theme-module" class="theme-select-container">
+            <label for="theme-select" style="font-weight: bold; display: block; margin-bottom: 8px;">🎯 Choisir un thème d'étude :</label>
+            <select id="theme-select" onchange="initTheme()">
+                <option value="all">📚 Tout le programme mixé</option>
+                <option value="france-territoire">🇫🇷 France : Territoire & Physiques</option>
+                <option value="france-dynamiques">🏙️ France : Aires urbaines & Mondialisation</option>
+                <option value="ue">🇪🇺 Union Européenne : Cartes, Mégalopole & Pouvoirs</option>
+                <option value="repere-mondiaux">🌐 Grands repères terrestres mondiaux</option>
+            </select>
+        </div>
+
+        <div id="screen-home" class="screen active">
+            <h2 style="margin-bottom: 15px; text-align: center;">Choisis ton mode d'entraînement :</h2>
+            <div class="grid-modes">
+                <button class="btn-mode" onclick="startGame('quiz')">📋 <span>Quiz ultime (20 Q)</span></button>
+                <button class="btn-mode" onclick="startGame('flashcard')">🃏 <span>Flashcards</span></button>
+                <button class="btn-mode" onclick="startGame('pairs')">🧩 <span>Jeu de paires</span></button>
+                <button class="btn-mode" onclick="startGame('truefalse')">✔️ <span>Vrai ou Faux</span></button>
+                <button class="btn-mode" onclick="startGame('survival')">🌋 <span>Mode Survie !</span></button>
+            </div>
+        </div>
+
+        <div id="screen-game" class="screen">
+            <div class="game-status">
+                <span id="game-progress">Question 1/20</span>
+                <span id="extra-status"></span>
+                <span id="game-timer">Chrono : 0.0s</span>
+            </div>
+            <div class="question-box" id="question-text">Quelle est la capitale de l'Allemagne ?</div>
+            <div class="options-grid" id="options-container">
+                </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-nav" id="btn-next-game" onclick="nextQuestion()" style="display:none;">Suivant ➔</button>
+            </div>
+        </div>
+
+        <div id="screen-flashcard" class="screen">
+            <div class="game-status">
+                <span id="flash-progress">Carte 1</span>
+                <span>💡 Clique sur la carte pour la retourner</span>
+            </div>
+            <div class="flashcard-wrapper" onclick="toggleFlashcard()">
+                <div class="flashcard" id="flashcard-element">
+                    <div class="card-face card-front" id="flash-front">Question</div>
+                    <div class="card-face card-back" id="flash-back">Réponse</div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-around; margin-top: 25px;">
+                <button class="btn-nav" onclick="prevFlashcard()" style="background:#475569;">◀ Précédente</button>
+                <button class="btn-nav" onclick="nextFlashcard()">Suivante ▶</button>
+            </div>
+            <center><button class="btn-nav" onclick="goHome()" style="background: var(--accent-danger);">Menu Principal</button></center>
+        </div>
+
+        <div id="screen-pairs" class="screen">
+            <div class="game-status">
+                <span>🧩 Associe la notion à sa bonne définition / lieu !</span>
+                <span id="pairs-timer">Chrono : 0.0s</span>
+            </div>
+            <div class="pairs-grid" id="pairs-container">
+                </div>
+            <center><button class="btn-nav" onclick="goHome()" style="background: var(--accent-danger); margin-top:30px;">Abandonner</button></center>
+        </div>
+
+        <div id="screen-results" class="screen">
+            <div class="results-box">
+                <h2>Session Terminée ! 🎉</h2>
+                <div class="score-big" id="res-score">18 / 20</div>
+                <p id="res-comment" style="font-size: 1.2rem; margin-bottom: 20px; color: var(--accent);"></p>
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; text-align: left; max-width: 400px; margin: 0 auto 20px auto;">
+                    <p>⏱️ Temps total : <strong id="res-total-time">0s</strong></p>
+                    <p>⚡ Temps moyen par réponse : <strong id="res-avg-time">0s</strong></p>
+                    <p id="res-survival-level" style="display:none;">🏆 Niveau survie atteint : <strong id="res-level">1</strong></p>
+                </div>
+                <button class="btn-nav" onclick="goHome()">Retourner à l'accueil</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- BASE DE DONNÉES DES NOTIONS DU BREVET ---
+        const database = [
+            // Thème France Territoire
+            { id: 1, theme: "france-territoire", q: "Quel territoire ultramarin est situé dans l'océan Indien ?", a: "La Réunion (ou Mayotte)", o: ["La Réunion (ou Mayotte)", "La Guadeloupe", "La Martinique", "La Polynésie Française"], t: true },
+            { id: 2, theme: "france-territoire", q: "Combien y a-t-il de régions métropolitaines en France depuis 2016 ?", a: "13", o: ["13", "22", "15", "10"], t: false },
+            { id: 3, theme: "france-territoire", q: "Quel est le plus long fleuve coulant entièrement en France ?", a: "La Loire", o: ["La Loire", "La Seine", "Le Rhône", "La Garonne"], t: true },
+            { id: 4, theme: "france-territoire", q: "Quelle chaîne de montagnes sépare la France de l'Italie ?", a: "Les Alpes", o: ["Les Alpes", "Les Pyrénées", "Le Massif Central", "Le Jura"], t: true },
+            { id: 5, theme: "france-territoire", q: "Vrai ou Faux : La Guyane est un territoire d'outre-mer situé en Amérique du Sud.", a: "Vrai", o: ["Vrai", "Faux"], t: false },
+            
+            // Thème France Dynamiques
+            { id: 6, theme: "france-dynamiques", q: "Quelle est l'aire urbaine la plus peuplée de France ?", a: "Paris", o: ["Paris", "Lyon", "Marseille", "Lille"], t: true },
+            { id: 7, theme: "france-dynamiques", q: "Quel grand port maritime français est le premier pôle pétrolier du pays ?", a: "Marseille", o: ["Marseille", "Le Havre", "Dunkerque", "Nantes"], t: true },
+            { id: 8, theme: "france-dynamiques", q: "Où se situe la majorité de la population française ?", a: "Dans les grandes aires urbaines et le long des fleuves/littoraux", o: ["Dans les grandes aires urbaines et le long des fleuves/littoraux", "Dans les espaces montagneux", "Dans le centre de la France uniquement", "Dans les forêts denses"], t: true },
+            { id: 9, theme: "france-dynamiques", q: "L'aéroport de Paris-Charles de Gaulle est un hub mondial majeur.", a: "Vrai", o: ["Vrai", "Faux"], t: false },
+            { id: 10, theme: "france-dynamiques", q: "Qu'est-ce qu'un espace productif inséré dans la mondialisation ?", a: "Un espace qui produit des biens/services exportés et connectés aux réseaux mondiaux", o: ["Un espace qui produit des biens/services exportés et connectés aux réseaux mondiaux", "Un espace agricole traditionnel fermé sur lui-même", "Une zone sans connexion internet", "Une réserve naturelle protégée"], t: true },
+
+            // Thème UE
+            { id: 11, theme: "ue", q: "Combien d'États membres compte l'Union Européenne actuellement ?", a: "27", o: ["27", "28", "25", "19"], t: true },
+            { id: 12, theme: "ue", q: "Quelle est la capitale de l'UE (siège principal de la Commission européenne) ?", a: "Bruxelles", o: ["Bruxelles", "Strasbourg", "Luxembourg", "Paris"], t: true },
+            { id: 13, theme: "ue", q: "Qu'appelle-t-on la 'mégalopole européenne' ?", a: "Une région urbaine densément peuplée allant de Londres à Milan", o: ["Une région urbaine densément peuplée allant de Londres à Milan", "L'axe Paris-Madrid", "L'ensemble des capitales de l'Est", "La ville de Berlin uniquement"], t: true },
+            { id: 14, theme: "ue", q: "Vrai ou Faux : Le Parlement européen siège officiellement à Strasbourg.", a: "Vrai", o: ["Vrai", "Faux"], t: false },
+            { id: 15, theme: "ue", q: "Quel est le fleuve le plus long traversant l'Union Européenne ?", a: "Le Danube", o: ["Le Danube", "Le Rhin", "La Seine", "La Tamise"], t: true },
+            { id: 16, theme: "ue", q: "Une région transfrontalière est une région située à cheval sur deux pays coopérant ensemble.", a: "Vrai", o: ["Vrai", "Faux"], t: false },
+
+            // Thème repères mondiaux
+            { id: 17, theme: "repere-mondiaux", q: "Quel est le plus grand désert chaud du monde ?", a: "Le Sahara", o: ["Le Sahara", "Le Gobi", "Le Kalahari", "L'Atacama"], t: true },
+            { id: 18, theme: "repere-mondiaux", q: "Où se situe la plus grande forêt dense du monde (forêt amazonienne) ?", a: "En Amérique du Sud", o: ["En Amérique du Sud", "En Afrique Centrale", "En Asie du Sud-Est", "En Europe de l'Est"], t: true },
+            { id: 19, theme: "repere-mondiaux", q: "Quelle est l'aire urbaine la plus peuplée de la planète ?", a: "Tokyo", o: ["Tokyo", "New-York", "Le Caire", "Sao Paulo"], t: true },
+            { id: 20, theme: "repere-mondiaux", q: "Quel canal artificiel permet de passer de la Mer Méditerranée à la Mer Rouge ?", a: "Le canal de Suez", o: ["Le canal de Suez", "Le canal de Panama", "Le détroit de Gibraltar", "Le détroit de Malacca"], t: true },
+            { id: 21, theme: "repere-mondiaux", q: "Quelle est la plus haute chaîne de montagnes du monde ?", a: "L'Himalaya", o: ["L'Himalaya", "Les Andes", "Les Rocheuses", "Les Alpes"], t: true },
+            { id: 22, theme: "repere-mondiaux", q: "Le Nil se situe principalement sur quel continent ?", a: "Afrique", o: ["Afrique", "Asie", "Amérique", "Europe"], t: true },
+            { id: 23, theme: "repere-mondiaux", q: "L'Inde et la Chine font partie des plus grands foyers de population mondiaux.", a: "Vrai", o: ["Vrai", "Faux"], t: false }
+        ];
+
+        // variables d'état globales
+        let currentMode = '';
+        let selectedTheme = 'all';
+        let filteredQuestions = [];
+        let currentGameQuestions = [];
+        let currentQuestionIndex = 0;
+        
+        // Stats et chronomètre
+        let timerInterval;
+        let startTime;
+        let questionStartTime;
+        let responseTimes = [];
+        let totalScore = 0;
+        
+        // Mode Survie
+        let survivalLives = 3;
+        let survivalLevel = 1;
+
+        // Flashcards spécifiques
+        let currentFlashIndex = 0;
+
+        // Initialisation de la sélection par thèmes
+        function initTheme() {
+            selectedTheme = document.getElementById('theme-select').value;
+            if(selectedTheme === 'all') {
+                filteredQuestions = [...database];
+            } else {
+                filteredQuestions = database.filter(q => q.theme === selectedTheme);
+            }
+        }
+        initTheme(); // Lancement initial
+
+        // Changement d'écran
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goHome() {
+            clearInterval(timerInterval);
+            document.getElementById('theme-module').style.display = 'block';
+            showScreen('screen-home');
+        }
+
+        // Démarrage d'une partie
+        function startGame(mode) {
+            currentMode = mode;
+            initTheme(); // re-sécurise les questions filtrées
+            
+            if(filteredQuestions.length < 3) {
+                alert("Pas assez de questions dans ce thème pour générer ce mode de jeu ! Choisis un autre thème.");
+                return;
+            }
+
+            // Cacher le sélecteur de thème pendant le jeu pour éviter la triche
+            document.getElementById('theme-module').style.display = 'none';
+
+            // Reset Chronos & variables
+            startTime = Date.now();
+            responseTimes = [];
+            totalScore = 0;
+            currentQuestionIndex = 0;
+
+            // Préparation des listes de questions
+            if(mode === 'quiz' || mode === 'truefalse') {
+                let pool = (mode === 'truefalse') ? filteredQuestions.filter(q => q.o.length === 2) : filteredQuestions.filter(q => q.o.length > 2);
+                if(pool.length === 0) pool = [...filteredQuestions]; // fallback
+                
+                // Mélange et limite à 20 max
+                currentGameQuestions = pool.sort(() => 0.5 - Math.random()).slice(0, 20);
+                setupStandardQuestionGrid();
+                showScreen('screen-game');
+                startMasterTimer();
+            } 
+            else if(mode === 'survival') {
+                survivalLives = 3;
+                survivalLevel = 1;
+                currentGameQuestions = [...filteredQuestions].sort(() => 0.5 - Math.random());
+                setupSurvivalQuestion();
+                showScreen('screen-game');
+                startMasterTimer();
+            }
+            else if(mode === 'flashcard') {
+                currentGameQuestions = [...filteredQuestions].sort(() => 0.5 - Math.random());
+                currentFlashIndex = 0;
+                loadFlashcard();
+                showScreen('screen-flashcard');
+            }
+            else if(mode === 'pairs') {
+                setupPairsGame();
+                showScreen('screen-pairs');
+                startMasterTimer();
+            }
+        }
+
+        // --- GESTION CHRONOMÈTRE ---
+        function startMasterTimer() {
+            let timerDisplay = document.getElementById(currentMode === 'pairs' ? 'pairs-timer' : 'game-timer');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                timerDisplay.innerText = `Chrono : ${elapsed}s`;
+            }, 100);
+            questionStartTime = Date.now();
+        }
+
+        // --- MODE : QUIZ & VRAI/FAUX ---
+        function setupStandardQuestionGrid() {
+            document.getElementById('btn-next-game').style.display = 'none';
+            document.getElementById('extra-status').style.display = 'none';
+            
+            let currentQ = currentGameQuestions[currentQuestionIndex];
+            document.getElementById('game-progress').innerText = `Question ${currentQuestionIndex + 1} / ${currentGameQuestions.length}`;
+            document.getElementById('question-text').innerText = currentQ.q;
+
+            let container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            // Mélange des propositions
+            let options = [...currentQ.o].sort(() => 0.5 - Math.random());
+            if(currentQ.o.length === 2) options = [...currentQ.o]; // Garder Vrai / Faux dans l'ordre
+
+            options.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-opt';
+                btn.innerText = opt;
+                btn.onclick = () => checkStandardAnswer(btn, opt, currentQ.a);
+                container.appendChild(btn);
+            });
+            questionStartTime = Date.now();
+        }
+
+        function checkStandardAnswer(selectedBtn, chosenOpt, correctOpt) {
+            // Empêcher de recliquer
+            let optionsButtons = document.getElementById('options-container').querySelectorAll('.btn-opt');
+            optionsButtons.forEach(b => b.disabled = true);
+
+            // Calcul temps de réponse
+            let timeSpent = (Date.now() - questionStartTime) / 1000;
+            responseTimes.push(timeSpent);
+
+            if(chosenOpt === correctOpt) {
+                selectedBtn.classList.add('correct');
+                totalScore++;
+            } else {
+                selectedBtn.classList.add('wrong');
+                // montre la bonne réponse
+                optionsButtons.forEach(b => {
+                    if(b.innerText === correctOpt) b.classList.add('correct');
+                });
+            }
+
+            document.getElementById('btn-next-game').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if(currentQuestionIndex < currentGameQuestions.length) {
+                if(currentMode === 'survival') {
+                    setupSurvivalQuestion();
+                } else {
+                    setupStandardQuestionGrid();
+                }
+            } else {
+                endGameSession();
+            }
+        }
+
+        // --- MODE : SURVIE ---
+        function setupSurvivalQuestion() {
+            document.getElementById('btn-next-game').style.display = 'none';
+            let extra = document.getElementById('extra-status');
+            extra.style.display = 'inline';
+            
+            // Évolution de la difficulté factice basée sur l'index/niveau
+            if (currentQuestionIndex > 0 && currentQuestionIndex % 3 === 0) {
+                survivalLevel++;
+            }
+
+            let heartsHtml = '❤️'.repeat(survivalLives);
+            extra.innerHTML = `<span class="level-badge">Niv. ${survivalLevel}</span> ${heartsHtml}`;
+
+            // Si on arrive au bout du paquet de cartes, on boucle et remélange
+            if(currentQuestionIndex >= currentGameQuestions.length) {
+                currentGameQuestions = [...filteredQuestions].sort(() => 0.5 - Math.random());
+                currentQuestionIndex = 0;
+            }
+
+            let currentQ = currentGameQuestions[currentQuestionIndex];
+            document.getElementById('game-progress').innerText = `Enchaînement : ${currentQuestionIndex + 1}`;
+            document.getElementById('question-text').innerText = `[Survie] ${currentQ.q}`;
+
+            let container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            let options = [...currentQ.o].sort(() => 0.5 - Math.random());
+            options.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-opt';
+                btn.innerText = opt;
+                btn.onclick = () => checkSurvivalAnswer(btn, opt, currentQ.a);
+                container.appendChild(btn);
+            });
+            questionStartTime = Date.now();
+        }
+
+        function checkSurvivalAnswer(selectedBtn, chosenOpt, correctOpt) {
+            let optionsButtons = document.getElementById('options-container').querySelectorAll('.btn-opt');
+            optionsButtons.forEach(b => b.disabled = true);
+
+            let timeSpent = (Date.now() - questionStartTime) / 1000;
+            responseTimes.push(timeSpent);
+
+            if(chosenOpt === correctOpt) {
+                selectedBtn.classList.add('correct');
+                totalScore++;
+                setTimeout(nextQuestion, 1200); // Passe tout seul au suivant pour le dynamisme
+            } else {
+                selectedBtn.classList.add('wrong');
+                survivalLives--;
+                optionsButtons.forEach(b => {
+                    if(b.innerText === correctOpt) b.classList.add('correct');
+                });
+
+                if(survivalLives <= 0) {
+                    setTimeout(() => { alert("Plus de vies ! Fin de ta survie 🌋"); endGameSession(); }, 1000);
+                } else {
+                    setTimeout(nextQuestion, 1500);
+                }
+            }
+        }
+
+        // --- MODE : FLASHCARDS ---
+        function loadFlashcard() {
+            let cardElement = document.getElementById('flashcard-element');
+            cardElement.classList.remove('flipped');
+            
+            document.getElementById('flash-progress').innerText = `Carte ${currentFlashIndex + 1} / ${currentGameQuestions.length}`;
+            
+            let currentQ = currentGameQuestions[currentFlashIndex];
+            document.getElementById('flash-front').innerText = currentQ.q;
+            document.getElementById('flash-back').innerText = "RÉPONSE :\n\n" + currentQ.a;
+        }
+
+        function toggleFlashcard() {
+            document.getElementById('flashcard-element').classList.toggle('flipped');
+        }
+
+        function nextFlashcard() {
+            currentFlashIndex = (currentFlashIndex + 1) % currentGameQuestions.length;
+            loadFlashcard();
+        }
+
+        function prevFlashcard() {
+            currentFlashIndex = (currentFlashIndex - 1 + currentGameQuestions.length) % currentGameQuestions.length;
+            loadFlashcard();
+        }
+
+        // --- MODE : JEU DE PAIRES ---
+        let firstTile = null;
+        let secondTile = null;
+        let pairsMatchedCount = 0;
+
+        function setupPairsGame() {
+            pairsMatchedCount = 0;
+            firstTile = null;
+            secondTile = null;
+            let container = document.getElementById('pairs-container');
+            container.innerHTML = '';
+
+            // Prendre 6 questions au hasard du thème
+            let sample = [...filteredQuestions].sort(() => 0.5 - Math.random()).slice(0, 6);
+            let pool = [];
+
+            sample.forEach((item, index) => {
+                pool.push({ type: 'question', txt: item.q, pairId: index });
+                // Tronquer un peu la réponse si trop longue
+                let shortAns = item.a.length > 40 ? item.a.substring(0,37) + "..." : item.a;
+                pool.push({ type: 'answer', txt: shortAns, pairId: index });
+            });
+
+            // Secouer le tout
+            pool.sort(() => 0.5 - Math.random());
+
+            pool.forEach(data => {
+                let div = document.createElement('div');
+                div.className = 'pair-tile';
+                div.innerText = data.txt;
+                div.dataset.pairId = data.pairId;
+                div.onclick = () => handleTileClick(div);
+                container.appendChild(div);
+            });
+        }
+
+        function handleTileClick(tile) {
+            if(tile.classList.contains('matched') || tile === firstTile) return;
+
+            tile.classList.add('selected');
+
+            if(!firstTile) {
+                firstTile = tile;
+            } else {
+                secondTile = tile;
+                // Vérification de la paire
+                if(firstTile.dataset.pairId === secondTile.dataset.pairId) {
+                    firstTile.classList.remove('selected');
+                    secondTile.classList.remove('selected');
+                    firstTile.classList.add('matched');
+                    secondTile.classList.add('matched');
+                    pairsMatchedCount++;
+                    firstTile = null;
+                    secondTile = null;
+
+                    if(pairsMatchedCount === 6) {
+                        clearInterval(timerInterval);
+                        setTimeout(() => {
+                            totalScore = 6; // Score parfait pour les 6 paires
+                            endGameSession();
+                        }, 800);
+                    }
+                } else {
+                    // Pas une paire -> on réinitialise visuellement après un court délai
+                    setTimeout(() => {
+                        if(firstTile) firstTile.classList.remove('selected');
+                        if(secondTile) secondTile.classList.remove('selected');
+                        firstTile = null;
+                        secondTile = null;
+                    }, 800);
+                }
+            }
+        }
+
+        // --- FIN DE SESSION ET RÉSULTATS ---
+        function endGameSession() {
+            clearInterval(timerInterval);
+            let totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+            
+            // Calcul moyenne
+            let avgTime = 0;
+            if(responseTimes.length > 0) {
+                let sum = responseTimes.reduce((a, b) => a + b, 0);
+                avgTime = (sum / responseTimes.length).toFixed(1);
+            } else {
+                avgTime = (totalTime / totalScore).toFixed(1);
+            }
+
+            // Gestion de l'affichage textuel
+            document.getElementById('res-total-time').innerText = `${totalTime} secondes`;
+            document.getElementById('res-avg-time').innerText = `${avgTime} secondes`;
+
+            let displayScore = document.getElementById('res-score');
+            let comment = document.getElementById('res-comment');
+            let survivalBadge = document.getElementById('res-survival-level');
+
+            survivalBadge.style.display = 'none';
+
+            if(currentMode === 'pairs') {
+                displayScore.innerText = "Réussi ! 🧩";
+                comment.innerText = "Tu as assemblé toutes les notions géographiques avec brio !";
+            } 
+            else if(currentMode === 'survival') {
+                displayScore.innerText = `${totalScore} Points`;
+                comment.innerText = "Belle résistance ! Recommence pour battre ton record de survie.";
+                survivalBadge.style.display = 'block';
+                document.getElementById('res-level').innerText = survivalLevel;
+            }
+            else {
+                displayScore.innerText = `${totalScore} / ${currentGameQuestions.length}`;
+                let ratio = totalScore / currentGameQuestions.length;
+                if(ratio >= 0.8) comment.innerText = "Excellent ! Le Brevet est dans la poche 🎓";
+                else if(ratio >= 0.5) comment.innerText = "Pas mal ! Encore un petit effort de mémorisation 💪";
+                else comment.innerText = "Relis tes fiches de cours et retente ta chance ! 📚";
+            }
+
+            showScreen('screen-results');
+        }
+    </script>
+</body>
+</html>

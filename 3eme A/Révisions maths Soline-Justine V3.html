@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Brevet Maths Arcade - Édition Élite</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --neon-glow: 0 0 15px rgba(99, 102, 241, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e1b4b, #311042);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border-bottom: 3px solid var(--secondary);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grid-themes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .theme-card {
+            background: var(--bg-card);
+            border: 2px solid #334155;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .theme-card h3 { margin-bottom: 10px; font-size: 1.2rem; }
+        .theme-card .icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+
+        .grid-games {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .game-btn {
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .game-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .game-btn.alt { background: linear-gradient(135deg, var(--secondary), #db2777); }
+
+        .btn-back {
+            background: #334155; color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; margin-bottom: 20px;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-back:hover { background: #475569; }
+
+        .hud {
+            display: flex; justify-content: space-between; background: #1e293b;
+            padding: 12px 20px; border-radius: 10px; margin-bottom: 20px;
+            font-weight: bold; border-left: 4px solid var(--primary);
+        }
+
+        /* FLASHCARDS */
+        .flashcard-wrapper { perspective: 1000px; width: 100%; max-width: 450px; height: 280px; margin: 30px auto; }
+        .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; cursor: pointer; }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; padding: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 3px solid #334155; }
+        .card-front { background: radial-gradient(circle at center, #1e293b, #0f172a); color: var(--text-light); }
+        .card-front::after { content: "🔄 Cliquez pour révéler la réponse"; position: absolute; bottom: 15px; font-size: 0.8rem; color: var(--text-muted); }
+        .card-back { background: radial-gradient(circle at center, #2e1065, #1e1b4b); color: #f1f5f9; transform: rotateY(180deg); border-color: var(--secondary); }
+        .card-nav { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
+
+        /* QUIZ / VRAI FAUX */
+        .quiz-box { background: var(--bg-card); border-radius: 20px; padding: 25px; border: 1px solid #334155; }
+        .timer-bar { width: 100%; height: 6px; background: #334155; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+        .timer-progress { height: 100%; background: var(--warning); width: 100%; transition: width 0.1s linear; }
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
+        @media (min-width: 600px) { .options-grid { grid-template-columns: 1fr 1fr; } }
+        .option-btn { background: #334155; color: white; border: 2px solid transparent; padding: 16px; border-radius: 12px; text-align: left; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+        .option-btn:hover { background: #475569; border-color: var(--primary); }
+        .option-btn.correct { background: rgba(16, 185, 129, 0.2) !important; border-color: var(--accent) !important; color: #34d399; }
+        .option-btn.wrong { background: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; color: #f87171; }
+        
+        .tf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .btn-true { background: #065f46; color: #34d399; font-size: 1.5rem; font-weight: bold; padding: 20px; border-radius: 12px; border: none; cursor: pointer; }
+        .btn-false { background: #991b1b; color: #f87171; font-size: 1.5rem; font-weight: bold; padding: 20px; border-radius: 12px; border: none; cursor: pointer; }
+        .btn-true:hover { filter: brightness(1.2); }
+        .btn-false:hover { filter: brightness(1.2); }
+
+        /* PAIRES */
+        .pairs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 20px; }
+        .pair-tile { background: #1e293b; border: 2px solid #475569; border-radius: 10px; padding: 15px; min-height: 90px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; user-select: none; }
+        .pair-tile:hover { background: #334155; border-color: var(--secondary); }
+        .pair-tile.selected { background: rgba(99, 102, 241, 0.3); border-color: var(--primary); transform: scale(1.03); }
+        .pair-tile.matched { background: rgba(16, 185, 129, 0.15); border-color: var(--accent); color: #a7f3d0; visibility: hidden; opacity: 0; }
+
+        /* BADGE DE NIVEAU SURVIE */
+        .level-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px var(--secondary);
+        }
+
+        .end-screen { text-align: center; padding: 40px 20px; }
+        .score-display { font-size: 3rem; font-weight: bold; color: var(--accent); margin: 15px 0; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+        .stats-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 15px; max-width: 400px; margin: 0 auto 25px auto; font-size: 1.1rem; color: var(--text-muted); }
+        .stats-box strong { color: var(--text-light); }
+        footer { text-align: center; padding: 15px; font-size: 0.85rem; color: var(--text-muted); margin-top: auto; border-top: 1px solid #1e293b; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚡ Brevet Maths Arcade</h1>
+        <p>Atteins le niveau Élite pour ton Brevet !</p>
+    </header>
+
+    <div class="container">
+        
+        <div id="screen-main" class="screen active">
+            <h2>🎯 Étape 1 : Choisis ton thème de révision</h2>
+            <div class="grid-themes" id="themes-container"></div>
+            
+            <div id="game-selection-zone" style="margin-top: 40px; display:none;">
+                <h2>🎮 Étape 2 : Choisis ton mode de jeu original</h2>
+                <p style="color: var(--text-muted);">Thème sélectionné : <span id="selected-theme-label" style="color: var(--secondary); font-weight: bold;">Aucun</span></p>
+                <div class="grid-games">
+                    <button class="game-btn" onclick="startMode('flashcards')">🃏 Cartes Magiques 3D<br><small>Apprentissage sans stress</small></button>
+                    <button class="game-btn alt" onclick="startMode('quiz')">⏱️ Quiz Classique (20 Q)<br><small>Test final + temps moyen</small></button>
+                    <button class="game-btn" onclick="startMode('truefalse')">⚖️ Vrai ou Faux ?<br><small>Débusque les pièges rapidement</small></button>
+                    <button class="game-btn alt" onclick="startMode('pairs')">🧩 Le Match des Paires<br><small>Associe question & réponse</small></button>
+                    <button class="game-btn" onclick="startMode('survival')">🌋 Survie Évolutive<br><small>Niveaux progressifs & chrono</small></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-flashcards" class="screen">
+            <button class="btn-back" onclick="toMain()">&larr; Changer de mode / thème</button>
+            <div class="hud">
+                <span id="flashcard-progress">Carte : 1 / 10</span>
+                <span style="color: var(--secondary);">Mode Flashcards</span>
+            </div>
+            <div class="flashcard-wrapper">
+                <div class="flashcard" id="main-flashcard" onclick="this.classList.toggle('flipped')">
+                    <div class="card-face card-front"><h3 id="flash-question">Question ?</h3></div>
+                    <div class="card-face card-back"><h3 id="flash-answer">Réponse.</h3></div>
+                </div>
+            </div>
+            <div class="card-nav">
+                <button class="game-btn" style="background:#475569" onclick="prevFlashcard()">Précédente</button>
+                <button class="game-btn" onclick="nextFlashcard()">Suivante &rarr;</button>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="screen">
+            <button class="btn-back" onclick="exitQuiz()">&larr; Quitter le jeu</button>
+            <div class="hud">
+                <span id="quiz-score">Score : 0</span>
+                <span id="quiz-hud-mode">Mode Quiz</span>
+                <span id="quiz-timer">Temps : --</span>
+            </div>
+            <div class="quiz-box">
+                <div class="timer-bar"><div class="timer-progress" id="timer-bar-fill"></div></div>
+                <h2 id="quiz-question-text" style="margin-bottom: 20px;">La question s'affiche ici ?</h2>
+                
+                <div class="options-grid" id="quiz-options-container"></div>
+                
+                <div class="tf-grid" id="quiz-tf-container" style="display: none;">
+                    <button class="btn-true" onclick="handleTrueFalseAnswer(true)">✅ VRAI</button>
+                    <button class="btn-false" onclick="handleTrueFalseAnswer(false)">❌ FAUX</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-pairs" class="screen">
+            <button class="btn-back" onclick="toMain()">&larr; Quitter le jeu</button>
+            <div class="hud">
+                <span>🧩 Associe chaque bloc Question à sa bonne Réponse !</span>
+                <span id="pairs-moves">Essais : 0</span>
+            </div>
+            <div class="pairs-grid" id="pairs-board"></div>
+        </div>
+
+        <div id="screen-end" class="screen end-screen">
+            <h2 id="end-title">🏆 Session Terminée !</h2>
+            <p style="margin-top:10px; color:var(--text-muted);" id="end-message">Bien joué, voici ton bilan :</p>
+            <div class="score-display" id="end-score-val">15 / 20</div>
+            
+            <div class="stats-box" id="end-stats-box" style="display: none;">
+                Temps moyen de réponse : <strong id="end-avg-time">--</strong> secondes par question
+            </div>
+            
+            <button class="game-btn" style="padding: 15px 40px;" onclick="toMain()">Retour au Menu Principal</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Brevet Maths Arcade Élite v2.5 - Conçu pour cartonner au Brevet.
+    </footer>
+
+    <script>
+        // BASE DE DONNÉES CLASSIFIÉE
+        const rawDatabase = [
+            { id: 1, theme: "Nombres & Calculs", difficulty: 1, q: "Donner les noms du résultat de l’addition, la soustraction, la multiplication, la division.", a: "Somme, différence, produit, quotient.", isTrueStatement: true },
+            { id: 3, theme: "Nombres & Calculs", difficulty: 1, q: "Le nombre 24 est un multiple de 12.", a: "Vrai", isTrueStatement: true },
+            { id: 5, theme: "Nombres & Calculs", difficulty: 1, q: "7 est un multiple de 14.", a: "Faux, 7 est un diviseur de 14.", isTrueStatement: false },
+            { id: 6, theme: "Nombres & Calculs", difficulty: 1, q: "Un nombre divisible par 2 se termine toujours par un chiffre pair.", a: "Vrai", isTrueStatement: true },
+            { id: 7, theme: "Nombres & Calculs", difficulty: 1, q: "Pour savoir si un nombre est divisible par 3, il suffit de regarder s'il se termine par 3.", a: "Faux, il faut faire la somme de ses chiffres.", isTrueStatement: false },
+            { id: 8, theme: "Nombres & Calculs", difficulty: 1, q: "Un nombre divisible par 5 se termine toujours par 0 ou 5.", a: "Vrai", isTrueStatement: true },
+            { id: 11, theme: "Nombres & Calculs", difficulty: 1, q: "Un nombre premier possède exactement 3 diviseurs.", a: "Faux, il en possède exactement deux (1 et lui-même).", isTrueStatement: false },
+            { id: 12, theme: "Nombres & Calculs", difficulty: 1, q: "Le nombre 15 est un nombre premier.", a: "Faux, il est divisible par 3 et 5.", isTrueStatement: false },
+            { id: 13, theme: "Nombres & Calculs", difficulty: 1, q: "Une fraction irréductible est une fraction qu'on ne peut plus simplifier.", a: "Vrai", isTrueStatement: true },
+            { id: 17, theme: "Nombres & Calculs", difficulty: 1, q: "Soustraire un nombre relatif revient à ajouter son opposé.", a: "Vrai", isTrueStatement: true },
+            { id: 21, theme: "Nombres & Calculs", difficulty: 1, q: "Deux nombres opposés ont un produit égal à 1.", a: "Faux, c'est leur somme qui vaut 0.", isTrueStatement: false },
+            { id: 22, theme: "Nombres & Calculs", difficulty: 2, q: "Deux nombres inverses ont un produit égal à 1.", a: "Vrai", isTrueStatement: true },
+            { id: 24, theme: "Nombres & Calculs", difficulty: 2, q: "L'expression a³ est égale à a + a + a.", a: "Faux, c'est a × a × a.", isTrueStatement: false },
+            { id: 29, theme: "Nombres & Calculs", difficulty: 1, q: "Le préfixe Méga correspond à 10^6 (1 million).", a: "Vrai", isTrueStatement: true },
+            { id: 30, theme: "Nombres & Calculs", difficulty: 1, q: "Le préfixe Giga correspond à 10^12.", a: "Faux, c'est 10^9 (1 milliard).", isTrueStatement: false },
+            
+            { id: 35, theme: "Algèbre & Équations", difficulty: 2, q: "La formule de la distributivité simple est k(a + b) = ka + kb.", a: "Vrai", isTrueStatement: true },
+            { id: 38, theme: "Algèbre & Équations", difficulty: 2, q: "La forme factorisée de a² - b² est (a - b)(a + b).", a: "Vrai", isTrueStatement: true },
+            { id: 41, theme: "Algèbre & Équations", difficulty: 2, q: "L'équation (ax + b)(cx + d) = 0 s'appelle une équation produit nul.", a: "Vrai", isTrueStatement: true },
+            { id: 42, theme: "Algèbre & Équations", difficulty: 3, q: "Un produit est nul si et seulement si TOUS ses facteurs sont nuls en même temps.", a: "Faux, il suffit qu'au moins UN des facteurs soit nul.", isTrueStatement: false },
+            { id: 43, theme: "Algèbre & Équations", difficulty: 3, q: "L'équation x² = 9 possède pour unique solution x = 3.", a: "Faux, -3 est aussi une solution.", isTrueStatement: false },
+            
+            { id: 44, theme: "Géométrie & Trigonométrie", difficulty: 1, q: "La somme des angles dans un triangle vaut 180°.", a: "Vrai", isTrueStatement: true },
+            { id: 45, theme: "Géométrie & Trigonométrie", difficulty: 1, q: "Un triangle isocèle possède trois côtés de même longueur.", a: "Faux, ça c'est le triangle équilatéral.", isTrueStatement: false },
+            { id: 47, theme: "Géométrie & Trigonométrie", difficulty: 1, q: "L'hypoténuse est le côté opposé à l'angle droit dans un triangle rectangle.", a: "Vrai", isTrueStatement: true },
+            { id: 48, theme: "Géométrie & Trigonométrie", difficulty: 2, q: "Le théorème de Pythagore sert à prouver que des droites sont parallèles.", a: "Faux, il sert à calculer des longueurs dans un triangle rectangle.", isTrueStatement: false },
+            { id: 57, theme: "Géométrie & Trigonométrie", difficulty: 3, q: "Le théorème de Thalès sert principalement à calculer des longueurs.", a: "Vrai", isTrueStatement: true },
+            { id: 64, theme: "Géométrie & Trigonométrie", difficulty: 3, q: "Dans le moyen mémo CAH-SOH-TOA, le TOA signifie Tangente = Opposé / Adjacent.", a: "Vrai", isTrueStatement: true },
+            { id: 68, theme: "Géométrie & Trigonométrie", difficulty: 2, q: "Une translation fait tourner une figure autour d'un point.", a: "Faux, elle glisse la figure sans la tourner.", isTrueStatement: false },
+            
+            { id: 76, theme: "Grandeurs, Mesures & Fonctions", difficulty: 1, q: "L'aire d'un triangle se calcule avec la formule (Base × hauteur) ÷ 2.", a: "Vrai", isTrueStatement: true },
+            { id: 84, theme: "Grandeurs, Mesures & Fonctions", difficulty: 1, q: "L'aire d'un disque de rayon R est égale à 2 × π × R.", a: "Faux, ça c'est le périmètre. L'aire est π × R².", isTrueStatement: false },
+            { id: 85, theme: "Grandeurs, Mesures & Fonctions", difficulty: 1, q: "L'axe vertical d'un repère s'appelle l'axe des ordonnées.", a: "Vrai", isTrueStatement: true },
+            { id: 93, theme: "Grandeurs, Mesures & Fonctions", difficulty: 2, q: "Un volume de 1 Litre (1L) est strictement égal à 1 dm³.", a: "Vrai", isTrueStatement: true },
+            { id: 102, theme: "Grandeurs, Mesures & Fonctions", difficulty: 2, q: "Si les longueurs sont multipliées par k, l'aire est multipliée par k².", a: "Vrai", isTrueStatement: true },
+            { id: 107, theme: "Grandeurs, Mesures & Fonctions", difficulty: 1, q: "Une situation de proportionnalité est représentée par une ligne droite ne passant pas par l'origine.", a: "Faux, la droite doit obligatoirement passer par l'origine.", isTrueStatement: false },
+            { id: 114, theme: "Grandeurs, Mesures & Fonctions", difficulty: 2, q: "Augmenter une quantité de 20% revient à la multiplier par 1,20.", a: "Vrai", isTrueStatement: true },
+            { id: 125, theme: "Grandeurs, Mesures & Fonctions", difficulty: 3, q: "Une fonction linéaire a pour forme générale f(x) = ax + b.", a: "Faux, f(x) = ax. La forme ax + b correspond à une fonction affine.", isTrueStatement: false }
+        ];
+
+        let selectedTheme = "";
+        let currentQuestions = [];
+        let currentMode = "";
+        
+        let flashIndex = 0;
+        let quizIndex = 0;
+        let quizScore = 0;
+        let quizTimerInterval = null;
+        let quizTimeLeft = 15;
+        let maxQuestionTime = 15;
+        let currentSurvivalLevel = 1;
+
+        // Variables pour statistiques de chronomètre
+        let totalTimeSpent = 0; 
+        let currentQuestionTimeSpent = 0;
+
+        let selectedTiles = [];
+        let pairMoves = 0;
+
+        const themes = [...new Set(rawDatabase.map(item => item.theme))];
+        
+        function initApp() {
+            const container = document.getElementById('themes-container');
+            const icons = { "Nombres & Calculs": "🔢", "Algèbre & Équations": "📐", "Géométrie & Trigonométrie": "➗", "Grandeurs, Mesures & Fonctions": "📈" };
+            
+            themes.forEach(theme => {
+                const card = document.createElement('div');
+                card.className = 'theme-card';
+                card.onclick = () => selectTheme(theme, card);
+                card.innerHTML = `<span class="icon">${icons[theme] || '🎯'}</span><h3>${theme}</h3>`;
+                container.appendChild(card);
+            });
+        }
+
+        function selectTheme(theme, element) {
+            selectedTheme = theme;
+            document.querySelectorAll('.theme-card').forEach(c => c.style.borderColor = '#334155');
+            element.style.borderColor = 'var(--secondary)';
+            document.getElementById('game-selection-zone').style.display = 'block';
+            document.getElementById('selected-theme-label').innerText = theme;
+            document.getElementById('game-selection-zone').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function toMain() {
+            clearInterval(quizTimerInterval);
+            switchScreen('screen-main');
+        }
+
+        function startMode(mode) {
+            currentMode = mode;
+            currentQuestions = rawDatabase.filter(item => item.theme === selectedTheme);
+            totalTimeSpent = 0;
+
+            // Ajustement de l'affichage des boutons selon le mode
+            document.getElementById('quiz-options-container').style.display = (mode === 'truefalse') ? 'none' : 'grid';
+            document.getElementById('quiz-tf-container').style.display = (mode === 'truefalse') ? 'grid' : 'none';
+
+            if (mode === 'flashcards') {
+                flashIndex = 0;
+                setupFlashcard();
+                switchScreen('screen-flashcards');
+            } else if (mode === 'quiz' || mode === 'truefalse') {
+                quizIndex = 0;
+                quizScore = 0;
+                
+                // Si la BDD manque de questions sur ce thème pour atteindre 20, on complète avec les autres thèmes
+                if(currentQuestions.length < 20) {
+                    let extras = rawDatabase.filter(item => item.theme !== selectedTheme);
+                    currentQuestions = [...currentQuestions, ...extras];
+                }
+                currentQuestions.sort(() => Math.random() - 0.5);
+                currentQuestions = currentQuestions.slice(0, 20); // 20 Questions max
+                setupQuizQuestion();
+                switchScreen('screen-quiz');
+            } else if (mode === 'survival') {
+                quizIndex = 0;
+                quizScore = 0;
+                currentSurvivalLevel = 1;
+                sortSurvivalQuestions();
+                setupQuizQuestion();
+                switchScreen('screen-quiz');
+            } else if (mode === 'pairs') {
+                pairMoves = 0;
+                setupPairsGame();
+                switchScreen('screen-pairs');
+            }
+        }
+
+        function sortSurvivalQuestions() {
+            let lvl1 = rawDatabase.filter(q => q.difficulty === 1).sort(() => Math.random() - 0.5);
+            let lvl2 = rawDatabase.filter(q => q.difficulty === 2).sort(() => Math.random() - 0.5);
+            let lvl3 = rawDatabase.filter(q => q.difficulty === 3).sort(() => Math.random() - 0.5);
+            currentQuestions = [...lvl1, ...lvl2, ...lvl3];
+        }
+
+        // --- FLASHCARDS ---
+        function setupFlashcard() {
+            const card = document.getElementById('main-flashcard');
+            card.classList.remove('flipped');
+            document.getElementById('flashcard-progress').innerText = `Fiche : ${flashIndex + 1} / ${currentQuestions.length}`;
+            document.getElementById('flash-question').innerText = currentQuestions[flashIndex].q;
+            document.getElementById('flash-answer').innerText = currentQuestions[flashIndex].a;
+        }
+        function nextFlashcard() {
+            if (flashIndex < currentQuestions.length - 1) { flashIndex++; setupFlashcard(); } 
+            else { showEndScreen("Félicitations !", "Toutes les fiches lues", "100%", false); }
+        }
+        function prevFlashcard() { if (flashIndex > 0) { flashIndex--; setupFlashcard(); } }
+
+        // --- QUIZ, SURVIE & VRAI/FAUX ---
+        function exitQuiz() { clearInterval(quizTimerInterval); toMain(); }
+
+        function setupQuizQuestion() {
+            // Fin des questionnaires de 20 questions
+            if ((currentMode === 'quiz' || currentMode === 'truefalse') && quizIndex >= 20) {
+                let avg = (totalTimeSpent / 20).toFixed(1);
+                showEndScreen("📝 Session Terminée !", `Analyse de tes performances de jeu :`, `${quizScore} / 20`, true, avg);
+                return;
+            }
+            // Fin du mode survie standard
+            if (quizIndex >= currentQuestions.length) {
+                showEndScreen("🌋 Dieu de la Survie !", `Tu as éliminé toutes les questions vivantes !`, `${quizScore} Pts`, false);
+                return;
+            }
+
+            const currentQ = currentQuestions[quizIndex];
+            currentQuestionTimeSpent = 0; // Reset pour cette question
+            
+            if(currentMode === 'survival') {
+                currentSurvivalLevel = currentQ.difficulty;
+                let lvlNames = ["Facile 🌱", "Moyen ⚡", "Difficile 🔥"];
+                document.getElementById('quiz-hud-mode').innerHTML = `Mode Survie <span class="level-badge">${lvlNames[currentSurvivalLevel-1]}</span>`;
+                document.getElementById('quiz-score').innerText = `Série : ${quizScore} 🔥`;
+                quizTimeLeft = currentSurvivalLevel === 1 ? 12 : (currentSurvivalLevel === 2 ? 9 : 6);
+            } else if (currentMode === 'truefalse') {
+                document.getElementById('quiz-hud-mode').innerText = `Vrai/Faux : ${quizIndex + 1} / 20`;
+                document.getElementById('quiz-score').innerText = `Score : ${quizScore}`;
+                quizTimeLeft = 10; // Plus nerveux en vrai/faux !
+            } else {
+                document.getElementById('quiz-hud-mode').innerText = `Question ${quizIndex + 1} / 20`;
+                document.getElementById('quiz-score').innerText = `Score : ${quizScore}`;
+                quizTimeLeft = 15;
+            }
+
+            maxQuestionTime = quizTimeLeft;
+            document.getElementById('quiz-question-text').innerText = currentQ.q;
+            
+            // Génération dynamique des boutons QCM (Ignoré en Vrai ou Faux)
+            if (currentMode === 'quiz' || currentMode === 'survival') {
+                let pool = rawDatabase.filter(item => item.id !== currentQ.id).map(item => item.a);
+                pool.sort(() => Math.random() - 0.5);
+                let choices = [currentQ.a, pool[0], pool[1], pool[2]].filter(Boolean);
+                choices.sort(() => Math.random() - 0.5);
+
+                const container = document.getElementById('quiz-options-container');
+                container.innerHTML = "";
+                
+                choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = choice;
+                    btn.onclick = () => handleQuizAnswer(btn, choice === currentQ.a);
+                    container.appendChild(btn);
+                });
+            }
+
+            handleQuizTimer();
+        }
+
+        function handleQuizTimer() {
+            clearInterval(quizTimerInterval);
+            const barFill = document.getElementById('timer-bar-fill');
+            
+            quizTimerInterval = setInterval(() => {
+                quizTimeLeft -= 0.1;
+                currentQuestionTimeSpent += 0.1;
+                let pct = (quizTimeLeft / maxQuestionTime) * 100;
+                barFill.style.width = `${pct}%`;
+                
+                if (quizTimeLeft <= 0) {
+                    clearInterval(quizTimerInterval);
+                    totalTimeSpent += maxQuestionTime; // Temps max ajouté en cas de time-out
+                    if(currentMode === 'survival') {
+                        showEndScreen("💥 Temps écoulé !", `Le chrono t'a éliminé au Niveau ${currentSurvivalLevel}.`, `${quizScore} Pts`, false);
+                    } else {
+                        quizIndex++;
+                        setupQuizQuestion();
+                    }
+                }
+            }, 100);
+        }
+
+        // Validation QCM (Quiz & Survie)
+        function handleQuizAnswer(selectedBtn, isCorrect) {
+            clearInterval(quizTimerInterval);
+            totalTimeSpent += currentQuestionTimeSpent; // Cumul du temps de réflexion
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                selectedBtn.classList.add('correct');
+                quizScore++;
+                setTimeout(() => { quizIndex++; setupQuizQuestion(); }, 1000);
+            } else {
+                selectedBtn.classList.add('wrong');
+                options.forEach(btn => {
+                    if (btn.innerText === currentQuestions[quizIndex].a) btn.classList.add('correct');
+                });
+                
+                setTimeout(() => {
+                    if(currentMode === 'survival') {
+                        showEndScreen("💀 Éliminé !", `Tu as fait une erreur au Niveau ${currentSurvivalLevel}.`, `${quizScore} Pts`, false);
+                    } else {
+                        quizIndex++;
+                        setupQuizQuestion();
+                    }
+                }, 1500);
+            }
+        }
+
+        // Validation Vrai ou Faux
+        function handleTrueFalseAnswer(userChoice) {
+            clearInterval(quizTimerInterval);
+            totalTimeSpent += currentQuestionTimeSpent;
+            const currentQ = currentQuestions[quizIndex];
+            const isCorrect = (userChoice === currentQ.isTrueStatement);
+
+            // Désactiver temporairement les boutons
+            document.querySelectorAll('.tf-grid button').forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                quizScore++;
+                document.getElementById('quiz-question-text').innerHTML = `🟢 <span style="color:var(--accent);">Correct !</span><br><br><small>${currentQ.a}</small>`;
+            } else {
+                document.getElementById('quiz-question-text').innerHTML = `🔴 <span style="color:#ef4444;">Erreur !</span><br><br><small>${currentQ.a}</small>`;
+            }
+
+            setTimeout(() => {
+                document.querySelectorAll('.tf-grid button').forEach(b => b.disabled = false);
+                quizIndex++;
+                setupQuizQuestion();
+            }, 2000);
+        }
+
+        // --- MATCH DES PAIRES ---
+        function setupPairsGame() {
+            const board = document.getElementById('pairs-board');
+            board.innerHTML = "";
+            selectedTiles = [];
+            
+            let sample = [...currentQuestions].sort(() => Math.random() - 0.5).slice(0, 5);
+            let tiles = [];
+
+            sample.forEach(item => {
+                tiles.push({ id: item.id, type: 'q', text: item.q.substring(0, 65) + (item.q.length > 65 ? '...' : '') });
+                tiles.push({ id: item.id, type: 'a', text: item.a.substring(0, 65) + (item.a.length > 65 ? '...' : '') });
+            });
+
+            tiles.sort(() => Math.random() - 0.5);
+
+            tiles.forEach(tileData => {
+                const tile = document.createElement('div');
+                tile.className = 'pair-tile';
+                tile.innerText = tileData.text;
+                tile.dataset.id = tileData.id;
+                tile.dataset.type = tileData.type;
+                
+                tile.onclick = () => {
+                    if (tile.classList.contains('selected') || tile.classList.contains('matched') || selectedTiles.length >= 2) return;
+                    tile.classList.add('selected');
+                    selectedTiles.push(tile);
+                    if (selectedTiles.length === 2) {
+                        pairMoves++;
+                        document.getElementById('pairs-moves').innerText = `Essais : ${pairMoves}`;
+                        checkPairMatch();
+                    }
+                };
+                board.appendChild(tile);
+            });
+        }
+
+        function checkPairMatch() {
+            const [t1, t2] = selectedTiles;
+            if (t1.dataset.id === t2.dataset.id && t1.dataset.type !== t2.dataset.type) {
+                setTimeout(() => {
+                    t1.className = 'pair-tile matched';
+                    t2.className = 'pair-tile matched';
+                    selectedTiles = [];
+                    if (document.querySelectorAll('.pair-tile.matched').length === 10) {
+                        showEndScreen("🧩 Victoire !", "Toutes les paires ont été liées !", `En ${pairMoves} coups`, false);
+                    }
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    t1.classList.remove('selected');
+                    t2.classList.remove('selected');
+                    selectedTiles = [];
+                }, 1000);
+            }
+        }
+
+        // --- FIN DE PARTIE ---
+        function showEndScreen(title, msg, finalScoreText, showStats = false, avgTime = 0) {
+            clearInterval(quizTimerInterval);
+            document.getElementById('end-title').innerText = title;
+            document.getElementById('end-message').innerText = msg;
+            document.getElementById('end-score-val').innerText = finalScoreText;
+            
+            const statsBox = document.getElementById('end-stats-box');
+            if (showStats) {
+                statsBox.style.display = "block";
+                document.getElementById('end-avg-time').innerText = avgTime;
+            } else {
+                statsBox.style.display = "none";
+            }
+            switchScreen('screen-end');
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objectif Brevet - Espace Révisions</title>
+    <style>
+        :root {
+            --space-bg: radial-gradient(circle at center, #1b1429 0%, #0b0711 100%);
+            --neon-purple: #9d4edd;
+            --neon-blue: #240046;
+            --neon-pink: #ff60a8;
+            --text-light: #f7f4f9;
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(157, 78, 221, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--space-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Étoiles animées en arrière-plan */
+        .stars {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            background: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            animation: starsMove 140s linear infinite;
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        @keyframes starsMove {
+            from { background-position: 0 0, 40px 60px, 130px 270px; }
+            to { background-position: 550px 1100px, 440px 760px, 430px 1170px; }
+        }
+
+        .container {
+            width: 92%;
+            max-width: 600px;
+            text-align: center;
+            z-index: 1;
+            padding: 20px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #ff60a8, #9d4edd, #00f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(157, 78, 221, 0.4));
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #a499b3;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 35px 25px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            margin-bottom: 25px;
+        }
+
+        /* Écrans de Configuration & Fin */
+        .screen { display: none; }
+        .active-screen { display: block; }
+
+        .setting-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .setting-group label {
+            display: block;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--neon-pink);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .radio-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .radio-tabs input[type="radio"] { display: none; }
+
+        .radio-tabs label {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .radio-tabs input[type="radio"]:checked + label {
+            background: rgba(157, 78, 221, 0.25);
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+            font-weight: bold;
+        }
+
+        /* Design de la Flashcard */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            margin-bottom: 25px;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            min-height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, rgba(36, 0, 70, 0.6) 0%, rgba(15, 4, 32, 0.8) 100%);
+            border-color: rgba(255, 96, 168, 0.3);
+        }
+
+        .question-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--neon-pink);
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .hint-text {
+            font-size: 0.8rem;
+            color: #a499b3;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        /* Boutons et Options */
+        .btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.6);
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-align: left;
+            padding-left: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background: rgba(157, 78, 221, 0.15);
+            border-color: var(--neon-purple);
+            transform: translateX(4px);
+        }
+
+        .correct { background: rgba(46, 213, 115, 0.25) !important; border-color: #2ed573 !important; color: #2ed573 !important; font-weight: bold;}
+        .wrong { background: rgba(255, 71, 87, 0.2) !important; border-color: #ff4757 !important; color: #ff4757 !important; opacity: 0.7; }
+
+        /* Évaluation Flashcards */
+        .flashcard-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn-success { background: #2ed573; color: #052e16; box-shadow: 0 4px 12px rgba(46, 213, 115, 0.3); }
+        .btn-danger { background: #ff4757; color: #fff; box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3); }
+
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <div class="container">
+        <header>
+            <h1>Flash-Brevet</h1>
+            <p>Révise l'histoire et la géo aux confins de la galaxie</p>
+        </header>
+
+        <div class="progress-bar" id="progress-container">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <div id="screen-setup" class="screen box active-screen">
+            <div class="setting-group">
+                <label>Matière</label>
+                <div class="radio-tabs">
+                    <input type="radio" id="subject-hist" name="quiz-subject" value="histoire" checked>
+                    <label for="subject-hist">⏳ Histoire</label>
+                    <input type="radio" id="subject-geo" name="quiz-subject" value="geographie">
+                    <label for="subject-geo">🌍 Géographie</label>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label>Mode de révision</label>
+                <div class="radio-tabs">
+                    <input type="radio" id="mode-qcm" name="quiz-mode" value="qcm" checked>
+                    <label for="mode-qcm">✨ Quiz QCM</label>
+                    <input type="radio" id="mode-flash" name="quiz-mode" value="flashcard">
+                    <label for="mode-flash">🃏 Flashcard</label>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label>Nombre de repères</label>
+                <div class="radio-tabs">
+                    <input type="radio" id="num-10" name="quiz-num" value="10" checked>
+                    <label for="num-10">10 Repères</label>
+                    <input type="radio" id="num-20" name="quiz-num" value="20">
+                    <label for="num-20">20 Repères</label>
+                    <input type="radio" id="num-all" name="quiz-num" value="all">
+                    <label for="num-all">Tous</label>
+                </div>
+            </div>
+            
+            <button class="btn" style="margin-top: 10px; width: 100%;" onclick="startQuiz()">Lancer la mission</button>
+        </div>
+
+        <div id="screen-qcm" class="screen">
+            <div class="box fade-in" id="qcm-box">
+                <div class="question-title" id="qcm-title">Trouve la réponse</div>
+                <div class="question-text" id="qcm-question-text">...</div>
+                <div class="options-container" id="qcm-options"></div>
+            </div>
+            <button class="btn" id="qcm-next-btn" style="display: none;">Suivant →</button>
+        </div>
+
+        <div id="screen-flashcard" class="screen">
+            <div class="flashcard-wrapper" onclick="flipCard()">
+                <div class="flashcard" id="card">
+                    <div class="card-face">
+                        <div class="question-title" id="flash-title-front">RECO</div>
+                        <div class="question-text" id="flash-text-front">...</div>
+                        <div class="hint-text">Clique sur la carte pour la retourner</div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="question-title">RÉPONSE</div>
+                        <div class="question-text" id="flash-text-back">...</div>
+                        <div class="hint-text">Clique à nouveau pour revoir l'énoncé</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="flash-controls" style="visibility: hidden;">
+                <p style="margin-bottom: 10px; font-size: 0.9rem; color: #a499b3;">Avais-tu la bonne réponse en tête ?</p>
+                <div class="flashcard-actions">
+                    <button class="btn btn-danger" onclick="handleFlashcardResult(false)">❌ Non</button>
+                    <button class="btn btn-success" onclick="handleFlashcardResult(true)">✅ Oui</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-end" class="screen box">
+            <h2 style="color: #00f0ff; margin-bottom: 15px; font-size: 1.8rem;">Mission Accomplie !</h2>
+            <div class="question-text" id="score-display" style="font-size: 1.2rem; margin-bottom: 25px;">...</div>
+            <button class="btn" onclick="returnToSetup()">Configurer une autre partie</button>
+        </div>
+    </div>
+
+    <script>
+        const dbHistoire = [
+            { date: "1914-1918", event: "Grande Guerre (Première guerre mondiale)" },
+            { date: "1916", event: "Verdun" },
+            { date: "1917", event: "Révolution(s) russe(s)" },
+            { date: "11 novembre 1918", event: "Armistice de la Première Guerre mondiale" },
+            { date: "1924-1953", event: "Staline au pouvoir en URSS" },
+            { date: "1933-1945", event: "L’Allemagne nazie d’Adolf Hitler" },
+            { date: "1936", event: "Victoire électorale et Lois sociales du Front populaire" },
+            { date: "1939-1945", event: "Seconde Guerre mondiale" },
+            { date: "18 juin 1940", event: "Appel du général De Gaulle à la radio de Londres" },
+            { date: "1940-1944", event: "Régime de Vichy" },
+            { date: "6 juin 1944", event: "Débarquement allié en Normandie" },
+            { date: "1944-1945", event: "Libération de la France, GPRF et rétablissement de la République (la IVe République)" },
+            { date: "1944-1945", event: "Droit de vote des femmes en France" },
+            { date: "8 mai 1945", event: "Capitulation allemande - fin de la Seconde Guerre mondiale en Europe" },
+            { date: "Août 1945", event: "Bombes atomiques sur Hiroshima et Nagasaki (Japon)" },
+            { date: "1945", event: "Création de l’ONU" },
+            { date: "1947-1991", event: "Guerre Froide" },
+            { date: "1947-1962", event: "Principale phase de décolonisation" },
+            { date: "1954-1962", event: "Guerre d’Algérie" },
+            { date: "1957", event: "Traité de Rome, création de l’UE" },
+            { date: "1958", event: "Naissance de la Ve République" },
+            { date: "1958-1969", event: "Les années de GAULLE" },
+            { date: "1962", event: "Indépendance de l’Algérie" },
+            { date: "1962", event: "Élection du président de la République au suffrage universel direct" },
+            { date: "1975", event: "Loi Veil sur l’Interruption Volontaire de Grossesse (IVG)" },
+            { date: "1981-1995", event: "Les années MITTERRAND et alternance" },
+            { date: "9 novembre 1989", event: "Chute du mur de Berlin" },
+            { date: "1991", event: "Éclatement : dislocation de l’URSS" },
+            { date: "1992", event: "Traité de Maastricht" },
+            { date: "1995-2007", event: "Les années CHIRAC" },
+            { date: "11 septembre 2001", event: "Attentats terroristes aux États-Unis" },
+            { date: "2002", event: "L'Euro devient monnaie européenne" }
+        ];
+
+        const dbGeographie = [
+            // France
+            { question: "Le territoire de la France comprend...", response: "La métropole et les territoires ultramarins (DROM-COM)" },
+            { question: "Quelles sont les aires urbaines françaises les plus peuplées ?", response: "Paris, Lyon, Marseille, Toulouse, Bordeaux, Lille, Nice, Nantes, Strasbourg, Rennes" },
+            { question: "Comment se répartit la population en France ?", response: "Fortes densités dans les grandes aires urbaines, les littoraux et les grandes vallées fluviales (diagonale des faibles densités au centre)" },
+            { question: "Exemples de métropoles dynamiques insérées dans la mondialisation :", response: "Paris (ville mondiale), Lyon, Toulouse (aéronautique), et espaces productifs innovants" },
+            { question: "Quels sont les points d'entrée majeurs du territoire français ?", response: "Les grands ports (Le Havre, Marseille), les aéroports (Roissy-CDG), les interfaces frontalières (Nord/Est) et les façades maritimes" },
+            { question: "Grands repères physiques français (Montagnes & Fleuves) :", response: "Alpes, Pyrénées, Massif Central / Fleuves : Seine, Loire, Garonne, Rhône, Rhin" },
+            { question: "Combien y a-t-il de régions métropolitaines en France ?", response: "13 régions métropolitaines (depuis la réforme territoriale)" },
+            { question: "Quels axes de transport structurent le territoire français ?", response: "Les réseaux en étoile autour de Paris (TGV, autoroutes) et les grands corridors européens (vallée du Rhône)" },
+            { question: "Quel est le grand trait de l'organisation du territoire national ?", response: "Une forte macrocéphalie urbaine et centralisation autour de Paris, nuancée par la métropolisation régionale" },
+            { question: "Quels sont les principaux territoires ultra-marins de la France ?", response: "Guadeloupe, Martinique, Guyane, La Réunion, Mayotte (DROM) / Nouvelle-Calédonie, Polynésie française (COM)" },
+            { question: "Citez quelques États francophones dans le monde :", response: "Belgique, Suisse, Canada (Québec), Sénégal, Côte d'Ivoire, République Démocratique du Congo" },
+            
+            // Union Européenne
+            { question: "Combien d'États membres compte l'Union européenne actuellement ?", response: "27 États membres" },
+            { question: "L'Union européenne face aux grands pôles économiques mondiaux :", response: "L'UE est l'une des 3 façades majeures de la Triade (avec l'Amérique du Nord et l'Asie orientale)" },
+            { question: "Où se trouvent les sièges des principales institutions européennes ?", response: "Bruxelles (Commission/Conseil), Strasbourg (Parlement), Luxembourg (Cour de justice)" },
+            { question: "Qu'est-ce que la mégalopole européenne ?", response: "Une dorsale de forte densité et d'activité allant de l'Italie du Nord au Sud de l'Angleterre en passant par l'axe rhénan" },
+            { question: "Donnez un exemple de région transfrontalière dynamique :", response: "L'espace Lille-Kortrijk-Tournai ou l'axe du Rhin supérieur (France-Allemagne-Suisse)" },
+            { question: "Quels sont les grands repères maritimes et fluviaux de l'Europe ?", response: "Mer Méditerranée, Mer du Nord, Mer Baltique, Océan Atlantique / Fleuves : le Rhin et le Danube" },
+            
+            // Grands repères terrestres
+            { question: "Quels sont les continents et grands cercles terrestres ?", response: "6 continents, 5 océans / Équateur, Tropiques (Cancer/Capricorne), Cercles polaires" },
+            { question: "Quelles sont les grandes zones thermiques du globe ?", response: "Zone chaude (intertropicale), zones tempérées, zones froides (polaires)" },
+            { question: "Quelles sont les 4 grandes chaînes de montagnes mondiales ?", response: "L'Himalaya (Asie), les Andes (Amérique du Sud), les Rocheuses (Amérique du Nord), les Alpes (Europe)" },
+            { question: "Quels sont les deux grands massifs de forêts denses mondiaux ?", response: "L'Amazonie (Amérique du Sud) et la forêt du Bassin du Congo (Afrique centrale)" },
+            { question: "Quel est le plus grand désert chaud du monde ?", response: "Le Sahara (Afrique du Nord)" },
+            { question: "Quels sont les grands fleuves mondiaux à connaître ?", response: "Le Nil, le Congo, le Gange, le Yangzi, l'Amazone, le Mississippi" },
+            { question: "Quels canaux et détroits forment des verrous maritimes stratégiques ?", response: "L'isthme (canal) de Suez, l'isthme (canal) de Panama, le détroit de Gibraltar" },
+            { question: "Quels sont les foyers de très fortes densités humaines ?", response: "Asie du Sud (Inde), Asie de l'Est (Chine), Europe, et les mégalopolises américaine et japonaise" },
+            { question: "Citez quelques grands États puissants ou très peuplés du globe :", response: "États-Unis, Chine, Inde, Japon, Brésil, Russie, Canada, Mexique, Indonésie, Égypte" },
+            { question: "Quelles sont les grandes métropoles mondiales majeures ?", response: "Tokyo, New York, Los Angeles, Mexico, São Paulo, Le Caire, Mumbai (Bombay), Shanghai, Pékin" }
+        ];
+
+        let database = [];
+        let chosenSubject = 'histoire';
+        let chosenMode = 'qcm';
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let qcmHasAnswered = false;
+        let isCardFlipped = false;
+
+        function changeScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(screenId).classList.add('active-screen');
+        }
+
+        function startQuiz() {
+            chosenSubject = document.querySelector('input[name="quiz-subject"]:checked').value;
+            chosenMode = document.querySelector('input[name="quiz-mode"]:checked').value;
+            const quantityVal = document.querySelector('input[name="quiz-num"]:checked').value;
+            
+            // Sélection de la base de données selon la matière
+            database = (chosenSubject === 'histoire') ? dbHistoire : dbGeographie;
+            
+            let count = quantityVal === 'all' ? database.length : parseInt(quantityVal);
+            if (count > database.length) count = database.length;
+            
+            // Mélange et sélection des questions
+            currentQuestions = [...database].sort(() => 0.5 - Math.random()).slice(0, count);
+            currentIndex = 0;
+            score = 0;
+
+            document.getElementById('progress-container').style.display = 'block';
+            updateProgressBar();
+
+            if (chosenMode === 'qcm') {
+                changeScreen('screen-qcm');
+                showQcmQuestion();
+            } else {
+                changeScreen('screen-flashcard');
+                showFlashcardQuestion();
+            }
+        }
+
+        function updateProgressBar() {
+            const percent = (currentIndex / currentQuestions.length) * 100;
+            document.getElementById('progress').style.width = `${percent}%`;
+        }
+
+        /* --- LOGIQUE MODE QCM --- */
+        function showQcmQuestion() {
+            qcmHasAnswered = false;
+            document.getElementById('qcm-next-btn').style.display = 'none';
+            updateProgressBar();
+
+            const box = document.getElementById('qcm-box');
+            box.classList.remove('fade-in');
+            void box.offsetWidth; 
+            box.classList.add('fade-in');
+
+            const item = currentQuestions[currentIndex];
+
+            if (chosenSubject === 'histoire') {
+                // Alternance Date -> Événement ou Événement -> Date
+                const isGuessingDate = Math.random() > 0.5;
+                if (isGuessingDate) {
+                    document.getElementById('qcm-title').textContent = "Trouve la bonne date";
+                    document.getElementById('qcm-question-text').textContent = item.event;
+                    buildQcmOptions(item.date, 'date');
+                } else {
+                    document.getElementById('qcm-title').textContent = "Quel est cet événement ?";
+                    document.getElementById('qcm-question-text').textContent = item.date;
+                    buildQcmOptions(item.event, 'event');
+                }
+            } else {
+                // Mode Géographie : Question -> Réponse
+                document.getElementById('qcm-title').textContent = "Repère Géographique";
+                document.getElementById('qcm-question-text').textContent = item.question;
+                buildQcmOptions(item.response, 'response');
+            }
+        }
+
+        function buildQcmOptions(correctAnswer, type) {
+            const container = document.getElementById('qcm-options');
+            container.innerHTML = '';
+
+            let pool = [];
+            if (chosenSubject === 'histoire') {
+                pool = database.map(i => type === 'date' ? i.date : i.event);
+            } else {
+                pool = database.map(i => i.response);
+            }
+
+            pool = [...new Set(pool)].filter(i => i !== correctAnswer);
+            let fakes = pool.sort(() => 0.5 - Math.random()).slice(0, 3);
+            let choices = [correctAnswer, ...fakes].sort(() => 0.5 - Math.random());
+
+            choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-btn');
+                btn.textContent = choice;
+                btn.onclick = () => {
+                    if (qcmHasAnswered) return;
+                    qcmHasAnswered = true;
+                    if (choice === correctAnswer) {
+                        btn.classList.add('correct');
+                        score++;
+                    } else {
+                        btn.classList.add('wrong');
+                        Array.from(container.children).forEach(b => {
+                            if (b.textContent === correctAnswer) b.classList.add('correct');
+                        });
+                    }
+                    document.getElementById('qcm-next-btn').style.display = 'inline-block';
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        document.getElementById('qcm-next-btn').onclick = () => {
+            currentIndex++;
+            if (currentIndex < currentQuestions.length) {
+                showQcmQuestion();
+            } else {
+                endQuiz();
+            }
+        };
+
+        /* --- LOGIQUE MODE FLASHCARD --- */
+        function showFlashcardQuestion() {
+            isCardFlipped = false;
+            document.getElementById('card').classList.remove('flipped');
+            document.getElementById('flash-controls').style.visibility = 'hidden';
+            updateProgressBar();
+
+            const item = currentQuestions[currentIndex];
+
+            if (chosenSubject === 'histoire') {
+                const isGuessingDate = Math.random() > 0.5;
+                if (isGuessingDate) {
+                    document.getElementById('flash-title-front').textContent = "Quelle est la date de cet événement ?";
+                    document.getElementById('flash-text-front').textContent = item.event;
+                    document.getElementById('flash-text-back').textContent = item.date;
+                } else {
+                    document.getElementById('flash-title-front').textContent = "Que s'est-il passé à cette date ?";
+                    document.getElementById('flash-text-front').textContent = item.date;
+                    document.getElementById('flash-text-back').textContent = item.event;
+                }
+            } else {
+                // Géographie
+                document.getElementById('flash-title-front').textContent = "Localise / Définis ce repère :";
+                document.getElementById('flash-text-front').textContent = item.question;
+                document.getElementById('flash-text-back').textContent = item.response;
+            }
+        }
+
+        function flipCard() {
+            isCardFlipped = !isCardFlipped;
+            const card = document.getElementById('card');
+            if (isCardFlipped) {
+                card.classList.add('flipped');
+                document.getElementById('flash-controls').style.visibility = 'visible';
+            } else {
+                card.classList.remove('flipped');
+            }
+        }
+
+        function handleFlashcardResult(wasCorrect) {
+            if (wasCorrect) score++;
+            currentIndex++;
+            
+            if (currentIndex < currentQuestions.length) {
+                showFlashcardQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        /* --- LOGIQUE ÉCRAN FIN --- */
+        function endQuiz() {
+            document.getElementById('progress').style.width = '100%';
+            changeScreen('screen-end');
+            
+            let comment = "Continue ton exploration, les connaissances vont venir ! 🚀";
+            const ratio = score / currentQuestions.length;
+            if (ratio >= 0.85) comment = "Niveau Intergalactique ! Tu es totalement prêt pour le Brevet ! 🌟";
+            else if (ratio >= 0.5) comment = "Bonne trajectoire ! Encore un peu d'entraînement. 🌍";
+
+            document.getElementById('score-display').innerHTML = `Score : <strong>${score}</strong> / ${currentQuestions.length}<br><br><span style="font-size:0.95rem; color:#a499b3; font-style:normal">${comment}</span>`;
+        }
+
+        function returnToSetup() {
+            document.getElementById('progress-container').style.display = 'none';
+            changeScreen('screen-setup');
+        }
+    </script>
+</body>
+</html>

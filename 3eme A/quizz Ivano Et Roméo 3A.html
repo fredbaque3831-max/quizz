@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Histoire & Géographie - QCM et Flashcards</title>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #d4c5a3;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-family: "IM Fell English", serif;
+      font-size: 3rem;
+      color: #3b240b;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #5a4a2a;
+      font-style: italic;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+    }
+
+    .paper {
+      background: #fdf6e3;
+      background-image: linear-gradient(#fdf6e3 0%, #f5e6c8 100%);
+      border: 1px solid #c9b896;
+      padding: 40px;
+      box-shadow: 0 0 0 6px #e8d5b5, 0 0 0 8px #c9b896, 5px 5px 15px rgba(0,0,0,0.25);
+      border-radius: 2px;
+      text-align: center;
+    }
+
+    .paper::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 10% 10%, rgba(0,0,0,0.03), transparent 40%),
+                  radial-gradient(circle at 90% 90%, rgba(0,0,0,0.03), transparent 40%);
+      pointer-events: none;
+      border-radius: 2px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .theme-choice {
+      display: inline-block;
+      width: 200px;
+      padding: 20px;
+      margin: 15px;
+      border: 3px solid #c9b896;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fffbf0;
+      transition: all 0.3s;
+    }
+
+    .theme-choice:hover {
+      background: #f5e6c8;
+      border-color: #8b6a3a;
+      transform: scale(1.05);
+    }
+
+    .theme-choice.selected {
+      background: #8b6a3a;
+      border-color: #a67c52;
+      color: #fff;
+    }
+
+    .theme-choice h3 {
+      font-family: "IM Fell English", serif;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .theme-choice p {
+      font-size: 0.95rem;
+    }
+
+    .number-choice {
+      display: inline-block;
+      width: 120px;
+      padding: 15px;
+      margin: 10px;
+      border: 3px solid #c9b896;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fffbf0;
+      font-size: 1.3rem;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .number-choice:hover {
+      background: #f5e6c8;
+      border-color: #8b6a3a;
+      transform: scale(1.05);
+    }
+
+    .number-choice.selected {
+      background: #8b6a3a;
+      color: #fff;
+      border-color: #a67c52;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      background: #8b6a3a;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border-radius: 6px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #a67c52;
+    }
+
+    .btn:disabled {
+      background: #c9b896;
+      color: #7a6a4a;
+      cursor: not-allowed;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: #c9b896;
+      color: #3b240b;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      background: #8b6a3a;
+      color: #fff;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .quiz-paper {
+      background: #fdf6e3;
+      background-image: linear-gradient(#fdf6e3 0%, #f5e6c8 100%);
+      border: 1px solid #c9b896;
+      padding: 40px;
+      padding-top: 70px;
+      box-shadow: 0 0 0 6px #e8d5b5, 0 0 0 8px #c9b896, 5px 5px 15px rgba(0,0,0,0.25);
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .question-number {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      padding: 6px 12px;
+      font-weight: bold;
+      border-radius: 3px;
+      font-size: 0.95rem;
+      z-index: 10;
+      color: #fff;
+      background: #8b6a3a;
+    }
+
+    .question {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #2b1d0e;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .choices {
+      display: grid;
+      gap: 12px;
+    }
+
+    .choice {
+      padding: 14px 16px;
+      border: 2px solid #c9b896;
+      background: #fffbf0;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1.05rem;
+      color: #2b1d0e;
+      font-family: Arial, Helvetica, sans-serif;
+      transition: 0.2s;
+      text-align: left;
+    }
+
+    .choice:hover {
+      background: #f5e6c8;
+      border-color: #8b6a3a;
+    }
+
+    .choice.correct {
+      background: #c8e6c9;
+      border-color: #2e7d32;
+    }
+
+    .choice.wrong {
+      background: #ffcdd2;
+      border-color: #c62828;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .score {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #3b240b;
+    }
+
+    .quiz-review {
+      margin-top: 25px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .review-item {
+      padding: 12px 16px;
+      border-radius: 4px;
+      font-weight: bold;
+      line-height: 1.5;
+      font-size: 1rem;
+      border: 2px solid #c9b896;
+    }
+
+    .review-correct {
+      background: #c8e6c9;
+      color: #1b5e20;
+    }
+
+    .review-wrong {
+      background: #ffcdd2;
+      color: #b71c1c;
+    }
+
+    .flashcard-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .flashcard {
+      width: 100%;
+      max-width: 650px;
+      min-height: 220px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      min-height: 220px;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 1.25rem;
+      background: #fdf6e3;
+      border: 2px solid #c9b896;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: Arial, Helvetica, sans-serif;
+      color: #2b1d0e;
+    }
+
+    .flashcard-back {
+      transform: rotateY(180deg);
+      background: #f5e6c8;
+      font-weight: bold;
+    }
+
+    .flash-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .progress {
+      font-weight: bold;
+      color: #5a4a2a;
+    }
+
+    .hint {
+      font-style: italic;
+      color: #7a6a4a;
+      font-size: 0.95rem;
+    }
+
+    .back-btn {
+      background: #c9b896;
+      margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+      background: #b8a585;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Histoire & Géographie</h1>
+    <p class="subtitle">Révise tes cours du collège</p>
+
+    <!-- PAGE 1 : CHOIX DU THÈME -->
+    <div id="pageTheme" class="page active">
+      <div class="paper">
+        <h2 style="font-family: 'IM Fell English', serif; font-size: 2rem; margin-bottom: 30px;">Choisis ton thème</h2>
+        
+        <div class="theme-choice" id="themeHistoire" onclick="selectTheme('histoire')">
+          <h3>Histoire</h3>
+          <p>Seulement des questions d'histoire</p>
+        </div>
+        
+        <div class="theme-choice" id="themeGeographie" onclick="selectTheme('geographie')">
+          <h3>Géographie</h3>
+          <p>Seulement des questions de géographie</p>
+        </div>
+        
+        <div class="theme-choice" id="themeLesDeux" onclick="selectTheme('lesdeux')">
+          <h3>Les deux</h3>
+          <p>Histoire et Géographie mélangées</p>
+        </div>
+
+        <button class="btn" id="btnValiderTheme" onclick="goToPageNombre()" disabled>Valider</button>
+      </div>
+    </div>
+
+    <!-- PAGE 2 : CHOIX DU NOMBRE DE QUESTIONS -->
+    <div id="pageNombre" class="page">
+      <div class="paper">
+        <button class="btn back-btn" onclick="goToPageTheme()">← Retour</button>
+        
+        <h2 style="font-family: 'IM Fell English', serif; font-size: 2rem; margin-bottom: 30px;">Choisis le nombre de questions</h2>
+        
+        <div class="number-choice" id="nb10" onclick="selectNombre(10)">10</div>
+        <div class="number-choice" id="nb20" onclick="selectNombre(20)">20</div>
+        <div class="number-choice" id="nb30" onclick="selectNombre(30)">30</div>
+
+        <button class="btn" id="btnValiderNombre" onclick="startQuiz()" disabled>Commencer le quiz</button>
+      </div>
+    </div>
+
+    <!-- PAGE 3 : QUIZ ET FLASHCARDS -->
+    <div id="pageQuiz" class="page">
+      <button class="btn back-btn" onclick="goToPageTheme()">← Nouveau quiz</button>
+
+      <div class="tabs">
+        <button class="tab-btn active" id="btnQuiz" onclick="showSection('quiz')">QCM</button>
+        <button class="tab-btn" id="btnFlash" onclick="showSection('flashcards')">Flashcards</button>
+      </div>
+
+      <div id="quiz" class="section active">
+        <div class="quiz-paper">
+          <div id="questionNumber" class="question-number"></div>
+          <div id="quizQuestion" class="question"></div>
+          <div id="quizChoices" class="choices"></div>
+          <div class="controls">
+            <button class="btn" id="prevBtn" onclick="prevQuestion()">Précédent</button>
+            <button class="btn" id="nextBtn" onclick="nextQuestion()">Suivant</button>
+            <button class="btn" onclick="restartQuiz()">Recommencer</button>
+          </div>
+          <div id="quizScore" class="score"></div>
+          <div id="quizReview" class="quiz-review"></div>
+        </div>
+      </div>
+
+      <div id="flashcards" class="section">
+        <div class="quiz-paper">
+          <div class="flashcard-area">
+            <div id="flashcard" class="flashcard" onclick="flipCard()">
+              <div class="flashcard-inner">
+                <div id="flashcardFront" class="flashcard-face"></div>
+                <div id="flashcardBack" class="flashcard-face flashcard-back"></div>
+              </div>
+            </div>
+            <div class="flash-controls">
+              <button class="btn" onclick="prevCard()">Carte précédente</button>
+              <button class="btn" onclick="nextCard()">Carte suivante</button>
+            </div>
+            <div id="flashProgress" class="progress"></div>
+            <div class="hint">Clique sur la carte pour voir la réponse.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DONNÉES HISTOIRE
+    const histoireData = [
+      { date: "1914-1918", event: "Grande Guerre (Première guerre mondiale)", theme: "histoire" },
+      { date: "1916", event: "Verdun", theme: "histoire" },
+      { date: "1917", event: "Révolution(s) russe(s)", theme: "histoire" },
+      { date: "11 novembre 1918", event: "Armistice de la Première Guerre mondiale", theme: "histoire" },
+      { date: "1924-1953", event: "Staline au pouvoir en URSS", theme: "histoire" },
+      { date: "1933-1945", event: "L'Allemagne nazie d'Adolf Hitler", theme: "histoire" },
+      { date: "1936", event: "Victoire électorale du Front populaire et lois sociales", theme: "histoire" },
+      { date: "1939-1945", event: "Seconde Guerre mondiale", theme: "histoire" },
+      { date: "18 juin 1940", event: "Appel du général De Gaulle à la radio de Londres", theme: "histoire" },
+      { date: "6 juin 1944", event: "Débarquement allié en Normandie", theme: "histoire" },
+      { date: "1944-1945", event: "Libération de la France, GPRF et IVe République", theme: "histoire" },
+      { date: "1944-1945", event: "Droit de vote des femmes en France", theme: "histoire" },
+      { date: "8 mai 1945", event: "Capitulation allemande - fin de la Seconde Guerre mondiale en Europe", theme: "histoire" },
+      { date: "Août 1945", event: "Bombes atomiques sur Hiroshima et Nagasaki", theme: "histoire" },
+      { date: "1940-1944", event: "Régime de Vichy", theme: "histoire" },
+      { date: "1945", event: "Création de l'ONU", theme: "histoire" },
+      { date: "1947-1991", event: "Guerre Froide", theme: "histoire" },
+      { date: "1947-1962", event: "Principale phase de décolonisation", theme: "histoire" },
+      { date: "1957", event: "Traité de Rome, création de l'UE", theme: "histoire" },
+      { date: "1958", event: "Naissance de la Ve République", theme: "histoire" },
+      { date: "1958-1969", event: "Les années de Gaulle", theme: "histoire" },
+      { date: "1954-1962", event: "Guerre d'Algérie", theme: "histoire" },
+      { date: "1962", event: "Indépendance de l'Algérie", theme: "histoire" },
+      { date: "1962", event: "Élection du président au suffrage universel direct", theme: "histoire" },
+      { date: "1975", event: "Loi Veil sur l'IVG", theme: "histoire" },
+      { date: "9 novembre 1989", event: "Chute du mur de Berlin", theme: "histoire" },
+      { date: "11 septembre 2001", event: "Attentats terroristes aux Etats-Unis", theme: "histoire" },
+      { date: "1992", event: "Traité de Maastricht", theme: "histoire" },
+      { date: "1981-1995", event: "Les années Mitterrand et alternance", theme: "histoire" },
+      { date: "1995-2007", event: "Les années Chirac", theme: "histoire" },
+      { date: "1991", event: "Dislocation de l'URSS", theme: "histoire" },
+      { date: "2002", event: "Euro, monnaie européenne", theme: "histoire" }
+    ];
+
+    // DONNÉES GÉOGRAPHIE
+    const geographieData = [
+      { concept: "Territoire français", detail: "Métropole + territoires ultramarins", theme: "geographie" },
+      { concept: "Aires urbaines françaises", detail: "Une dizaine d'aires urbaines parmi les plus peuplées", theme: "geographie" },
+      { concept: "Répartition population France", detail: "Espaces fortement peuplés en France", theme: "geographie" },
+      { concept: "Métropoles dynamiques", detail: "Aires urbaines, métropoles et espaces productifs en France", theme: "geographie" },
+      { concept: "Points d'entrée du territoire", detail: "Ports, aéroports, interfaces frontalières, façades maritimes", theme: "geographie" },
+      { concept: "Repères physiques France", detail: "Massifs montagneux, forestiers, vallées, fleuves, domaines bioclimatiques", theme: "geographie" },
+      { concept: "Régions métropolitaines", detail: "Les 13 régions métropolitaines en France", theme: "geographie" },
+      { concept: "Axes de transport", detail: "Principaux axes de transport en France", theme: "geographie" },
+      { concept: "Organisation territoire", detail: "Grands traits de l'organisation du territoire national français", theme: "geographie" },
+      { concept: "Territoires ultra-marins", detail: "Les territoires ultra-marins de la France", theme: "geographie" },
+      { concept: "États francophones", detail: "Quelques États francophones dans le monde", theme: "geographie" },
+      { concept: "États membres UE", detail: "Carte des 27 États membres de l'Union européenne et leurs capitales", theme: "geographie" },
+      { concept: "UE et pôles économiques", detail: "L'UE et les grands pôles économiques mondiaux", theme: "geographie" },
+      { concept: "Métropoles européennes", detail: "Principales métropoles européennes et sièges des institutions européennes", theme: "geographie" },
+      { concept: "Mégalopole européenne", detail: "La mégalopole européenne et les grands axes de l'espace européen", theme: "geographie" },
+      { concept: "Régions transfrontalières", detail: "Exemples de régions transfrontalières", theme: "geographie" },
+      { concept: "Façades maritimes UE", detail: "Façades maritimes européennes et fleuves principaux", theme: "geographie" },
+      { concept: "Continents et océans", detail: "Continents, océans, Équateur, tropiques, cercles polaires", theme: "geographie" },
+      { concept: "Zones climatiques", detail: "Zones chaude, tempérée, froide et domaines bioclimatiques", theme: "geographie" },
+      { concept: "Chaînes de montagnes", detail: "Himalaya, Andes, Rocheuses, Alpes", theme: "geographie" },
+      { concept: "Forêts denses", detail: "Amazonie, Afrique centrale", theme: "geographie" },
+      { concept: "Déserts", detail: "Sahara", theme: "geographie" },
+      { concept: "Grands fleuves", detail: "Nil, Congo, Gange, Yangzi, Amazone, Mississippi", theme: "geographie" },
+      { concept: "Isthmes et détroits", detail: "Isthmes de Suez et Panama, détroit de Gibraltar", theme: "geographie" },
+      { concept: "Foyers de densité", detail: "Foyers de très fortes densités humaines, mégalopoles américaines et japonaises", theme: "geographie" },
+      { concept: "Grands États", detail: "Égypte, Inde, Chine, Japon, USA, Canada, Mexique, Brésil, Indonésie", theme: "geographie" },
+      { concept: "Mégalopoles mondiales", detail: "Tokyo, Le Caire, Pékin, Shanghai, Bombay, Calcutta, New-York, Dakka, Sao Paulo, Mexico", theme: "geographie" }
+    ];
+
+    // VARIABLES GLOBALES
+    let selectedTheme = null;
+    let selectedNombre = null;
+    let quizData = [];
+    let quizIndex = 0;
+    let score = 0;
+    let answered = [];
+    let userAnswers = [];
+    let flashIndex = 0;
+
+    function shuffleArray(arr) {
+      return arr.sort(() => Math.random() - 0.5);
+    }
+
+    // === GESTION PAGE THÈME ===
+    function selectTheme(theme) {
+      selectedTheme = theme;
+      
+      document.getElementById("themeHistoire").classList.remove("selected");
+      document.getElementById("themeGeographie").classList.remove("selected");
+      document.getElementById("themeLesDeux").classList.remove("selected");
+      
+      if (theme === "histoire") {
+        document.getElementById("themeHistoire").classList.add("selected");
+      } else if (theme === "geographie") {
+        document.getElementById("themeGeographie").classList.add("selected");
+      } else if (theme === "lesdeux") {
+        document.getElementById("themeLesDeux").classList.add("selected");
+      }
+      
+      document.getElementById("btnValiderTheme").disabled = false;
+    }
+
+    function goToPageNombre() {
+      document.getElementById("pageTheme").classList.remove("active");
+      document.getElementById("pageNombre").classList.add("active");
+    }
+
+    function goToPageTheme() {
+      document.getElementById("pageQuiz").classList.remove("active");
+      document.getElementById("pageTheme").classList.add("active");
+      selectedTheme = null;
+      selectedNombre = null;
+      document.getElementById("themeHistoire").classList.remove("selected");
+      document.getElementById("themeGeographie").classList.remove("selected");
+      document.getElementById("themeLesDeux").classList.remove("selected");
+      document.getElementById("btnValiderTheme").disabled = true;
+    }
+
+    // === GESTION PAGE NOMBRE ===
+    function selectNombre(nb) {
+      selectedNombre = nb;
+      
+      document.getElementById("nb10").classList.remove("selected");
+      document.getElementById("nb20").classList.remove("selected");
+      document.getElementById("nb30").classList.remove("selected");
+      
+      document.getElementById("nb" + nb).classList.add("selected");
+      document.getElementById("btnValiderNombre").disabled = false;
+    }
+
+    function startQuiz() {
+      // Préparer les données selon le thème
+      if (selectedTheme === "histoire") {
+        quizData = [...histoireData];
+      } else if (selectedTheme === "geographie") {
+        quizData = [...geographieData];
+      } else if (selectedTheme === "lesdeux") {
+        quizData = [...histoireData, ...geographieData];
+      }
+      
+      // Mélanger et limiter au nombre choisi
+      quizData = shuffleArray(quizData).slice(0, selectedNombre);
+      
+      // Réinitialiser les variables
+      quizIndex = 0;
+      score = 0;
+      answered = Array(quizData.length).fill(false);
+      userAnswers = Array(quizData.length).fill(null);
+      flashIndex = 0;
+      
+      // Passer à la page quiz
+      document.getElementById("pageNombre").classList.remove("active");
+      document.getElementById("pageQuiz").classList.add("active");
+      
+      // Afficher la première question
+      buildQuizQuestion(quizIndex);
+      renderFlashcard();
+    }
+
+    // === GESTION QUIZ ===
+    function updateQuestionNumber() {
+      document.getElementById("questionNumber").textContent = `Question ${quizIndex + 1} / ${quizData.length}`;
+    }
+
+    function buildQuizQuestion(index) {
+      const current = quizData[index];
+      const isHistoire = current.theme === "histoire";
+      
+      if (isHistoire) {
+        const options = shuffleArray([
+          current.date,
+          ...shuffleArray(quizData.filter((_, i) => i !== index).map(x => x.date)).slice(0, 3)
+        ]);
+        
+        document.getElementById("quizQuestion").textContent = `Quel est la date de : ${current.event} ?`;
+        
+        const choicesDiv = document.getElementById("quizChoices");
+        choicesDiv.innerHTML = "";
+        
+        options.forEach(option => {
+          const btn = document.createElement("button");
+          btn.className = "choice";
+          btn.textContent = option;
+          btn.onclick = () => selectAnswer(btn, option, current.date);
+          choicesDiv.appendChild(btn);
+        });
+      } else {
+        const options = shuffleArray([
+          current.concept,
+          ...shuffleArray(quizData.filter((_, i) => i !== index).map(x => x.concept)).slice(0, 3)
+        ]);
+        
+        document.getElementById("quizQuestion").textContent = `Quel est ce concept : ${current.detail} ?`;
+        
+        const choicesDiv = document.getElementById("quizChoices");
+        choicesDiv.innerHTML = "";
+        
+        options.forEach(option => {
+          const btn = document.createElement("button");
+          btn.className = "choice";
+          btn.textContent = option;
+          btn.onclick = () => selectAnswer(btn, option, current.concept);
+          choicesDiv.appendChild(btn);
+        });
+      }
+      
+      updateQuestionNumber();
+      document.getElementById("quizScore").textContent = `Score : ${score} / ${quizData.length}`;
+      document.getElementById("prevBtn").disabled = quizIndex === 0;
+      document.getElementById("nextBtn").disabled = false;
+      document.getElementById("nextBtn").textContent = quizIndex === quizData.length - 1 ? "Terminer" : "Suivant";
+      document.getElementById("quizReview").innerHTML = "";
+    }
+
+    function selectAnswer(button, selected, correct) {
+      const buttons = document.querySelectorAll(".choice");
+      buttons.forEach(btn => btn.disabled = true);
+      
+      if (!answered[quizIndex]) {
+        userAnswers[quizIndex] = selected;
+        
+        if (selected === correct) {
+          score++;
+          button.classList.add("correct");
+        } else {
+          button.classList.add("wrong");
+          buttons.forEach(btn => {
+            if (btn.textContent === correct) btn.classList.add("correct");
+          });
+        }
+        
+        answered[quizIndex] = true;
+        document.getElementById("quizScore").textContent = `Score : ${score} / ${quizData.length}`;
+      }
+    }
+
+    function showReview() {
+      const reviewDiv = document.getElementById("quizReview");
+      reviewDiv.innerHTML = "";
+      
+      quizData.forEach((item, index) => {
+        const userAnswer = userAnswers[index];
+        const isCorrect = item.theme === "histoire" ? userAnswer === item.date : userAnswer === item.concept;
+        
+        const div = document.createElement("div");
+        div.className = `review-item ${isCorrect ? "review-correct" : "review-wrong"}`;
+        
+        if (item.theme === "histoire") {
+          div.innerHTML = `
+            <div>${index + 1}. ${item.event}</div>
+            <div>Ta réponse : ${userAnswer ? userAnswer : "Aucune réponse"}</div>
+            <div>Bonne réponse : ${item.date}</div>
+          `;
+        } else {
+          div.innerHTML = `
+            <div>${index + 1}. ${item.detail}</div>
+            <div>Ta réponse : ${userAnswer ? userAnswer : "Aucune réponse"}</div>
+            <div>Bonne réponse : ${item.concept}</div>
+          `;
+        }
+        
+        reviewDiv.appendChild(div);
+      });
+    }
+
+    function nextQuestion() {
+      if (quizIndex < quizData.length - 1) {
+        quizIndex++;
+        buildQuizQuestion(quizIndex);
+      } else {
+        document.getElementById("quizQuestion").textContent = "Quiz terminé !";
+        document.getElementById("quizChoices").innerHTML = "";
+        document.getElementById("quizScore").textContent = `Score final : ${score} / ${quizData.length}`;
+        document.getElementById("nextBtn").disabled = true;
+        document.getElementById("prevBtn").disabled = true;
+        document.getElementById("questionNumber").textContent = "";
+        showReview();
+      }
+    }
+
+    function prevQuestion() {
+      if (quizIndex > 0) {
+        quizIndex--;
+        buildQuizQuestion(quizIndex);
+      }
+    }
+
+    function restartQuiz() {
+      quizIndex = 0;
+      score = 0;
+      answered = Array(quizData.length).fill(false);
+      userAnswers = Array(quizData.length).fill(null);
+      document.getElementById("nextBtn").disabled = false;
+      buildQuizQuestion(quizIndex);
+    }
+
+    // === GESTION FLASHCARDS ===
+    function renderFlashcard() {
+      const card = quizData[flashIndex];
+      
+      if (card.theme === "histoire") {
+        document.getElementById("flashcardFront").textContent = card.event;
+        document.getElementById("flashcardBack").textContent = card.date;
+      } else {
+        document.getElementById("flashcardFront").textContent = card.concept;
+        document.getElementById("flashcardBack").textContent = card.detail;
+      }
+      
+      document.getElementById("flashProgress").textContent = `Carte ${flashIndex + 1} / ${quizData.length}`;
+      document.getElementById("flashcard").classList.remove("flipped");
+    }
+
+    function flipCard() {
+      document.getElementById("flashcard").classList.toggle("flipped");
+    }
+
+    function nextCard() {
+      if (flashIndex < quizData.length - 1) {
+        flashIndex++;
+        renderFlashcard();
+      }
+    }
+
+    function prevCard() {
+      if (flashIndex > 0) {
+        flashIndex--;
+        renderFlashcard();
+      }
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(sectionId).classList.add("active");
+      
+      const btnQuiz = document.getElementById("btnQuiz");
+      const btnFlash = document.getElementById("btnFlash");
+      
+      if (sectionId === "quiz") {
+        btnQuiz.classList.add("active");
+        btnFlash.classList.remove("active");
+      } else {
+        btnFlash.classList.add("active");
+        btnQuiz.classList.remove("active");
+      }
+    }
+  </script>
+</body>
+</html>

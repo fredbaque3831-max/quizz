@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Master Pro : Tout-en-un</title>
+    <style>
+        :root {
+            --jaune: #FFD700; --orange: #FF8C00; --rose: #FF1493;
+            --rose-pale: #FFB6C1; --primary: #4B0082; --bg: #FFF5EE;
+            --success: #2ecc71; --danger: #e74c3c;
+            --current-theme: var(--orange);
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--primary); }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        header { 
+            text-align: center; margin-bottom: 20px; 
+            background: linear-gradient(90deg, var(--jaune), var(--orange), var(--rose));
+            padding: 25px; border-radius: 25px; color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .menu-section { 
+            background: white; padding: 20px; border-radius: 25px; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05); margin-bottom: 25px;
+            border: 3px solid var(--current-theme);
+        }
+
+        .label-menu { font-weight: bold; text-align: center; margin: 10px 0 5px 0; font-size: 0.85rem; color: #888; text-transform: uppercase; }
+        .btn-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+        
+        .btn { 
+            padding: 12px 20px; border: none; border-radius: 50px; cursor: pointer; 
+            font-weight: bold; transition: 0.3s; background: #f0f0f0; font-size: 0.95rem;
+            box-shadow: 0 3px 0 #ddd;
+        }
+
+        .cat-btn.active-hist { background: var(--orange) !important; color: white; box-shadow: 0 3px 0 #b36200; }
+        .cat-btn.active-geo { background: var(--jaune) !important; color: var(--primary); box-shadow: 0 3px 0 #ccac00; }
+        .mode-btn.active { background: var(--rose) !important; color: white; box-shadow: 0 3px 0 #b00e66; }
+        .len-btn.active { background: var(--primary) !important; color: white; box-shadow: 0 3px 0 #2a004a; }
+
+        /* Leçons */
+        .lesson-card { background: white; padding: 35px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); line-height: 1.6; }
+        .lesson-card h2 { color: var(--orange); border-bottom: 3px solid var(--jaune); padding-bottom: 5px; }
+        .lesson-card h3 { color: var(--rose); margin-top: 25px; border-left: 5px solid var(--rose); padding-left: 10px; }
+        .lesson-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+        .repere-item { background: #fffcf0; padding: 10px; border-radius: 10px; border: 1px solid #ffeeba; }
+        .repere-item b { color: var(--orange); }
+
+        /* Flashcards */
+        .card-box { perspective: 1000px; height: 280px; cursor: pointer; margin: 20px auto; max-width: 500px; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .card-box.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { 
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
+            display: flex; align-items: center; justify-content: center; 
+            border-radius: 30px; padding: 30px; box-sizing: border-box; border: 5px solid white; font-size: 1.4rem; font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .card-front { background: var(--rose-pale); color: var(--rose); }
+        .card-back { background: var(--rose); color: white; transform: rotateY(180deg); }
+
+        /* Quiz */
+        .quiz-card { background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 4px solid var(--current-theme); }
+        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 15px; background: #fff; cursor: pointer; font-family: inherit; font-size: 1.05rem; text-align: left; }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success) !important; }
+        .wrong { background: var(--danger) !important; color: white; border-color: var(--danger) !important; }
+        .show-correct { border: 5px solid var(--success) !important; font-weight: bold; }
+
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; }
+        .next-btn { background: var(--rose); color: white; padding: 15px 35px; border-radius: 50px; border:none; cursor:pointer; font-weight:bold; font-size: 1.1rem; box-shadow: 0 4px 0 #b00e66; }
+        .score-box { background: var(--jaune); padding: 10px 20px; border-radius: 15px; font-weight: bold; font-size: 1.1rem; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🌟 Objectif Brevet 2026 🌟</h1>
+    </header>
+
+    <div class="menu-section">
+        <div class="label-menu">1. CHOISIS TA MATIÈRE</div>
+        <div class="btn-group">
+            <button id="cat-histoire" class="btn cat-btn active-hist" onclick="updateConfig('cat', 'histoire')">📜 HISTOIRE</button>
+            <button id="cat-geographie" class="btn cat-btn" onclick="updateConfig('cat', 'geographie')">🌍 GÉOGRAPHIE</button>
+        </div>
+
+        <div class="label-menu">2. QUE VEUX-TU FAIRE ?</div>
+        <div class="btn-group">
+            <button id="mode-lesson" class="btn mode-btn active" onclick="updateConfig('mode', 'lesson')">📖 LIRE LA LEÇON</button>
+            <button id="mode-flash" class="btn mode-btn" onclick="updateConfig('mode', 'flash')">⚡ FLASHCARDS</button>
+            <button id="mode-qcm" class="btn mode-btn" onclick="updateConfig('mode', 'qcm')">✅ TEST QCM</button>
+        </div>
+
+        <div id="len-selector" class="hidden">
+            <div class="label-menu">3. NOMBRE DE QUESTIONS</div>
+            <div class="btn-group">
+                <button id="len-10" class="btn len-btn active" onclick="updateConfig('len', 10)">10</button>
+                <button id="len-20" class="btn len-btn" onclick="updateConfig('len', 20)">20</button>
+                <button id="len-32" class="btn len-btn" onclick="updateConfig('len', 32)">32 (Max)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-lesson" class="lesson-card">
+        <div id="lesson-content"></div>
+    </div>
+
+    <div id="view-flash" class="hidden">
+        <div class="card-box" onclick="this.classList.toggle('flipped')">
+            <div class="card-inner">
+                <div class="card-front" id="flash-q">...</div>
+                <div class="card-back" id="flash-a">...</div>
+            </div>
+        </div>
+        <div class="controls">
+            <span id="flash-info" style="font-weight: bold; font-size: 1.2rem;">1 / 10</span>
+            <button class="next-btn" onclick="nextQuestion()">Suivant ➡️</button>
+        </div>
+    </div>
+
+    <div id="view-qcm" class="hidden">
+        <div class="quiz-card">
+            <h3 id="qcm-q" style="margin-top: 0; color: var(--primary);">...</h3>
+            <div id="qcm-options"></div>
+            <p id="qcm-feedback" style="text-align: center; font-weight: bold; min-height: 25px;"></p>
+        </div>
+        <div class="controls">
+            <div class="score-box" id="qcm-score">Score: 0</div>
+            <button class="next-btn" onclick="nextQuestion()">Suivant ➡️</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Base de données unifiée (Leçon + Questions)
+const appData = {
+    histoire: {
+        title: "Repères d'Histoire (3ème)",
+        intro: "Voici les dates et notions clés à connaître pour l'épreuve d'histoire.",
+        items: [
+            {q:"1914-1918", a:"La Grande Guerre (Première Guerre mondiale)"},
+            {q:"1916", a:"Bataille de Verdun"},
+            {q:"1917", a:"Révolutions russes (Février et Octobre)"},
+            {q:"11 novembre 1918", a:"Armistice de la Grande Guerre"},
+            {q:"1924-1953", a:"Staline au pouvoir en URSS"},
+            {q:"1933-1945", a:"Hitler au pouvoir / Allemagne Nazie"},
+            {q:"1936", a:"Victoire du Front Populaire (Congés payés)"},
+            {q:"1939-1945", a:"Seconde Guerre mondiale"},
+            {q:"18 juin 1940", a:"Appel du Général De Gaulle (Résistance)"},
+            {q:"1940-1944", a:"Régime de Vichy (Pétain et Collaboration)"},
+            {q:"1944-1945", a:"Libération de la France et GPRF"},
+            {q:"1944", a:"Droit de vote des femmes en France"},
+            {q:"8 mai 1945", a:"Capitulation de l'Allemagne nazie"},
+            {q:"Août 1945", a:"Bombes atomiques sur Hiroshima et Nagasaki"},
+            {q:"1945", a:"Création de l'ONU"},
+            {q:"1947-1991", a:"Guerre Froide (USA vs URSS)"},
+            {q:"1957", a:"Traité de Rome (Création de la CEE)"},
+            {q:"1958", a:"Naissance de la Vème République (De Gaulle)"},
+            {q:"1962", a:"Indépendance de l'Algérie"},
+            {q:"1975", a:"Loi Veil sur l'IVG (Avortement)"},
+            {q:"1981", a:"Alternance : François Mitterrand (PS) élu"},
+            {q:"1989", a:"Chute du mur de Berlin"},
+            {q:"1992", a:"Traité de Maastricht (Création de l'UE)"},
+            {q:"11 sept 2001", a:"Attentats terroristes aux USA"},
+            {q:"2002", a:"Mise en circulation de l'Euro"},
+            {q:"Guerre Totale", a:"Conflit mobilisant civils, soldats et économie"},
+            {q:"Totalitarisme", a:"Régime à parti unique, terreur et propagande"},
+            {q:"Antisémitisme", a:"Doctrine de haine envers les Juifs"},
+            {q:"Shoah", a:"Génocide des Juifs pendant la 2ème GM"},
+            {q:"Résistance", a:"Lutte contre l'occupation nazie et Vichy"},
+            {q:"Décolonisation", a:"Processus d'indépendance des colonies"},
+            {q:"Alternance", a:"Changement de majorité politique (gauche/droite)"}
+        ]
+    },
+    geographie: {
+        title: "Repères de Géographie (3ème)",
+        intro: "Les espaces français, européens et mondiaux à maîtriser.",
+        items: [
+            {q:"Les 5 fleuves FR", a:"La Seine, la Loire, le Rhône, la Garonne, le Rhin"},
+            {q:"Les 5 massifs FR", a:"Alpes, Pyrénées, Massif Central, Jura, Vosges"},
+            {q:"Nombre de régions", a:"13 régions métropolitaines"},
+            {q:"DROM", a:"Guadeloupe, Guyane, Martinique, Mayotte, Réunion"},
+            {q:"Mégalopole Européenne", a:"Espace dense de Londres à Milan (Dorsale)"},
+            {q:"Union Européenne", a:"Association de 27 pays européens"},
+            {q:"Siège de l'UE", a:"Bruxelles (Belgique)"},
+            {q:"Parlement Européen", a:"Strasbourg (France)"},
+            {q:"Espace Schengen", a:"Zone de libre circulation des personnes"},
+            {q:"Héliotropisme", a:"Attrait pour les régions ensoleillées (Sud)"},
+            {q:"Littoralisation", a:"Concentration de l'activité sur les côtes"},
+            {q:"Métropolisation", a:"Concentration de la population dans les grandes villes"},
+            {q:"Périurbanisation", a:"Étalement des villes sur les campagnes"},
+            {q:"Mondialisation", a:"Multiplication des échanges à l'échelle mondiale"},
+            {q:"Mégalopole mondiale", a:"Ex: Boston-Washington aux USA"},
+            {q:"Pays émergents", a:"Pays à croissance rapide (ex: BRICS)"},
+            {q:"Francophonie", a:"Ensemble des locuteurs du français"},
+            {q:"Paris", a:"Seule ville mondiale française"},
+            {q:"Himalaya", a:"Chaîne de montagnes la plus haute (Asie)"},
+            {q:"Andes", a:"Chaîne de montagnes (Amérique du Sud)"},
+            {q:"Rocheuses", a:"Chaîne de montagnes (Amérique du Nord)"},
+            {q:"Amazone", a:"Fleuve le plus puissant (Am. du Sud)"},
+            {q:"Nil", a:"Long fleuve africain"},
+            {q:"Gange", a:"Fleuve sacré (Inde)"},
+            {q:"Sahara", a:"Plus grand désert chaud (Afrique)"},
+            {q:"Tokyo", a:"Plus grande métropole du monde"},
+            {q:"ZEE", a:"Zone Économique Exclusive (en mer)"},
+            {q:"Conflit d'usage", a:"Opposition pour l'utilisation d'un espace"},
+            {q:"Productivisme", a:"Recherche de rendement maximal (agriculture)"},
+            {q:"Interface", a:"Zone de contact entre deux espaces"},
+            {q:"Relocalisation", a:"Retour d'une activité dans le pays d'origine"},
+            {q:"PIB", a:"Indicateur de richesse d'un pays"}
+        ]
+    }
+};
+
+let config = { cat: 'histoire', mode: 'lesson', len: 10 };
+let sessionPool = [];
+let currentIdx = 0;
+let score = 0;
+
+function updateConfig(type, value) {
+    config[type] = value;
+    document.querySelectorAll(`.${type}-btn`).forEach(b => b.classList.remove('active', 'active-hist', 'active-geo'));
+    document.querySelectorAll(`.len-btn`).forEach(b => b.classList.remove('active'));
+    
+    const btn = document.getElementById(`${type === 'cat' ? 'cat' : type === 'mode' ? 'mode' : 'len'}-${value}`);
+    if(type === 'cat') {
+        btn.classList.add(value === 'histoire' ? 'active-hist' : 'active-geo');
+        document.documentElement.style.setProperty('--current-theme', value === 'histoire' ? 'var(--orange)' : 'var(--jaune)');
+    } else {
+        btn.classList.add('active');
+    }
+
+    document.getElementById('len-selector').classList.toggle('hidden', config.mode === 'lesson');
+    initSession();
+}
+
+function initSession() {
+    if(config.mode !== 'lesson') {
+        let fullList = [...appData[config.cat].items];
+        fullList.sort(() => Math.random() - 0.5);
+        sessionPool = fullList.slice(0, config.len);
+    }
+    currentIdx = 0;
+    score = 0;
+    render();
+}
+
+function render() {
+    document.getElementById('view-lesson').classList.toggle('hidden', config.mode !== 'lesson');
+    document.getElementById('view-flash').classList.toggle('hidden', config.mode !== 'flash');
+    document.getElementById('view-qcm').classList.toggle('hidden', config.mode !== 'qcm');
+
+    if(config.mode === 'lesson') {
+        const data = appData[config.cat];
+        let html = `<h2>${data.title}</h2><p>${data.intro}</p><div class="lesson-grid">`;
+        data.items.forEach(item => {
+            html += `<div class="repere-item"><b>${item.q}</b> : ${item.a}</div>`;
+        });
+        html += `</div>`;
+        document.getElementById('lesson-content').innerHTML = html;
+    } else {
+        const item = sessionPool[currentIdx];
+        if(config.mode === 'flash') {
+            document.getElementById('flash-q').innerText = item.q;
+            document.getElementById('flash-a').innerText = item.a;
+            document.getElementById('flash-info').innerText = `${currentIdx + 1} / ${sessionPool.length}`;
+            document.querySelector('.card-box').classList.remove('flipped');
+        } else {
+            document.getElementById('qcm-q').innerText = "À quoi correspond : " + item.q + " ?";
+            document.getElementById('qcm-feedback').innerText = "";
+            document.getElementById('qcm-score').innerText = `Score: ${score}`;
+            
+            let choices = [item.a];
+            while(choices.length < 3) {
+                let r = appData[config.cat].items[Math.floor(Math.random()*appData[config.cat].items.length)].a;
+                if(!choices.includes(r)) choices.push(r);
+            }
+            choices.sort(() => Math.random() - 0.5);
+            
+            const container = document.getElementById('qcm-options');
+            container.innerHTML = "";
+            choices.forEach(c => {
+                const b = document.createElement('button');
+                b.className = "option-btn";
+                b.innerText = c;
+                b.onclick = () => {
+                    const all = document.querySelectorAll('.option-btn');
+                    all.forEach(x => x.disabled = true);
+                    if(c === item.a) { b.classList.add('correct'); score++; }
+                    else { b.classList.add('wrong'); all.forEach(x => { if(x.innerText === item.a) x.classList.add('show-correct'); }); }
+                    document.getElementById('qcm-score').innerText = `Score: ${score}`;
+                };
+                container.appendChild(b);
+            });
+        }
+    }
+}
+
+function nextQuestion() {
+    currentIdx++;
+    if(currentIdx >= sessionPool.length) {
+        alert(`Série terminée ! Score final : ${score} / ${sessionPool.length}`);
+        initSession();
+    } else {
+        render();
+    }
+}
+
+// Lancement direct
+updateConfig('cat', 'histoire');
+</script>
+
+</body>
+</html>

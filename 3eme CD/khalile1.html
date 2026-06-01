@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Révisions Brevet – Histoire (Dates, Quiz & Flashcards)</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #1e293b;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #1e293b;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .modes {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.2s;
+    }
+
+    .btn-mode {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-mode.active {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: white;
+    }
+
+    .card-list {
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      border-radius: 8px;
+      background: #0f172a;
+    }
+
+    .card {
+      padding: 10px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .date { font-weight: bold; color: #60a5fa; }
+
+    /* QUIZ */
+    .btn-answer {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: white;
+    }
+
+    .btn-answer.correct { background: #14532d; border-color: #22c55e; }
+    .btn-answer.wrong { background: #7f1d1d; border-color: #ef4444; }
+
+    /* FLASHCARDS */
+    .flashcard {
+      width: 100%;
+      height: 180px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: transform 0.4s;
+      margin-bottom: 15px;
+    }
+
+    .flashcard:hover {
+      transform: scale(1.03);
+    }
+
+    .flashcard.flipped {
+      background: #1e3a8a;
+      color: #bfdbfe;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Révisions Brevet – Histoire</h1>
+  <p>Dates importantes • Quiz • Flashcards</p>
+</header>
+
+<div class="container">
+
+  <div class="modes">
+    <button id="btnRevision" class="btn-mode active">Révisions</button>
+    <button id="btnQuiz" class="btn-mode">Quiz</button>
+    <button id="btnFlash" class="btn-mode">Flashcards</button>
+  </div>
+
+  <!-- RÉVISIONS -->
+  <section id="sectionRevision">
+    <h2>Fiches de révision</h2>
+    <div class="card-list" id="cardList"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="sectionQuiz" style="display:none;">
+    <h2>Quiz</h2>
+    <p id="quizQuestion"></p>
+    <div id="quizAnswers"></div>
+    <button id="btnNext" class="btn-secondary">Question suivante</button>
+    <p id="quizStatus"></p>
+    <p id="quizScore"></p>
+  </section>
+
+  <!-- FLASHCARDS -->
+  <section id="sectionFlash" style="display:none;">
+    <h2>Flashcards</h2>
+    <div id="flashcard" class="flashcard">Clique pour voir</div>
+    <button id="btnFlashNext" class="btn-secondary">Flashcard suivante</button>
+  </section>
+
+</div>
+
+<script>
+  const dates = [
+    { date: "1914-1918", event: "Première Guerre mondiale" },
+    { date: "1916", event: "Bataille de Verdun" },
+    { date: "1917", event: "Révolution(s) russe(s)" },
+    { date: "11 novembre 1918", event: "Armistice de la Première Guerre mondiale" },
+    { date: "1924-1953", event: "Staline au pouvoir en URSS" },
+    { date: "1933-1945", event: "Allemagne nazie d’Hitler" },
+    { date: "1936", event: "Front populaire" },
+    { date: "1939-1945", event: "Seconde Guerre mondiale" },
+    { date: "18 juin 1940", event: "Appel du général de Gaulle" },
+    { date: "6 juin 1944", event: "Débarquement allié en Normandie" },
+    { date: "1944-1945", event: "Libération de la France" },
+    { date: "1944-1945", event: "Droit de vote des femmes" },
+    { date: "8 mai 1945", event: "Capitulation allemande" },
+    { date: "août 1945", event: "Bombes atomiques au Japon" },
+    { date: "1940-1944", event: "Régime de Vichy" },
+    { date: "1945", event: "Création de l’ONU" },
+    { date: "1947-1991", event: "Guerre froide" },
+    { date: "1947-1962", event: "Décolonisation" },
+    { date: "1957", event: "Traité de Rome" },
+    { date: "1958", event: "Naissance de la Ve République" },
+    { date: "1954-1962", event: "Guerre d’Algérie" },
+    { date: "1962", event: "Indépendance de l’Algérie" },
+    { date: "1975", event: "Loi Veil (IVG)" },
+    { date: "1989", event: "Chute du mur de Berlin" },
+    { date: "2001", event: "Attentats du 11 septembre" },
+    { date: "1992", event: "Traité de Maastricht" },
+    { date: "2002", event: "Euro monnaie européenne" }
+  ];
+
+  // DOM
+  const btnRevision = document.getElementById("btnRevision");
+  const btnQuiz = document.getElementById("btnQuiz");
+  const btnFlash = document.getElementById("btnFlash");
+
+  const sectionRevision = document.getElementById("sectionRevision");
+  const sectionQuiz = document.getElementById("sectionQuiz");
+  const sectionFlash = document.getElementById("sectionFlash");
+
+  const cardList = document.getElementById("cardList");
+
+  const quizQuestion = document.getElementById("quizQuestion");
+  const quizAnswers = document.getElementById("quizAnswers");
+  const quizStatus = document.getElementById("quizStatus");
+  const quizScore = document.getElementById("quizScore");
+  const btnNext = document.getElementById("btnNext");
+
+  const flashcard = document.getElementById("flashcard");
+  const btnFlashNext = document.getElementById("btnFlashNext");
+
+  let score = 0;
+  let total = 0;
+  let currentFlash = 0;
+  let showingBack = false;
+
+  // Mode switching
+  function show(mode) {
+    sectionRevision.style.display = mode === "rev" ? "block" : "none";
+    sectionQuiz.style.display = mode === "quiz" ? "block" : "none";
+    sectionFlash.style.display = mode === "flash" ? "block" : "none";
+
+    btnRevision.classList.toggle("active", mode === "rev");
+    btnQuiz.classList.toggle("active", mode === "quiz");
+    btnFlash.classList.toggle("active", mode === "flash");
+  }
+
+  btnRevision.onclick = () => show("rev");
+  btnQuiz.onclick = () => { show("quiz"); newQuestion(); };
+  btnFlash.onclick = () => { show("flash"); loadFlashcard(); };
+
+  // Révisions
+  function loadCards() {
+    cardList.innerHTML = "";
+    dates.forEach(d => {
+      cardList.innerHTML += `
+        <div class="card">
+          <div class="date">${d.date}</div>
+          <div>${d.event}</div>
+        </div>
+      `;
+    });
+  }
+  loadCards();
+
+  // Quiz
+  function newQuestion() {
+    quizStatus.textContent = "";
+    quizAnswers.innerHTML = "";
+
+    const q = dates[Math.floor(Math.random() * dates.length)];
+    quizQuestion.textContent = "Quel est la date de : " + q.event + " ?";
+
+    const wrong = dates.filter(d => d.date !== q.date)
+                       .sort(() => Math.random() - 0.5)
+                       .slice(0, 3)
+                       .map(d => d.date);
+
+    const options = [q.date, ...wrong].sort(() => Math.random() - 0.5);
+
+    options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "btn-answer";
+      btn.textContent = opt;
+      btn.onclick = () => checkAnswer(btn, opt, q.date);
+      quizAnswers.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(btn, answer, correct) {
+    total++;
+    if (answer === correct) {
+      score++;
+      btn.classList.add("correct");
+      quizStatus.textContent = "Bonne réponse !";
+    } else {
+      btn.classList.add("wrong");
+      quizStatus.textContent = "Mauvaise réponse. La bonne date était : " + correct;
+    }
+    quizScore.textContent = `Score : ${score} / ${total}`;
+  }
+
+  btnNext.onclick = newQuestion;
+
+  // Flashcards
+  function loadFlashcard() {
+    const d = dates[currentFlash];
+    flashcard.textContent = d.event;
+    flashcard.classList.remove("flipped");
+    showingBack = false;
+  }
+
+  flashcard.onclick = () => {
+    const d = dates[currentFlash];
+    if (!showingBack) {
+      flashcard.textContent = d.date;
+      flashcard.classList.add("flipped");
+    } else {
+      flashcard.textContent = d.event;
+      flashcard.classList.remove("flipped");
+    }
+    showingBack = !showingBack;
+  };
+
+  btnFlashNext.onclick = () => {
+    currentFlash = (currentFlash + 1) % dates.length;
+    loadFlashcard();
+  };
+</script>
+
+</body>
+</html>

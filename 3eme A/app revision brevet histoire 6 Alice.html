@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révision Brevet Histoire - Thème Bordeaux</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bordeaux: #6B2737;
+            --bordeaux-light: #8B3A4F;
+            --beige: #F5E6E0;
+            --white: #F8F8F8;
+            --gold: #D4AF37;
+            --text: #333333;
+            --shadow: rgba(107, 39, 55, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Lora', serif;
+        }
+
+        body {
+            background-color: var(--beige);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 6px 25px var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--gold);
+        }
+
+        header {
+            background: var(--bordeaux);
+            color: var(--white);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: "🍷";
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 20px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--bordeaux);
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 10px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            background: var(--bordeaux-light);
+            padding: 15px;
+            gap: 10px;
+            border-bottom: 1px solid var(--gold);
+        }
+
+        .nav button {
+            padding: 12px 25px;
+            background: var(--white);
+            color: var(--bordeaux);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav button:hover {
+            background: var(--bordeaux);
+            color: var(--white);
+        }
+
+        .section {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Frise chronologique en tableau */
+        .timeline-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .timeline-table th {
+            background: var(--bordeaux);
+            color: var(--white);
+            padding: 15px;
+            text-align: left;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        .timeline-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--beige);
+        }
+
+        .timeline-table tr:nth-child(even) {
+            background: rgba(139, 58, 79, 0.05);
+        }
+
+        .timeline-table tr:hover {
+            background: rgba(139, 58, 79, 0.1);
+        }
+
+        .event-date {
+            font-weight: 600;
+            color: var(--bordeaux);
+        }
+
+        .event-context {
+            font-size: 14px;
+            color: #7F7F7F;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* Quiz */
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quiz-question {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--gold);
+        }
+
+        .quiz-question h3 {
+            margin-top: 0;
+            color: var(--bordeaux);
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            background: var(--beige);
+            border: 1px solid var(--bordeaux-light);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .quiz-option:hover {
+            background: var(--bordeaux);
+            color: var(--white);
+            border-color: var(--bordeaux);
+        }
+
+        .quiz-option.selected {
+            background: var(--bordeaux);
+            color: var(--white);
+            border-color: var(--bordeaux);
+        }
+
+        .quiz-option.correct {
+            background: #2ECC71;
+            color: var(--white);
+            border-color: #2ECC71;
+        }
+
+        .quiz-option.incorrect {
+            background: #E74C3C;
+            color: var(--white);
+            border-color: #E74C3C;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+            background: var(--beige);
+            border: 1px solid var(--gold);
+        }
+
+        .quiz-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .quiz-controls button {
+            padding: 12px 25px;
+            background: var(--bordeaux);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .quiz-controls button:hover {
+            background: var(--bordeaux-light);
+        }
+
+        /* Flashcards */
+        .flashcards-container {
+            max-width: 600px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            margin-bottom: 25px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px var(--shadow);
+            border-radius: 8px;
+            border: 1px solid var(--gold);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .flashcard-front {
+            background: var(--white);
+            color: var(--bordeaux);
+            transform: rotateY(0deg);
+        }
+
+        .flashcard-back {
+            background: var(--bordeaux);
+            color: var(--white);
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-content {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .flashcard-context {
+            font-size: 14px;
+            font-style: italic;
+            opacity: 0.9;
+            margin-top: 10px;
+            font-family: 'Lora', serif;
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .flashcard-controls button {
+            padding: 12px 25px;
+            background: var(--bordeaux);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .flashcard-controls button:hover {
+            background: var(--bordeaux-light);
+        }
+
+        /* Fiches de révision */
+        .revision-sheets {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .revision-sheet {
+            background: var(--white);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .revision-sheet:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px var(--shadow);
+        }
+
+        .revision-sheet h3 {
+            color: var(--bordeaux);
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 8px;
+        }
+
+        .revision-sheet-content {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--beige);
+        }
+
+        .revision-sheet.active .revision-sheet-content {
+            display: block;
+        }
+
+        .revision-sheet-summary {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 15px;
+        }
+
+        .revision-sheet-events {
+            margin-top: 10px;
+        }
+
+        .revision-sheet-events h4 {
+            color: var(--bordeaux-light);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .revision-sheet-events ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .revision-sheet-events li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--beige);
+            font-size: 14px;
+        }
+
+        .revision-sheet-events li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Révision Brevet Histoire</h1>
+        </header>
+
+        <div class="nav">
+            <button onclick="showSection('timeline')">Frise Chronologique</button>
+            <button onclick="showSection('quiz')">Quiz</button>
+            <button onclick="showSection('flashcards')">Flashcards</button>
+            <button onclick="showSection('revision-sheets')">Fiches de Révision</button>
+        </div>
+
+        <div id="timeline" class="section active">
+            <h2>Frise Chronologique</h2>
+            <table class="timeline-table">
+                <thead>
+                    <tr>
+                        <th>Période / Date</th>
+                        <th>Événement</th>
+                    </tr>
+                </thead>
+                <tbody id="timeline-body">
+                    <!-- Les événements seront ajoutés ici par JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="quiz" class="section">
+            <h2>Quiz</h2>
+            <div class="quiz-container" id="quiz-container">
+                <!-- Le quiz sera ajouté ici par JavaScript -->
+            </div>
+        </div>
+
+        <div id="flashcards" class="section">
+            <h2>Flashcards</h2>
+            <div class="flashcards-container" id="flashcards-container">
+                <!-- Les flashcards seront ajoutées ici par JavaScript -->
+            </div>
+            <div class="flashcard-controls">
+                <button onclick="prevFlashcard()">Précédent</button>
+                <button onclick="nextFlashcard()">Suivant</button>
+                <button onclick="randomFlashcard()">Aléatoire</button>
+            </div>
+        </div>
+
+        <div id="revision-sheets" class="section">
+            <h2>Fiches de Révision</h2>
+            <p style="color: #7F7F7F; margin-bottom: 20px;">Cliquez sur une fiche pour afficher son contenu.</p>
+            <div class="revision-sheets" id="revision-sheets-container">
+                <!-- Les fiches seront ajoutées ici par JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des événements historiques avec contexte
+        const events = [
+            {
+                date: "1914-1918",
+                event: "Grande Guerre (Première Guerre mondiale)",
+                context: "Conflit mondial opposant les Alliés (France, Royaume-Uni, Russie) aux Empires centraux (Allemagne, Autriche-Hongrie). Marqué par la guerre de tranchées et l'utilisation massive de nouvelles technologies (chars, avions, gaz).",
+                theme: ["Guerres mondiales"]
+            },
+            {
+                date: "1916",
+                event: "Bataille de Verdun",
+                context: "Symbole de la résistance française. Une des batailles les plus meurtrières de la Première Guerre mondiale, avec plus de 300 000 morts. Les soldats français, commandés par le général Pétain, résistent héroïquement.",
+                theme: ["Guerres mondiales"]
+            },
+            {
+                date: "1917",
+                event: "Révolution(s) russe(s)",
+                context: "Chute du tsar Nicolas II en février (révolution bourgeoise), puis prise de pouvoir par les bolcheviks de Lénine en octobre (révolution communiste). La Russie quitte la guerre en 1918.",
+                theme: ["Guerres mondiales", "Régimes totalitaires"]
+            },
+            {
+                date: "11 novembre 1918",
+                event: "Armistice de la Première Guerre mondiale",
+                context: "Fin des combats sur le front ouest. L'Allemagne, vaincue, signe l'armistice à Rethondes. Le traité de Versailles (1919) officialisera la paix, mais imposera des réparations lourdes à l'Allemagne.",
+                theme: ["Guerres mondiales"]
+            },
+            {
+                date: "1924-1953",
+                event: "Staline au pouvoir en URSS",
+                context: "Staline instaure un régime totalitaire en URSS : culte de la personnalité, répression (Goulag), collectivisation des terres et industrialisation forcée. L'URSS devient une superpuissance.",
+                theme: ["Régimes totalitaires"]
+            },
+            {
+                date: "1933-1945",
+                event: "L’Allemagne nazie d’Adolf Hitler",
+                context: "Hitler arrive au pouvoir en 1933 et instaure une dictature. Politique expansionniste (Anschluss, annexion des Sudètes), persécution des Juifs (lois de Nuremberg, 1935) et préparation de la guerre.",
+                theme: ["Régimes totalitaires"]
+            },
+            {
+                date: "1936",
+                event: "Victoire électorale du Front populaire et Lois sociales",
+                context: "Coalition de gauche (socialistes, communistes, radicaux) menée par Léon Blum. Mesures sociales majeures : congés payés (2 semaines), semaine de 40h, conventions collectives.",
+                theme: ["La France entre les deux guerres"]
+            },
+            {
+                date: "1939-1945",
+                event: "Seconde Guerre mondiale",
+                context: "Conflit le plus meurtrier de l'histoire (60 millions de morts). Oppose l'Axe (Allemagne, Italie, Japon) aux Alliés (France, Royaume-Uni, URSS, États-Unis). Marqué par le génocide des Juifs (Shoah) et l'utilisation de l'arme atomique.",
+                theme: ["Guerres mondiales"]
+            },
+            {
+                date: "18 juin 1940",
+                event: "Appel du général De Gaulle",
+                context: "Depuis Londres, De Gaulle lance un appel à la résistance sur les ondes de la BBC. Il refuse l'armistice et incite les Français à continuer le combat. Symbole de la France libre.",
+                theme: ["Seconde Guerre mondiale", "La France dans la guerre"]
+            },
+            {
+                date: "6 juin 1944",
+                event: "Débarquement allié en Normandie (Jour J)",
+                context: "Opération Overlord : les Alliés débarquent sur les plages de Normandie (Utah, Omaha, etc.). Début de la libération de l'Europe occupée par l'Allemagne nazie.",
+                theme: ["Seconde Guerre mondiale"]
+            },
+            {
+                date: "1944-1945",
+                event: "Libération de la France et rétablissement de la République (IVe République)",
+                context: "La France est libérée par les Alliés et la Résistance. Le GPRF (Gouvernement provisoire) rétablit la démocratie. La IVe République est instaurée en 1946, avec un régime parlementaire instable.",
+                theme: ["La France dans la guerre", "La Ve République"]
+            },
+            {
+                date: "1944-1945",
+                event: "Droit de vote des femmes en France",
+                context: "Les femmes obtiennent enfin le droit de voter et d'être éligibles, grâce à l'ordonnance du 21 avril 1944. Elles voteront pour la première fois en 1945.",
+                theme: ["Société et droits"]
+            },
+            {
+                date: "8 mai 1945",
+                event: "Capitulation allemande",
+                context: "Fin de la Seconde Guerre mondiale en Europe. L'Allemagne nazie capitule sans condition. Le 2 septembre 1945, le Japon capitule à son tour après les bombes atomiques.",
+                theme: ["Seconde Guerre mondiale"]
+            },
+            {
+                date: "Août 1945",
+                event: "Bombes atomiques sur Hiroshima et Nagasaki",
+                context: "Les États-Unis lancent deux bombes atomiques sur le Japon (6 août : Hiroshima, 9 août : Nagasaki). Bilan : plus de 200 000 morts. Le Japon capitule le 2 septembre 1945.",
+                theme: ["Seconde Guerre mondiale"]
+            },
+            {
+                date: "1940-1944",
+                event: "Régime de Vichy",
+                context: "Régime autoritaire dirigé par le maréchal Pétain, collaborant avec l'Allemagne nazie. Politiques antisémites (statut des Juifs, 1940), répression et propagande. La Milice française participe à la traque des résistants et des Juifs.",
+                theme: ["Seconde Guerre mondiale", "La France dans la guerre"]
+            },
+            {
+                date: "1945",
+                event: "Création de l’ONU",
+                context: "Organisation des Nations Unies créée pour maintenir la paix et la sécurité internationales. Remplace la SDN (inefficace). Siège à New York. La France est membre permanent du Conseil de sécurité.",
+                theme: ["Relations internationales"]
+            },
+            {
+                date: "1947-1991",
+                event: "Guerre Froide",
+                context: "Affrontement idéologique entre les États-Unis (capitalisme, démocratie) et l'URSS (communisme, dictature). Course aux armements, guerre par procuration (Corée, Vietnam), crise des missiles de Cuba (1962).",
+                theme: ["Relations internationales", "Régimes totalitaires"]
+            },
+            {
+                date: "1947-1962",
+                event: "Principale phase de décolonisation",
+                context: "Les colonies (Inde, Indochine, Algérie, etc.) obtiennent leur indépendance. La France perd son empire colonial après des guerres coûteuses (Indochine, Algérie).",
+                theme: ["Décolonisation"]
+            },
+            {
+                date: "1957",
+                event: "Traité de Rome",
+                context: "Création de la CEE (Communauté Économique Européenne) par 6 pays (France, RFA, Italie, Belgique, Pays-Bas, Luxembourg). Début de la construction européenne.",
+                theme: ["Construction européenne"]
+            },
+            {
+                date: "1958",
+                event: "Naissance de la Ve République",
+                context: "Crise politique en Algérie et instabilité gouvernementale poussent De Gaulle au pouvoir. Nouvelle Constitution : régime semi-présidentiel avec un président fort.",
+                theme: ["La Ve République"]
+            },
+            {
+                date: "1958-1969",
+                event: "Les années De Gaulle",
+                context: "Modernisation de la France (nucléaire civil et militaire, grands projets industriels), politique étrangère indépendante (OTAN, Algérie). Mai 68 et démission en 1969 après un référendum perdu.",
+                theme: ["La Ve République"]
+            },
+            {
+                date: "1954-1962",
+                event: "Guerre d’Algérie",
+                context: "Guerre d'indépendance de l'Algérie, alors département français. Violente répression, torture, attentats du FLN. Fin par les accords d'Évian (1962) : indépendance de l'Algérie.",
+                theme: ["Décolonisation", "La Ve République"]
+            },
+            {
+                date: "1962",
+                event: "Indépendance de l’Algérie",
+                context: "Fin de 132 ans de colonisation française. Exode des Pieds-Noirs (Européens d'Algérie) et des Harkis (Algériens pro-français). Traumatisme durable en France.",
+                theme: ["Décolonisation"]
+            },
+            {
+                date: "1962",
+                event: "Élection du président au suffrage universel direct",
+                context: "Réforme majeure de la Ve République : le président est élu directement par le peuple (et non plus par un collège de grands électeurs). Renforce la légitimité démocratique.",
+                theme: ["La Ve République"]
+            },
+            {
+                date: "1975",
+                event: "Loi Veil sur l’IVG",
+                context: "Loi portée par Simone Veil, rescapée d'Auschwitz. Légalise l'interruption volontaire de grossesse (IVG) en France, malgré une forte opposition. Symbole des droits des femmes.",
+                theme: ["Société et droits"]
+            },
+            {
+                date: "9 novembre 1989",
+                event: "Chute du mur de Berlin",
+                context: "Symbole de la fin de la Guerre Froide. Le mur, construit en 1961 pour séparer Berlin-Est (communiste) et Berlin-Ouest (capitaliste), tombe après des semaines de manifestations. L'Allemagne sera réunifiée en 1990.",
+                theme: ["Relations internationales"]
+            },
+            {
+                date: "11 septembre 2001",
+                event: "Attentats terroristes aux États-Unis",
+                context: "Attaques d'Al-Qaïda contre les tours du World Trade Center (New York) et le Pentagone. Bilan : près de 3 000 morts. Début de la 'guerre contre le terrorisme' et des interventions en Afghanistan et en Irak.",
+                theme: ["Relations internationales"]
+            },
+            {
+                date: "1992",
+                event: "Traité de Maastricht",
+                context: "Création de l'Union Européenne (UE). Introduction de la citoyenneté européenne, politique étrangère commune et préparation de la monnaie unique (euro).",
+                theme: ["Construction européenne"]
+            },
+            {
+                date: "1981-1995",
+                event: "Les années Mitterrand",
+                context: "Premier président socialiste de la Ve République. Politiques sociales (retraite à 60 ans, 5e semaine de congés payés), décentralisation, abolition de la peine de mort (1981).",
+                theme: ["La Ve République"]
+            },
+            {
+                date: "1995-2007",
+                event: "Les années Chirac",
+                context: "Présidence marquée par la reconnaissance de la responsabilité de la France dans la Shoah (1995), le passage à l'euro (2002) et l'opposition à la guerre en Irak (2003).",
+                theme: ["La Ve République"]
+            },
+            {
+                date: "1991",
+                event: "Dislocation de l’URSS",
+                context: "Effondrement de l'Union Soviétique, marquant la fin de la Guerre Froide. Les républiques soviétiques deviennent indépendantes (Russie, Ukraine, etc.). Les États-Unis restent seule superpuissance.",
+                theme: ["Relations internationales", "Régimes totalitaires"]
+            },
+            {
+                date: "2002",
+                event: "Mise en circulation de l’euro",
+                context: "L'euro devient la monnaie officielle de 12 pays de l'UE (dont la France). Symbole de l'intégration européenne, mais aussi source de débats économiques.",
+                theme: ["Construction européenne"]
+            }
+        ];
+
+        // Fiches de révision par thème
+        const revisionSheets = [
+            {
+                title: "Les deux Guerres Mondiales",
+                summary: "Les deux conflits mondiaux du XXe siècle ont marqué l'histoire par leur ampleur et leur brutalité. La Première Guerre mondiale (1914-1918) est caractérisée par la guerre de position et l'utilisation de nouvelles technologies, tandis que la Seconde Guerre mondiale (1939-1945) voit l'émergence de régimes totalitaires, de génocides et de l'arme atomique.",
+                events: [
+                    "1914-1918 : Grande Guerre (Première Guerre mondiale)",
+                    "1916 : Bataille de Verdun",
+                    "11 novembre 1918 : Armistice de la Première Guerre mondiale",
+                    "1939-1945 : Seconde Guerre mondiale",
+                    "6 juin 1944 : Débarquement allié en Normandie",
+                    "8 mai 1945 : Capitulation allemande",
+                    "Août 1945 : Bombes atomiques sur Hiroshima et Nagasaki"
+                ]
+            },
+            {
+                title: "Régimes Totalitaires",
+                summary: "Le XXe siècle a vu l'émergence de régimes totalitaires, notamment en URSS avec Staline et en Allemagne avec Hitler. Ces régimes se caractérisent par un contrôle absolu de l'État sur la société, une propagande massive, une répression violente et un culte de la personnalité.",
+                events: [
+                    "1917 : Révolution(s) russe(s)",
+                    "1924-1953 : Staline au pouvoir en URSS",
+                    "1933-1945 : L’Allemagne nazie d’Adolf Hitler",
+                    "1940-1944 : Régime de Vichy"
+                ]
+            },
+            {
+                title: "La Ve République",
+                summary: "Instaurée en 1958 sous De Gaulle, la Ve République est un régime semi-présidentiel qui renforce le pouvoir exécutif. Elle est marquée par des périodes de modernisation, des crises politiques (Mai 68) et des réformes sociales majeures.",
+                events: [
+                    "1958 : Naissance de la Ve République",
+                    "1958-1969 : Les années De Gaulle",
+                    "1962 : Élection du président au suffrage universel direct",
+                    "1981-1995 : Les années Mitterrand",
+                    "1995-2007 : Les années Chirac"
+                ]
+            },
+            {
+                title: "Décolonisation",
+                summary: "Après la Seconde Guerre mondiale, les colonies réclament leur indépendance. La France, comme d'autres puissances européennes, doit faire face à des mouvements nationalistes et à des conflits violents, notamment en Indochine et en Algérie.",
+                events: [
+                    "1947-1962 : Principale phase de décolonisation",
+                    "1954-1962 : Guerre d’Algérie",
+                    "1962 : Indépendance de l’Algérie"
+                ]
+            },
+            {
+                title: "Construction Européenne",
+                summary: "L'Europe se construit progressivement après la Seconde Guerre mondiale pour éviter de nouveaux conflits. Le traité de Rome (1957) crée la CEE, et le traité de Maastricht (1992) instaure l'Union Européenne et prépare l'euro.",
+                events: [
+                    "1957 : Traité de Rome, création de la CEE",
+                    "1992 : Traité de Maastricht",
+                    "2002 : Mise en circulation de l’euro"
+                ]
+            },
+            {
+                title: "Société et Droits",
+                summary: "Le XXe siècle est marqué par des avancées sociales et des luttes pour les droits. En France, le Front populaire instaure des mesures sociales majeures, et la loi Veil légalise l'IVG en 1975, symbolisant les droits des femmes.",
+                events: [
+                    "1936 : Victoire électorale du Front populaire et Lois sociales",
+                    "1944-1945 : Droit de vote des femmes en France",
+                    "1975 : Loi Veil sur l’IVG"
+                ]
+            },
+            {
+                title: "Relations Internationales",
+                summary: "La Guerre Froide (1947-1991) domine les relations internationales de la seconde moitié du XXe siècle. L'ONU est créée en 1945 pour maintenir la paix, mais les tensions entre les États-Unis et l'URSS mènent à des crises comme celle de Cuba (1962).",
+                events: [
+                    "1945 : Création de l’ONU",
+                    "1947-1991 : Guerre Froide",
+                    "9 novembre 1989 : Chute du mur de Berlin",
+                    "11 septembre 2001 : Attentats terroristes aux États-Unis",
+                    "1991 : Dislocation de l’URSS"
+                ]
+            }
+        ];
+
+        // Variables globales
+        let currentQuizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let currentFlashcardIndex = 0;
+        let flashcards = [];
+        let isFrontDate = true;
+
+        // Afficher une section
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            if (sectionId === 'timeline') {
+                displayTimelineTable();
+            } else if (sectionId === 'quiz') {
+                generateQuiz();
+            } else if (sectionId === 'flashcards') {
+                generateFlashcards();
+            } else if (sectionId === 'revision-sheets') {
+                displayRevisionSheets();
+            }
+        }
+
+        // Frise chronologique en tableau
+        function displayTimelineTable() {
+            const tbody = document.getElementById('timeline-body');
+            tbody.innerHTML = '';
+            events.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="event-date">${item.date}</span></td>
+                    <td>
+                        <strong>${item.event}</strong>
+                        <div class="event-context">${item.context}</div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Quiz
+        function generateQuiz() {
+            currentQuizQuestions = [...events].sort(() => 0.5 - Math.random()).slice(0, 5);
+            currentQuestionIndex = 0;
+            score = 0;
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const quizContainer = document.getElementById('quiz-container');
+            const question = currentQuizQuestions[currentQuestionIndex];
+            const options = generateOptions(question.date);
+
+            quizContainer.innerHTML = `
+                <div class="quiz-question">
+                    <h3>Question ${currentQuestionIndex + 1} / ${currentQuizQuestions.length}</h3>
+                    <p><strong>${question.event}</strong></p>
+                    <div class="event-context">${question.context}</div>
+                    <p style="margin-top: 15px;">Quelle est la date associée à cet événement ?</p>
+                    <div class="quiz-options" id="quiz-options">
+                        ${options.map(option => `
+                            <div class="quiz-option" onclick="selectOption(this, '${option}', '${question.date}')">${option}</div>
+                        `).join('')}
+                    </div>
+                    <div class="quiz-feedback" id="quiz-feedback"></div>
+                </div>
+                <div class="quiz-controls">
+                    <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''}>Précédent</button>
+                    <button onclick="nextQuestion()" ${currentQuestionIndex === currentQuizQuestions.length - 1 ? 'disabled' : ''}>Suivant</button>
+                    <button onclick="finishQuiz()">Terminer</button>
+                </div>
+            `;
+        }
+
+        function generateOptions(correctAnswer) {
+            const options = [correctAnswer];
+            const otherEvents = events.filter(e => e.date !== correctAnswer);
+            const wrongOptions = otherEvents.sort(() => 0.5 - Math.random()).slice(0, 3).map(e => e.date);
+            options.push(...wrongOptions);
+            return options.sort(() => 0.5 - Math.random());
+        }
+
+        function selectOption(element, selectedOption, correctAnswer) {
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+
+            if (selectedOption === correctAnswer) {
+                element.classList.add('correct');
+                document.getElementById('quiz-feedback').textContent = "✅ Bonne réponse !";
+                document.getElementById('quiz-feedback').style.background = "#2ECC71";
+                document.getElementById('quiz-feedback').style.color = "white";
+                score++;
+            } else {
+                element.classList.add('incorrect');
+                document.getElementById('quiz-feedback').textContent = `❌ Mauvaise réponse. La bonne réponse est : ${correctAnswer}`;
+                document.getElementById('quiz-feedback').style.background = "#E74C3C";
+                document.getElementById('quiz-feedback').style.color = "white";
+
+                options.forEach(option => {
+                    if (option.textContent === correctAnswer) {
+                        option.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuizQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            const percentage = (score / currentQuizQuestions.length * 100).toFixed(1);
+            quizContainer.innerHTML = `
+                <div class="quiz-question">
+                    <h3>Quiz terminé !</h3>
+                    <p>Ton score : <strong>${score} / ${currentQuizQuestions.length}</strong></p>
+                    <p>Soit <strong>${percentage}%</strong> de bonnes réponses.</p>
+                    ${percentage >= 80 ? '<p style="color: #2ECC71; font-size: 18px; font-weight: 600;">Excellent travail ! 🎉</p>' : ''}
+                    ${percentage >= 50 && percentage < 80 ? '<p style="color: #3498DB; font-size: 18px; font-weight: 600;">Bon effort, continue ainsi !</p>' : ''}
+                    ${percentage < 50 ? '<p style="color: #E74C3C; font-size: 18px; font-weight: 600;">Réessaye pour progresser ! 🔥</p>' : ''}
+                    <button onclick="generateQuiz()" style="margin-top: 20px;">Recommencer</button>
+                </div>
+            `;
+        }
+
+        // Flashcards
+        function generateFlashcards() {
+            flashcards = [...events];
+            currentFlashcardIndex = 0;
+            isFrontDate = Math.random() < 0.5;
+            displayFlashcard();
+        }
+
+        function displayFlashcard() {
+            const flashcardsContainer = document.getElementById('flashcards-container');
+            const flashcard = flashcards[currentFlashcardIndex];
+
+            const frontContent = isFrontDate ? flashcard.date : flashcard.event;
+            const backContent = isFrontDate ? flashcard.event : flashcard.date;
+            const backContext = flashcard.context;
+
+            flashcardsContainer.innerHTML = `
+                <div class="flashcard" onclick="flipFlashcard(this)">
+                    <div class="flashcard-face flashcard-front">
+                        <div class="flashcard-content">${frontContent}</div>
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div class="flashcard-content">${backContent}</div>
+                        <div class="flashcard-context">${backContext}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function flipFlashcard(element) {
+            element.classList.toggle('flipped');
+        }
+
+        function nextFlashcard() {
+            if (currentFlashcardIndex < flashcards.length - 1) {
+                currentFlashcardIndex++;
+                isFrontDate = Math.random() < 0.5;
+                displayFlashcard();
+            }
+        }
+
+        function prevFlashcard() {
+            if (currentFlashcardIndex > 0) {
+                currentFlashcardIndex--;
+                isFrontDate = Math.random() < 0.5;
+                displayFlashcard();
+            }
+        }
+
+        function randomFlashcard() {
+            currentFlashcardIndex = Math.floor(Math.random() * flashcards.length);
+            isFrontDate = Math.random() < 0.5;
+            displayFlashcard();
+        }
+
+        // Fiches de révision
+        function displayRevisionSheets() {
+            const revisionSheetsContainer = document.getElementById('revision-sheets-container');
+            revisionSheetsContainer.innerHTML = '';
+
+            revisionSheets.forEach(sheet => {
+                const sheetDiv = document.createElement('div');
+                sheetDiv.className = 'revision-sheet';
+                sheetDiv.innerHTML = `
+                    <h3>${sheet.title}</h3>
+                    <div class="revision-sheet-content">
+                        <p class="revision-sheet-summary">${sheet.summary}</p>
+                        <div class="revision-sheet-events">
+                            <h4>Événements clés :</h4>
+                            <ul>
+                                ${sheet.events.map(event => `<li>${event}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                sheetDiv.onclick = function() {
+                    this.classList.toggle('active');
+                };
+                revisionSheetsContainer.appendChild(sheetDiv);
+            });
+        }
+
+        // Initialisation
+        window.onload = function() {
+            displayTimelineTable();
+            displayRevisionSheets();
+        };
+    </script>
+</body>
+</html>

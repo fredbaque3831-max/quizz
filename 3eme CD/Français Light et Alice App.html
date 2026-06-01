@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Révisions - Français</title>
+    <style>
+        :root {
+            --bg-color: #fcf8ff;
+            --pastel-purple: #e8dbfc;
+            --pastel-pink: #fcdbf0;
+            --pastel-yellow: #fcf6bd;
+            --text-dark: #4a3f54;
+            --purple-dark: #7a52b3;
+            --pink-dark: #b34286;
+            --yellow-dark: #998a12;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--purple-dark);
+            text-shadow: 2px 2px var(--pastel-pink);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-style: italic;
+            color: #776a85;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(122, 82, 179, 0.1);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- ACCUEIL --- */
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .btn-menu {
+            border: none;
+            border-radius: 15px;
+            padding: 35px 20px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 0px rgba(0,0,0,0.05);
+            color: var(--text-dark);
+        }
+
+        .btn-menu:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-purple { background-color: var(--pastel-purple); color: var(--purple-dark); }
+        .btn-pink { background-color: var(--pastel-pink); color: var(--pink-dark); }
+        .btn-yellow { background-color: var(--pastel-yellow); color: var(--yellow-dark); }
+        .btn-orange { background-color: #ffe5d9; color: #d96a36; }
+
+        /* --- BOUTONS NAVIGATION --- */
+        .btn-back {
+            background-color: #eee;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+        .btn-back:hover { background-color: #ddd; }
+
+        /* --- FLASHCARDS --- */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            font-size: 1.3rem;
+        }
+
+        .card-front {
+            background-color: var(--pastel-purple);
+            border: 3px dashed var(--purple-dark);
+        }
+
+        .card-back {
+            background-color: var(--pastel-pink);
+            border: 3px solid var(--pink-dark);
+            transform: rotateY(180deg);
+        }
+
+        .hint-text {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .flash-controls, .qcm-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn-success { background-color: #cbf3f0; color: #0077b6; }
+        .btn-danger { background-color: #ffccd5; color: #c9184a; }
+        .btn-next { background-color: var(--pastel-yellow); color: var(--yellow-dark); }
+
+        /* --- QCM / EXERCICES --- */
+        .question-box {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+            line-height: 1.5;
+            background: #fafafa;
+            padding: 15px;
+            border-left: 5px solid var(--purple-dark);
+            border-radius: 4px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            text-align: left;
+            background: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: var(--bg-color);
+            border-color: var(--purple-dark);
+        }
+
+        .option-btn.correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .option-btn.incorrect {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+        }
+
+        /* --- COURS --- */
+        .lesson-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-tab {
+            padding: 10px 15px;
+            border: none;
+            background: #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-tab.active {
+            background-color: var(--purple-dark);
+            color: white;
+        }
+
+        .lesson-content {
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .lesson-content h3 {
+            color: var(--purple-dark);
+            margin: 20px 0 10px 0;
+            border-bottom: 2px solid var(--pastel-purple);
+            padding-bottom: 5px;
+        }
+
+        .lesson-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .lesson-content li {
+            margin-bottom: 5px;
+        }
+
+        .example {
+            background-color: #fdfaf6;
+            border-left: 3px solid var(--yellow-dark);
+            padding: 8px 12px;
+            margin: 5px 0;
+            font-style: italic;
+        }
+
+        /* --- ALERTE ALERTE COURS --- */
+        .alert-lesson {
+            background-color: #fff3cd;
+            border: 2px dashed #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .alert-lesson button {
+            background: #ffc107;
+            border: none;
+            padding: 8px 15px;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- PROGRESSION --- */
+        .progress {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <header onclick="showScreen('home')">
+        <h1>Objectif Brevet : Français</h1>
+        <p>Révise avec style et efficacité ✨</p>
+    </header>
+
+    <div class="container">
+        <div id="course-alert" class="alert-lesson">
+            <p id="course-alert-text">Oups ! Tu sembles bloquer sur cette notion. Regardons la leçon ensemble !</p>
+            <button onclick="goToSuggestedLesson()">Ouvrir le cours lié</button>
+        </div>
+
+        <div id="home" class="screen active">
+            <h2 style="text-align: center; margin-bottom: 20px;">Que veux-tu faire aujourd'hui ?</h2>
+            <div class="grid-menu">
+                <button class="btn-menu btn-purple" onclick="initActivity('qcm')">🎯 QCM</button>
+                <button class="btn-menu btn-pink" onclick="initActivity('flashcards')">🃏 Flashcards</button>
+                <button class="btn-menu btn-yellow" onclick="initActivity('exercises')">📝 Exercices</button>
+                <button class="btn-menu btn-orange" onclick="openCoursTab('modes')">📚 Cours</button>
+            </div>
+        </div>
+
+        <div id="qcm" class="screen">
+            <button class="btn-back" onclick="showScreen('home')">⬅ Accueil</button>
+            <div class="progress" id="qcm-progress">Question X / Y</div>
+            <div class="question-box" id="qcm-question">Chargement...</div>
+            <div class="options-list" id="qcm-options"></div>
+            <div class="qcm-controls">
+                <button class="btn-action btn-next" id="qcm-next-btn" onclick="nextQuestion('qcm')" style="display:none;">Question suivante ➡️</button>
+            </div>
+        </div>
+
+        <div id="flashcards" class="screen">
+            <button class="btn-back" onclick="showScreen('home')">⬅ Accueil</button>
+            <div class="progress" id="flash-progress">Carte X / Y</div>
+            
+            <div class="flashcard-wrapper">
+                <div class="flashcard" id="main-card" onclick="toggleCard()">
+                    <div class="card-face card-front">
+                        <div id="flash-front-text">Question</div>
+                        <div class="hint-text">👉 Clique pour retourner</div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div id="flash-back-text">Réponse</div>
+                        <div class="hint-text">👉 Clique pour revenir au recto</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flash-controls">
+                <button class="btn-action btn-danger" onclick="handleFlashAnswer(false)">❌ Je ne savais pas</button>
+                <button class="btn-action btn-success" onclick="handleFlashAnswer(true)">✅ Je savais !</button>
+            </div>
+        </div>
+
+        <div id="exercises" class="screen">
+            <button class="btn-back" onclick="showScreen('home')">⬅ Accueil</button>
+            <div class="progress" id="exercise-progress">Exercice X / Y</div>
+            <div class="question-box" id="exercise-question">Chargement...</div>
+            <div class="options-list" id="exercise-options"></div>
+            <div class="qcm-controls">
+                <button class="btn-action btn-next" id="exercise-next-btn" onclick="nextQuestion('exercises')" style="display:none;">Exercice suivant ➡️</button>
+            </div>
+        </div>
+
+        <div id="cours" class="screen">
+            <button class="btn-back" onclick="showScreen('home')">⬅ Accueil</button>
+            
+            <div class="lesson-nav">
+                <button class="btn-tab active" id="tab-modes" onclick="switchLesson('modes')">Les Modes</button>
+                <button class="btn-tab" id="tab-figures" onclick="switchLesson('figures')">Figures de Style</button>
+                <button class="btn-tab" id="tab-present" onclick="switchLesson('present')">Valeurs du Présent</button>
+            </div>
+
+            <div class="lesson-content">
+                <div id="lesson-modes" class="lesson-detail">
+                    <h3>Les Modes Verbaux</h3>
+                    <p>En français, le mode indique de quelle manière l'action est envisagée par le locuteur :</p>
+                    <ul>
+                        <li><strong>L'indicatif :</strong> Mode du réel, des faits ancrés dans le temps.<br><span class="example">Exemple : Je pars en vacances.</span></li>
+                        <li><strong>Le subjonctif :</strong> Mode du possible, du souhait, du doute ou de la nécessité.<br><span class="example">Exemple : Il faut qu’il parte.</span></li>
+                        <li><strong>Le conditionnel :</strong> Mode du potentiel ou de l'imaginaire (souvent soumis à condition).<br><span class="example">Exemple : Il partirait avec toi si tu le voulais.</span></li>
+                        <li><strong>L'impératif :</strong> Mode de l'ordre, du conseil ou de la prière.<br><span class="example">Exemple : Pars !</span></li>
+                        <li><strong>L'infinitif :</strong> Forme nominale du verbe (telle qu'on la trouve dans le dictionnaire).<br><span class="example">Exemple : partir / être parti</span></li>
+                        <li><strong>Le participe :</strong> Forme adjectivale du verbe.<br><span class="example">Exemple : partant / parti(e)</span></li>
+                        <li><strong>Le gérondif :</strong> Forme adverbiale (précédé de "en"), exprime la simultanéité.<br><span class="example">Exemple : en partant.</span></li>
+                    </ul>
+                </div>
+
+                <div id="lesson-figures" class="lesson-detail" style="display:none;">
+                    <h3>Les Figures de Style à connaître</h3>
+                    <ul>
+                        <li><strong>L'antithèse :</strong> Oppose deux mots ou groupes de mots contraires dans une phrase.<br><span class="example">Exemple : "Vous êtes aujourd'hui ce qu'autrefois je fus." (Corneille)</span></li>
+                        <li><strong>L'oxymore :</strong> Rapproche de manière immédiate deux mots opposés (souvent côte à côte).<br><span class="example">Exemple : Une obscure clarté.</span></li>
+                        <li><strong>La périphrase :</strong> Remplace un mot précis par une expression imagée ou descriptive de même sens.<br><span class="example">Exemple : "Le septième art" pour désigner le cinéma.</span></li>
+                        <li><strong>La personnification :</strong> Attribue des caractéristiques humaines (parole, actions, sentiments) à un animal, un objet ou un élément naturel.<br><span class="example">Exemple : Le Malheur a percé mon cœur de sa lance.</span></li>
+                        <li><strong>L'allégorie :</strong> Rend concrète et vivante une idée abstraite (souvent marquée par une majuscule).<br><span class="example">Exemple : La Mort représentée comme un capitaine.</span></li>
+                    </ul>
+                </div>
+
+                <div id="lesson-present" class="lesson-detail" style="display:none;">
+                    <h3>Les Valeurs du Présent de l'Indicatif</h3>
+                    <p>Le présent ne sert pas qu'à parler de ce qui se passe "maintenant". Il a plusieurs valeurs :</p>
+                    <ol>
+                        <li><strong>Présent d'énonciation :</strong> Évoque un événement qui se produit au moment même où l'on parle ou écrit.<br><span class="example">Exemple : Le froid est vif ce matin.</span></li>
+                        <li><strong>Présent de vérité générale :</strong> Exprime des faits vrais de tout temps, des définitions, proverbes ou lois scientifiques.<br><span class="example">Exemple : Il vaut mieux prévenir que guérir. / L’eau gèle à zéro degré.</span></li>
+                        <li><strong>Présent de narration :</strong> S'insère dans un récit au passé pour rendre l'action soudainement vivante et captivante.<br><span class="example">Exemple : Je marchais dans la rue. Soudain, un ami vient vers moi...</span></li>
+                        <li><strong>Présent itératif (d'habitude) :</strong> Exprime une habitude ou une action répétitive.<br><span class="example">Exemple : Tous les matins, je bois un grand verre d’eau.</span></li>
+                        <li><strong>Présent à valeur de futur proche / passé récent :</strong> Indique une action imminente ou qui vient tout juste de se produire.<br><span class="example">Exemple : Je termine ce devoir et j’arrive (futur proche). / Il sort de chez moi à l’instant (passé récent).</span></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DONNÉES DE L'APPLICATION ---
+        const data = {
+            modes: {
+                title: "Les Modes",
+                questions: [
+                    { q: "Il a été puni pour <b>avoir voulu</b> désobéir.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Infinitif" },
+                    { q: "Je ne comprends pas qu'il <b>préfère</b> travailler.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Subjonctif" },
+                    { q: "Il <b>aurait pu</b> te le dire.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Conditionnel" },
+                    { q: "En <b>courant</b>, il s'est foulé la cheville.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Gérondif" },
+                    { q: "Il faisait du ski en <b>zigzaguant</b> sur la montagne.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Gérondif" },
+                    { q: "<b>Avoir passé</b> son diplôme est une véritable fierté.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Infinitif" },
+                    { q: "Cela <b>aurait été</b> plus simple.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Conditionnel" },
+                    { q: "<b>Soyez</b> gentils avec elle.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Impératif" },
+                    { q: "Après son succès, <b>rester</b> le même n'a pas été facile.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Infinitif" },
+                    { q: "<b>Comprenez</b>-moi, ce n'est pas possible.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Impératif" },
+                    { q: "<b>Pourriez</b>-vous me passer le sel ?", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Conditionnel" },
+                    { q: "Vous <b>aviez fini</b> sans vous en rendre compte.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Indicatif" },
+                    { q: "Ils <b>auront compris</b> avant toi.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Indicatif" },
+                    { q: "Il regrette que tu ne <b>puisses</b> pas l'aider.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Subjonctif" },
+                    { q: "Ils <b>auraient compris</b> sans toi.", options: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Participe", "Gérondif"], a: "Conditionnel" }
+                ]
+            },
+            figures: {
+                title: "Figures de Style",
+                questions: [
+                    { q: "« Pour qui sont ces serpents qui sifflent sur vos têtes ? » (Racine)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie", "Autre"], a: "Autre" }, // Allitération
+                    { q: "« […] je me suis baigné dans le poème / De la mer… » (Rimbaud)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie", "Autre"], a: "Autre" }, // Métaphore
+                    { q: "« Ce n’était pas un sot, non, non, et croyez-m'en » (La Fontaine)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie", "Autre"], a: "Autre" }, // Litote
+                    { q: "« Cette <b>obscure clarté</b> qui tombe des étoiles » (Corneille)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie"], a: "Oxymore" },
+                    { q: "« Le <b>Malheur</b> a percé mon vieux coeur de <b>sa lance</b> » (Verlaine)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie"], a: "Allégorie" },
+                    { q: "« De même que le vent... de même la mer dispersa les longues poutres. » (Homère)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Autre"], a: "Autre" }, // Comparaison
+                    { q: "Faire allusion de manière détournée à la façon dont sa mère l'avait conçu.", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie"], a: "Périphrase" },
+                    { q: "« Tout lui <b>plaît</b> et <b>déplaît</b>, tout le choque et l'oblige. Sans raison il est <b>gai</b>, sans raison il <b>s’afflige</b> » (Boileau)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie"], a: "Antithèse" },
+                    { q: "« Je m'en vais vous mander la chose la plus étonnante, la plus surprenante... » (Mme de Sévigné)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Autre"], a: "Autre" }, // Accumulation/Gradation
+                    { q: "« Ô <b>Mort, vieux capitaine</b>, il est temps ! » (Baudelaire)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie"], a: "Allégorie" },
+                    { q: "« des palais Romains le <b>front audacieux</b> » (Du Bellay)", options: ["Antithèse", "Oxymore", "Périphrase", "Personnification", "Allégorie"], a: "Personnification" }
+                ]
+            },
+            present: {
+                title: "Valeurs du Présent",
+                questions: [
+                    { q: "En Laponie, l’hiver, le soleil <b>ne se lève pas</b>.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Vérité générale" },
+                    { q: "Elle <b>téléphone</b> tous les jours à ses amies.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Habitude" },
+                    { q: "Le 26 décembre 1999, une tempête <b>ravage</b> les forêts françaises.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Narration" },
+                    { q: "Le granit <b>est</b> une roche dure qui <b>est</b> formée de cristaux variés.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Vérité générale" },
+                    { q: "Pendant ses trajets matinaux en bus, il <b>lit</b> le journal.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Habitude" },
+                    { q: "La brume <b>estompe</b> les détails du paysage qui <b>prend</b> un aspect irréel.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Énonciation" },
+                    { q: "Ils s’enfoncèrent prudemment... Un terrible craquement les <b>fait</b> soudain sursauter.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Narration" },
+                    { q: "Je te <b>téléphone</b> parce que je m’<b>ennuie</b>.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Énonciation" },
+                    { q: "Encore une semaine et les vacances <b>commencent</b>.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Futur proche / Passé récent" },
+                    { q: "Je n’<b>arrive</b> pas à ouvrir cette porte.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Énonciation" },
+                    { q: "Les jours <b>rallongent</b> au printemps.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Vérité générale" },
+                    { q: "Le soir, Jean <b>se consacre</b> à sa collection de timbres.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Habitude" },
+                    { q: "La pendule <b>sonne</b> toutes les heures.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Habitude" },
+                    { q: "Tu aurais dû venir plus tôt pour les voir, ils nous <b>quittent</b> à l’instant.", options: ["Énonciation", "Vérité générale", "Narration", "Habitude", "Futur proche / Passé récent"], a: "Futur proche / Passé récent" }
+                ]
+            }
+        };
+
+        // Fusionner toutes les questions pour le mode global (QCM complet & Flashcards)
+        let poolQuestions = [];
+        function rebuildPool() {
+            poolQuestions = [];
+            for (let category in data) {
+                data[category].questions.forEach(q => {
+                    poolQuestions.push({ ...q, category: category });
+                });
+            }
+        }
+        rebuildPool();
+
+        // --- ÉTAT DE L'APPLICATION ---
+        let currentActivity = ''; 
+        let activeQuestions = [];
+        let currentIndex = 0;
+        let errorTracker = {}; // Permet de suivre le nombre d'erreurs par notion
+        let lastFailedCategory = 'modes'; 
+
+        // --- NAVIGATION ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            document.getElementById('course-alert').style.display = 'none';
+        }
+
+        function openCoursTab(category) {
+            showScreen('cours');
+            switchLesson(category);
+        }
+
+        function switchLesson(category) {
+            document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.lesson-detail').forEach(d => d.style.display = 'none');
+            
+            document.getElementById(`tab-${category}`).classList.add('active');
+            document.getElementById(`lesson-${category}`).style.display = 'block';
+        }
+
+        // --- INITIALISATION DE L'ACTIVITÉ ---
+        function initActivity(type) {
+            currentActivity = type;
+            document.getElementById('main-card').classList.remove('flipped');
+            
+            if (type === 'qcm') {
+                // Mode QCM : Mélange de toutes les catégories existantes
+                rebuildPool();
+                activeQuestions = shuffle([...poolQuestions]);
+                currentIndex = 0;
+                loadQcmQuestion();
+                showScreen('qcm');
+            } else if (type === 'flashcards') {
+                rebuildPool();
+                activeQuestions = shuffle([...poolQuestions]);
+                currentIndex = 0;
+                loadFlashcard();
+                showScreen('flashcards');
+            } else if (type === 'exercises') {
+                // Exercices séparés : On propose par exemple "Les Modes" par défaut ou trié
+                rebuildPool();
+                activeQuestions = shuffle([...poolQuestions]); 
+                currentIndex = 0;
+                loadExerciseQuestion();
+                showScreen('exercises');
+            }
+        }
+
+        // --- OUTILS ---
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function trackError(category) {
+            if (!errorTracker[category]) errorTracker[category] = 0;
+            errorTracker[category]++;
+            
+            if (errorTracker[category] >= 3) {
+                lastFailedCategory = category;
+                triggerCourseSuggestion(category);
+                errorTracker[category] = 0; // reset après suggestion
+            }
+        }
+
+        function triggerCourseSuggestion(category) {
+            let label = data[category].title;
+            document.getElementById('course-alert-text').innerHTML = `💡 Tu as rencontré des difficultés 3 fois sur la notion : <b>${label}</b>. Prenons une pause pour revoir la leçon !`;
+            document.getElementById('course-alert').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToSuggestedLesson() {
+            openCoursTab(lastFailedCategory);
+        }
+
+        // --- GESTION LOGIQUE QCM & EXERCICES ---
+        function loadQcmQuestion() {
+            if (currentIndex >= activeQuestions.length) {
+                alert("Bravo ! Tu as terminé toutes les questions du QCM.");
+                showScreen('home');
+                return;
+            }
+            document.getElementById('qcm-next-btn').style.display = 'none';
+            let current = activeQuestions[currentIndex];
+            
+            document.getElementById('qcm-progress').innerText = `Question ${currentIndex + 1} / ${activeQuestions.length}`;
+            document.getElementById('qcm-question').innerHTML = current.q;
+            
+            let optionsContainer = document.getElementById('qcm-options');
+            optionsContainer.innerHTML = '';
+            
+            current.options.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkQcmAnswer(btn, opt, current.a, current.category);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkQcmAnswer(selectedBtn, chosen, correct, category) {
+            let options = document.getElementById('qcm-options').querySelectorAll('.option-btn');
+            options.forEach(btn => btn.disabled = true);
+
+            if (chosen === correct) {
+                selectedBtn.classList.add('correct');
+            } else {
+                selectedBtn.classList.add('incorrect');
+                trackError(category);
+                // Montrer la bonne réponse en vert
+                options.forEach(btn => {
+                    if (btn.innerText === correct) btn.classList.add('correct');
+                });
+            }
+            document.getElementById('qcm-next-btn').style.display = 'block';
+        }
+
+        // --- LOGIQUE EXERCICES (Similaire au QCM mais écran distinct) ---
+        function loadExerciseQuestion() {
+            if (currentIndex >= activeQuestions.length) {
+                alert("Super ! Séance d'exercices terminée !");
+                showScreen('home');
+                return;
+            }
+            document.getElementById('exercise-next-btn').style.display = 'none';
+            let current = activeQuestions[currentIndex];
+            
+            document.getElementById('exercise-progress').innerText = `Exercice ${currentIndex + 1} / ${activeQuestions.length}`;
+            document.getElementById('exercise-question').innerHTML = current.q;
+            
+            let optionsContainer = document.getElementById('exercise-options');
+            optionsContainer.innerHTML = '';
+            
+            current.options.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkExerciseAnswer(btn, opt, current.a, current.category);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkExerciseAnswer(selectedBtn, chosen, correct, category) {
+            let options = document.getElementById('exercise-options').querySelectorAll('.option-btn');
+            options.forEach(btn => btn.disabled = true);
+
+            if (chosen === correct) {
+                selectedBtn.classList.add('correct');
+            } else {
+                selectedBtn.classList.add('incorrect');
+                trackError(category);
+                options.forEach(btn => {
+                    if (btn.innerText === correct) btn.classList.add('correct');
+                });
+            }
+            document.getElementById('exercise-next-btn').style.display = 'block';
+        }
+
+        function nextQuestion(type) {
+            currentIndex++;
+            if (type === 'qcm') loadQcmQuestion();
+            if (type === 'exercises') loadExerciseQuestion();
+        }
+
+        // --- GESTION LOGIQUE FLASHCARDS ---
+        function loadFlashcard() {
+            if (currentIndex >= activeQuestions.length) {
+                alert("Génial ! Tu as passé en revue toutes les Flashcards.");
+                showScreen('home');
+                return;
+            }
+            document.getElementById('main-card').classList.remove('flipped');
+            let current = activeQuestions[currentIndex];
+            
+            document.getElementById('flash-progress').innerText = `Carte ${currentIndex + 1} / ${activeQuestions.length}`;
+            
+            // Attendre la fin du retournement d'animation si nécessaire avant de changer le texte
+            setTimeout(() => {
+                document.getElementById('flash-front-text').innerHTML = `<b>Phrase :</b><br><br>${current.q}`;
+                document.getElementById('flash-back-text').innerHTML = `<b>Réponse attendue :</b><br><br><span style="color:var(--purple-dark); font-weight:bold;">${current.a}</span><br><br><small>Catégorie : ${data[current.category].title}</small>`;
+            }, 150);
+        }
+
+        function toggleCard() {
+            document.getElementById('main-card').classList.toggle('flipped');
+        }
+
+        function handleFlashAnswer(knew) {
+            let current = activeQuestions[currentIndex];
+            if (!knew) {
+                trackError(current.category);
+            }
+            currentIndex++;
+            loadFlashcard();
+        }
+    </script>
+</body>
+</html>

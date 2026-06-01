@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brevet — Révision Histoire & Géo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d10;
+  --surface: #16161c;
+  --surface2: #1e1e27;
+  --surface3: #26262f;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0efea;
+  --muted: #7a7a8a;
+  --accent: #c8f060;
+  --accent2: #60d0f0;
+  --accent3: #f060a0;
+  --green: #4ade80;
+  --red: #f87171;
+  --green-bg: rgba(74,222,128,0.1);
+  --red-bg: rgba(248,113,113,0.1);
+  --radius: 12px;
+  --radius-lg: 18px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* background grid */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(200,240,96,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,240,96,0.03) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.wrapper {
+  position:relative;z-index:1;
+  max-width:780px;
+  margin:0 auto;
+  padding:2rem 1.5rem 4rem;
+}
+
+/* HEADER */
+header {
+  margin-bottom:2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+}
+.logo {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.1rem;
+  letter-spacing:-0.02em;
+  color:var(--text);
+}
+.logo span{color:var(--accent)}
+.badge-bar{display:flex;gap:8px;flex-wrap:wrap}
+.badge {
+  font-size:11px;font-family:'DM Sans',sans-serif;font-weight:500;
+  padding:4px 10px;border-radius:99px;
+  border:0.5px solid var(--border2);
+  color:var(--muted);
+  background:var(--surface);
+}
+
+/* TABS */
+.tabs {
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  background:var(--surface);
+  border:0.5px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:6px;
+  margin-bottom:2rem;
+}
+.tab {
+  font-family:'Syne',sans-serif;font-weight:600;font-size:13px;
+  padding:10px 8px;border-radius:10px;border:none;
+  background:transparent;color:var(--muted);cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;
+  letter-spacing:0.01em;
+}
+.tab:hover{color:var(--text);background:var(--surface2)}
+.tab.active{background:var(--surface3);color:var(--accent);border:0.5px solid var(--border2)}
+.tab svg{width:16px;height:16px;flex-shrink:0}
+
+/* SECTIONS */
+.section{display:none;animation:fadeIn .25s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* CAT PILLS */
+.cats {
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem;
+}
+.cat {
+  font-size:12px;font-weight:500;
+  padding:5px 14px;border-radius:99px;
+  border:0.5px solid var(--border2);
+  background:transparent;color:var(--muted);cursor:pointer;
+  transition:all .18s;
+}
+.cat:hover{color:var(--text);border-color:var(--border2)}
+.cat.active{background:var(--accent);color:#0d0d10;border-color:var(--accent);font-weight:700}
+
+/* ========== FLASHCARDS ========== */
+.fc-scene {
+  perspective:1000px;
+  height:230px;
+  cursor:pointer;
+  margin-bottom:1.25rem;
+  user-select:none;
+}
+.fc-inner {
+  width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.4,0,.2,1);
+  position:relative;
+}
+.fc-inner.flipped{transform:rotateY(180deg)}
+.fc-face {
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  border-radius:var(--radius-lg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem;text-align:center;
+  border:0.5px solid var(--border2);
+}
+.fc-front {
+  background:var(--surface);
+}
+.fc-back {
+  background:var(--surface2);
+  transform:rotateY(180deg);
+}
+.fc-tag {
+  font-family:'Syne',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:12px;
+}
+.fc-main {
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:700;
+  color:var(--text);line-height:1.3;
+}
+.fc-back .fc-main{font-family:'DM Sans',sans-serif;font-size:16px;font-weight:400;color:var(--text);line-height:1.6}
+.fc-hint{font-size:12px;color:var(--muted);margin-top:14px;display:flex;align-items:center;gap:5px}
+.fc-accent-line {
+  width:40px;height:3px;background:var(--accent);border-radius:2px;
+  margin:10px auto 0;
+}
+
+.fc-nav {
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:1rem;
+}
+.fc-counter {
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted);
+}
+.icon-btn {
+  width:40px;height:40px;border-radius:10px;
+  border:0.5px solid var(--border2);background:var(--surface);
+  color:var(--text);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.icon-btn:hover{background:var(--surface3);border-color:var(--border2)}
+.icon-btn svg{width:18px;height:18px}
+
+.shuffle-btn {
+  display:block;width:100%;
+  padding:11px;border-radius:var(--radius);
+  border:0.5px solid var(--border2);
+  background:var(--surface);color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .18s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.shuffle-btn:hover{background:var(--surface2);color:var(--text)}
+.shuffle-btn svg{width:15px;height:15px}
+
+/* ========== QUIZ ========== */
+.stats-row {
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  margin-bottom:1.25rem;
+}
+.stat-card {
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;text-align:center;
+}
+.stat-val {
+  font-family:'Syne',sans-serif;font-size:26px;font-weight:800;
+  color:var(--text);
+}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+.progress-track {
+  height:4px;background:var(--surface2);border-radius:2px;
+  margin-bottom:1.75rem;overflow:hidden;
+}
+.progress-fill {
+  height:100%;background:var(--accent);border-radius:2px;
+  transition:width .4s ease;
+}
+
+.quiz-q-card {
+  background:var(--surface);border:0.5px solid var(--border2);
+  border-radius:var(--radius-lg);padding:1.5rem;
+  margin-bottom:1.25rem;
+}
+.quiz-q-tag{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.quiz-q-text {
+  font-family:'Syne',sans-serif;font-size:17px;font-weight:600;
+  color:var(--text);line-height:1.5;
+}
+
+.opts {
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  margin-bottom:1rem;
+}
+@media(max-width:500px){.opts{grid-template-columns:1fr}}
+
+.opt {
+  padding:13px 16px;
+  border:0.5px solid var(--border2);border-radius:var(--radius);
+  background:var(--surface);color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:14px;
+  cursor:pointer;text-align:left;line-height:1.4;
+  transition:all .15s;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.opt-letter {
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  background:var(--surface3);color:var(--muted);
+  width:22px;height:22px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+  transition:all .15s;
+}
+.opt:hover:not(:disabled) {border-color:var(--accent2);background:var(--surface2)}
+.opt:hover:not(:disabled) .opt-letter{background:var(--accent2);color:#000}
+.opt.correct{border-color:var(--green);background:var(--green-bg)}
+.opt.correct .opt-letter{background:var(--green);color:#000}
+.opt.wrong{border-color:var(--red);background:var(--red-bg)}
+.opt.wrong .opt-letter{background:var(--red);color:#000}
+.opt:disabled{cursor:default}
+
+.feedback {
+  border-radius:var(--radius);padding:12px 16px;
+  font-size:14px;margin-bottom:1rem;display:none;
+  align-items:center;gap:10px;
+}
+.feedback.show{display:flex}
+.feedback.correct{background:var(--green-bg);border:0.5px solid rgba(74,222,128,.3);color:var(--green)}
+.feedback.wrong{background:var(--red-bg);border:0.5px solid rgba(248,113,113,.3);color:var(--red)}
+.feedback svg{width:18px;height:18px;flex-shrink:0}
+
+.quiz-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-next {
+  font-family:'Syne',sans-serif;font-weight:700;font-size:13px;
+  padding:11px 20px;border-radius:var(--radius);
+  border:none;background:var(--accent);color:#0d0d10;
+  cursor:pointer;transition:all .18s;
+  display:none;align-items:center;gap:8px;
+}
+.btn-next.show{display:flex}
+.btn-next:hover{background:#d8ff70}
+.btn-next svg{width:15px;height:15px}
+.btn-reset {
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  padding:11px 20px;border-radius:var(--radius);
+  border:0.5px solid var(--border2);background:transparent;
+  color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.btn-reset:hover{background:var(--surface2);color:var(--text)}
+
+.done-card {
+  background:var(--surface);border:0.5px solid var(--border2);
+  border-radius:var(--radius-lg);padding:2.5rem;text-align:center;
+}
+.done-emoji{font-size:48px;display:block;margin-bottom:1rem}
+.done-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:8px}
+.done-score{font-size:42px;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);margin:12px 0}
+.done-sub{color:var(--muted);font-size:14px}
+
+/* ========== NOTIONS ========== */
+.notions-grid {
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:6px;
+}
+.notion-chip {
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:10px 14px;
+  font-size:13px;color:var(--text);line-height:1.4;
+  transition:all .18s;cursor:default;
+}
+.notion-chip:hover{border-color:var(--border2);background:var(--surface2)}
+.notion-chip::before{
+  content:'#';font-family:'Syne',sans-serif;font-weight:700;
+  color:var(--accent);margin-right:6px;font-size:11px;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<header>
+  <div class="logo">brevet<span>.</span>révision</div>
+  <div class="badge-bar">
+    <span class="badge">Histoire</span>
+    <span class="badge">Géographie</span>
+    <span class="badge">3ème</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showSection('flashcards',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+    Flashcards
+  </button>
+  <button class="tab" onclick="showSection('quiz',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+    Quiz
+  </button>
+  <button class="tab" onclick="showSection('notions',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/></svg>
+    Notions
+  </button>
+</div>
+
+<!-- ===== FLASHCARDS ===== -->
+<div id="sec-flashcards" class="section active">
+  <div class="cats">
+    <button class="cat active" onclick="setFCCat('reperes',this)">Repères historiques</button>
+    <button class="cat" onclick="setFCCat('geo',this)">Repères géographiques</button>
+  </div>
+
+  <div class="fc-scene" onclick="flipCard()">
+    <div class="fc-inner" id="fc-inner">
+      <div class="fc-face fc-front">
+        <div class="fc-tag">Date · Événement</div>
+        <div class="fc-main" id="fc-front-text">—</div>
+        <div class="fc-accent-line"></div>
+        <div class="fc-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
+          Cliquez pour retourner
+        </div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-tag">Réponse</div>
+        <div class="fc-main" id="fc-back-text">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-nav">
+    <button class="icon-btn" onclick="prevCard()" title="Précédent">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="fc-counter" id="fc-counter">1 / ?</span>
+    <button class="icon-btn" onclick="nextCard()" title="Suivant">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <button class="shuffle-btn" onclick="shuffleCards()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+    Mélanger les cartes
+  </button>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div id="sec-quiz" class="section">
+  <div class="cats">
+    <button class="cat active" onclick="setQCat('all',this)">Tout</button>
+    <button class="cat" onclick="setQCat('hist',this)">Histoire</button>
+    <button class="cat" onclick="setQCat('geo',this)">Géographie</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="q-score">0</div><div class="stat-lbl">Bonnes rép.</div></div>
+    <div class="stat-card"><div class="stat-val" id="q-total">0</div><div class="stat-lbl">Questions</div></div>
+    <div class="stat-card"><div class="stat-val" id="q-pct">—</div><div class="stat-lbl">Réussite</div></div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="q-progress" style="width:0%"></div></div>
+
+  <div id="quiz-body">
+    <div class="quiz-q-card">
+      <div class="quiz-q-tag" id="q-tag">Histoire</div>
+      <div class="quiz-q-text" id="quiz-q">Chargement…</div>
+    </div>
+    <div class="opts" id="quiz-opts"></div>
+    <div class="feedback" id="quiz-fb">
+      <svg id="fb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+      <span id="fb-text"></span>
+    </div>
+    <div class="quiz-actions">
+      <button class="btn-reset" onclick="resetQuiz()">Recommencer</button>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">
+        Suivant
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="quiz-done" style="display:none">
+    <div class="done-card">
+      <span class="done-emoji" id="done-emoji">🎉</span>
+      <div class="done-title">Quiz terminé !</div>
+      <div class="done-score" id="done-score">—</div>
+      <div class="done-sub" id="done-sub">—</div>
+      <div class="quiz-actions" style="justify-content:center;margin-top:1.5rem">
+        <button class="btn-reset" onclick="resetQuiz()">Recommencer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NOTIONS ===== -->
+<div id="sec-notions" class="section">
+  <div class="cats">
+    <button class="cat active" onclick="setNCat('hist',this)">Histoire</button>
+    <button class="cat" onclick="setNCat('geo',this)">Géographie</button>
+  </div>
+  <div class="notions-grid" id="notions-list"></div>
+</div>
+
+</div><!-- /wrapper -->
+<script>
+const REPERES=[
+  {q:"1914-1918",a:"Grande Guerre (Première Guerre mondiale)"},
+  {q:"1916",a:"Bataille de Verdun"},
+  {q:"1917",a:"Révolution(s) russe(s)"},
+  {q:"11 novembre 1918",a:"Armistice de la Première Guerre mondiale"},
+  {q:"1924-1953",a:"Staline au pouvoir en URSS"},
+  {q:"1933-1945",a:"L'Allemagne nazie d'Adolf Hitler"},
+  {q:"1936",a:"Victoire du Front populaire et lois sociales"},
+  {q:"1939-1945",a:"Seconde Guerre mondiale"},
+  {q:"18 juin 1940",a:"Appel du général De Gaulle à la radio de Londres"},
+  {q:"6 juin 1944",a:"Débarquement allié en Normandie"},
+  {q:"1940-1944",a:"Régime de Vichy"},
+  {q:"1944-1945",a:"Droit de vote des femmes en France"},
+  {q:"8 mai 1945",a:"Capitulation allemande — fin de la guerre en Europe"},
+  {q:"Août 1945",a:"Bombes atomiques sur Hiroshima et Nagasaki"},
+  {q:"1945",a:"Création de l'ONU"},
+  {q:"1947-1991",a:"Guerre Froide"},
+  {q:"1947-1962",a:"Principale phase de décolonisation"},
+  {q:"1957",a:"Traité de Rome — création de l'UE"},
+  {q:"1958",a:"Naissance de la Ve République"},
+  {q:"1958-1969",a:"Les années De Gaulle"},
+  {q:"1954-1962",a:"Guerre d'Algérie"},
+  {q:"1962",a:"Indépendance de l'Algérie"},
+  {q:"1962",a:"Élection du président au suffrage universel direct"},
+  {q:"1975",a:"Loi Veil sur l'IVG"},
+  {q:"9 novembre 1989",a:"Chute du mur de Berlin"},
+  {q:"1991",a:"Éclatement de l'URSS"},
+  {q:"1992",a:"Traité de Maastricht"},
+  {q:"1981-1995",a:"Les années Mitterrand"},
+  {q:"1995-2007",a:"Les années Chirac"},
+  {q:"2002",a:"L'euro, monnaie européenne"},
+  {q:"11 septembre 2001",a:"Attentats terroristes aux États-Unis"},
+];
+const GEO_FC=[
+  {q:"Quel isthme relie la Méditerranée à la mer Rouge ?",a:"L'isthme de Suez — passage commercial stratégique"},
+  {q:"Quel est le plus long fleuve d'Afrique ?",a:"Le Nil"},
+  {q:"Quels sont les 3 grands foyers de population mondiaux ?",a:"Asie du Sud-Est, Asie du Sud (Inde), Europe de l'Ouest"},
+  {q:"Qu'est-ce que la mégalopole européenne ?",a:"Espace urbain dense reliant Londres à Milan (dorsale européenne)"},
+  {q:"Combien d'États membres dans l'UE ?",a:"27 États membres"},
+  {q:"Quelles sont les 4 grandes chaînes de montagnes mondiales ?",a:"Himalaya, Andes, Rocheuses, Alpes"},
+  {q:"Qu'est-ce que l'Amazonie ?",a:"La plus grande forêt dense tropicale du monde (Amérique du Sud)"},
+  {q:"Combien de régions métropolitaines en France ?",a:"13 régions métropolitaines"},
+  {q:"Quels sont les territoires ultramarins français ?",a:"Guadeloupe, Martinique, Guyane, La Réunion, Mayotte + collectivités d'outre-mer"},
+  {q:"Qu'est-ce que le détroit de Gibraltar ?",a:"Passage maritime entre Europe et Afrique, reliant Atlantique et Méditerranée"},
+  {q:"Quelles sont les grandes métropoles mondiales ?",a:"Tokyo, Delhi, Shanghai, São Paulo, Mexico, Le Caire, Pékin, Mumbai…"},
+  {q:"Qu'est-ce que l'isthme de Panama ?",a:"Lien terrestre entre Amérique du Nord et du Sud, canal maritime stratégique"},
+];
+const NOTIONS_HIST=["Civils / Militaires","Guerre de tranchées","Front et arrière","Guerre totale","Mobilisation","Économie de guerre","Propagande","Culte de la personnalité","Censure","Génocide / Shoah","Solution finale à la question juive","Révolution russe","Totalitarisme","Régime totalitaire","Stalinisme / nazisme","Antisémitisme","Collectivisation","Communisme","Camp de concentration","Centre de mise à mort","Goulag","Guerre d'anéantissement","Violence de masse","Brutalisation de la guerre","Front populaire","Résistance / Maquis / Réseau","Déportation","Régime de Vichy","Collaboration","Guerre froide / monde bipolaire","Construction européenne","Tiers Monde","Décolonisation / Indépendance","Monde multipolaire"];
+const NOTIONS_GEO=["Territoire national / ultramarin","Aire urbaine","Métropole","Mondialisation","Interface frontalière","Façade maritime","Massif montagneux","Grand fleuve","Domaine bioclimatique","Région transfrontalière","Mégalopole","Pôle économique mondial","Espace dense / vide de population","Axe de transport","Espace productif","Dorsale européenne","Désindustrialisation","Littoralisation"];
+const QUIZ=[
+  {q:"Quel événement correspond au 18 juin 1940 ?",opts:["Débarquement en Normandie","Armistice de la 2e GM","Appel du général De Gaulle","Libération de Paris"],a:2,cat:"hist"},
+  {q:"En quelle année a été créée l'ONU ?",opts:["1944","1945","1947","1948"],a:1,cat:"hist"},
+  {q:"Quelle loi, votée en 1975, légalise l'IVG en France ?",opts:["Loi Aubry","Loi Veil","Loi Neuwirth","Loi Badinter"],a:1,cat:"hist"},
+  {q:"Quand a eu lieu la chute du mur de Berlin ?",opts:["9 novembre 1989","3 octobre 1990","25 décembre 1991","1er janvier 1993"],a:0,cat:"hist"},
+  {q:"La Guerre Froide s'étend de 1947 à…",opts:["1975","1985","1989","1991"],a:3,cat:"hist"},
+  {q:"Le traité de Maastricht date de…",opts:["1957","1975","1992","2002"],a:2,cat:"hist"},
+  {q:"Quelle bataille emblématique de la 1re GM a eu lieu en 1916 ?",opts:["Marne","Verdun","Somme","Sedan"],a:1,cat:"hist"},
+  {q:"Quand les femmes ont-elles obtenu le droit de vote en France ?",opts:["1936","1940","1944","1958"],a:2,cat:"hist"},
+  {q:"Quelle est la date du débarquement allié en Normandie ?",opts:["6 juin 1944","8 mai 1945","11 novembre 1918","18 juin 1940"],a:0,cat:"hist"},
+  {q:"Qui était au pouvoir en URSS de 1924 à 1953 ?",opts:["Lénine","Khrouchtchev","Staline","Brejnev"],a:2,cat:"hist"},
+  {q:"En quelle année l'euro est-il devenu monnaie européenne ?",opts:["1999","2002","2004","2007"],a:1,cat:"hist"},
+  {q:"Quel régime français collabore avec l'occupant nazi de 1940 à 1944 ?",opts:["IVe République","Front populaire","Régime de Vichy","GPRF"],a:2,cat:"hist"},
+  {q:"Quelle révolution russe renverse le tsar en 1917 ?",opts:["Révolution d'Octobre","Révolution de Février","Révolution Bolchévique","Révolution Menchévique"],a:1,cat:"hist"},
+  {q:"Combien de régions métropolitaines compte la France ?",opts:["10","13","18","22"],a:1,cat:"geo"},
+  {q:"Quel isthme relie la mer Méditerranée à la mer Rouge ?",opts:["Panama","Suez","Gibraltar","Malacca"],a:1,cat:"geo"},
+  {q:"Combien d'États membres compte l'Union européenne ?",opts:["25","27","28","30"],a:1,cat:"geo"},
+  {q:"Quelle est la plus grande forêt dense tropicale du monde ?",opts:["Congo","Amazonie","Bornéo","Taïga"],a:1,cat:"geo"},
+  {q:"Quelle chaîne de montagnes se trouve en Amérique du Sud ?",opts:["Himalaya","Rocheuses","Andes","Alpes"],a:2,cat:"geo"},
+  {q:"Qu'est-ce que la mégalopole européenne ?",opts:["Un pays très peuplé","La dorsale urbaine de Londres à Milan","L'ensemble des villes de +1M hab.","Une région française"],a:1,cat:"geo"},
+  {q:"Quel fleuve traverse l'Égypte ?",opts:["Congo","Gange","Nil","Niger"],a:2,cat:"geo"},
+  {q:"Quel grand désert se situe en Afrique du Nord ?",opts:["Gobi","Atacama","Namib","Sahara"],a:3,cat:"geo"},
+  {q:"Quel détroit relie l'Atlantique à la Méditerranée ?",opts:["Bering","Magellan","Gibraltar","Ormuz"],a:2,cat:"geo"},
+  {q:"Combien de territoires ultramarins constituent les DOM français ?",opts:["3","4","5","6"],a:2,cat:"geo"},
+];
+
+const LETTERS=['A','B','C','D'];
+function shuffle(a){return[...a].sort(()=>Math.random()-.5)}
+
+// --- TABS ---
+function showSection(s,el){
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('sec-'+s).classList.add('active');
+  el.classList.add('active');
+}
+
+// --- FLASHCARDS ---
+let fcCat='reperes',fcCards=[],fcIdx=0,fcFlipped=false;
+
+function setFCCat(cat,el){
+  fcCat=cat;
+  document.querySelectorAll('#sec-flashcards .cat').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  loadFC();
+}
+function loadFC(){
+  fcCards=shuffle(fcCat==='reperes'?REPERES:GEO_FC);
+  fcIdx=0;fcFlipped=false;
+  document.getElementById('fc-inner').classList.remove('flipped');
+  renderFC();
+}
+function renderFC(){
+  const c=fcCards[fcIdx];
+  document.getElementById('fc-front-text').textContent=c.q;
+  document.getElementById('fc-back-text').textContent=c.a;
+  document.getElementById('fc-counter').textContent=(fcIdx+1)+' / '+fcCards.length;
+  document.getElementById('fc-inner').classList.remove('flipped');
+  fcFlipped=false;
+}
+function flipCard(){
+  fcFlipped=!fcFlipped;
+  document.getElementById('fc-inner').classList.toggle('flipped',fcFlipped);
+}
+function nextCard(){fcIdx=(fcIdx+1)%fcCards.length;renderFC()}
+function prevCard(){fcIdx=(fcIdx-1+fcCards.length)%fcCards.length;renderFC()}
+function shuffleCards(){fcCards=shuffle(fcCards);fcIdx=0;renderFC()}
+
+// --- QUIZ ---
+let qCat='all',qPool=[],qIdx=0,qScore=0,qTotal=0;
+
+function setQCat(cat,el){
+  qCat=cat;
+  document.querySelectorAll('#sec-quiz .cat').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  resetQuiz();
+}
+function resetQuiz(){
+  qScore=0;qTotal=0;qIdx=0;
+  const pool=qCat==='all'?QUIZ:QUIZ.filter(q=>q.cat===qCat);
+  qPool=shuffle(pool);
+  updateStats();
+  document.getElementById('quiz-done').style.display='none';
+  document.getElementById('quiz-body').style.display='block';
+  loadQ();
+}
+function updateStats(){
+  document.getElementById('q-score').textContent=qScore;
+  document.getElementById('q-total').textContent=qTotal;
+  document.getElementById('q-pct').textContent=qTotal?Math.round(qScore/qTotal*100)+'%':'—';
+  document.getElementById('q-progress').style.width=qTotal?Math.round(qScore/qTotal*100)+'%':'0%';
+}
+function loadQ(){
+  document.getElementById('btn-next').classList.remove('show');
+  const fb=document.getElementById('quiz-fb');
+  fb.className='feedback';
+  if(qIdx>=qPool.length){
+    showDone();return;
+  }
+  const q=qPool[qIdx];
+  document.getElementById('q-tag').textContent=q.cat==='hist'?'Histoire':'Géographie';
+  document.getElementById('quiz-q').textContent=q.q;
+  const opts=document.getElementById('quiz-opts');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML=`<span class="opt-letter">${LETTERS[i]}</span><span>${o}</span>`;
+    b.onclick=()=>answer(i,q.a,q);
+    opts.appendChild(b);
+  });
+}
+function answer(chosen,correct,q){
+  qTotal++;
+  const opts=document.getElementById('quiz-opts').querySelectorAll('.opt');
+  opts.forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct)b.classList.add('correct');
+    else if(i===chosen&&chosen!==correct)b.classList.add('wrong');
+  });
+  const fb=document.getElementById('quiz-fb');
+  const icon=document.getElementById('fb-icon');
+  const text=document.getElementById('fb-text');
+  if(chosen===correct){
+    qScore++;
+    fb.className='feedback correct show';
+    icon.innerHTML='<circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>';
+    text.textContent='Bonne réponse !';
+  } else {
+    fb.className='feedback wrong show';
+    icon.innerHTML='<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+    text.textContent='Faux. Bonne réponse : '+q.opts[correct];
+  }
+  updateStats();
+  document.getElementById('btn-next').classList.add('show');
+  qIdx++;
+}
+function nextQuestion(){loadQ()}
+function showDone(){
+  document.getElementById('quiz-body').style.display='none';
+  document.getElementById('quiz-done').style.display='block';
+  const pct=qTotal?Math.round(qScore/qTotal*100):0;
+  document.getElementById('done-score').textContent=qScore+' / '+qTotal;
+  document.getElementById('done-sub').textContent=pct+'% de bonnes réponses';
+  document.getElementById('done-emoji').textContent=pct>=80?'🏆':pct>=60?'👍':'📚';
+}
+
+// --- NOTIONS ---
+let nCat='hist';
+function setNCat(cat,el){
+  nCat=cat;
+  document.querySelectorAll('#sec-notions .cat').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderNotions();
+}
+function renderNotions(){
+  const list=nCat==='hist'?NOTIONS_HIST:NOTIONS_GEO;
+  document.getElementById('notions-list').innerHTML=list.map(n=>`<div class="notion-chip">${n}</div>`).join('');
+}
+
+// INIT
+loadFC();
+resetQuiz();
+renderNotions();
+</script>
+</body>
+</html>

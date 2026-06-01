@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Odyssey : Objectif Français</title>
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --panel-bg: #131a26;
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #ff007f;
+            --success: #00ff66;
+            --text-light: #ffffff;
+            --text-muted: #8b9bb4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Arrière-plan animé */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a233a 0%, #0a0e17 100%);
+            opacity: 0.6;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(19, 26, 38, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(0, 242, 254, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- CONFIGURATION SCREEN --- */
+        .grid-config {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        @media(min-width: 768px) {
+            .grid-config { grid-template-columns: 1fr 1fr; }
+        }
+
+        .card-selection {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .card-selection:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 242, 254, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-choice {
+            display: block;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-choice:hover, .btn-choice.selected {
+            background: linear-gradient(90deg, rgba(0, 242, 254, 0.15), rgba(7f, 0, 254, 0.05));
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .btn-choice.selected {
+            border-left: 5px solid var(--primary);
+        }
+
+        .btn-launch {
+            grid-column: 1 / -1;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--bg-dark);
+            font-weight: bold;
+            font-size: 1.3rem;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+            transition: all 0.2s ease;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .btn-launch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 242, 254, 0.6);
+        }
+
+        /* --- INTERFACE JEU GLOBAL --- */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: var(--panel-bg);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hud-item {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .hud-value {
+            color: var(--primary);
+        }
+
+        .lives-container {
+            display: flex;
+            gap: 5px;
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .progress-bar.survival-timer {
+            background: var(--accent);
+            width: 100%;
+            transition: none;
+        }
+
+        /* --- DESIGN QUIZ & SURVIE --- */
+        .box-question {
+            background: var(--panel-bg);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .question-text em {
+            color: var(--accent);
+            font-style: normal;
+            background: rgba(255, 0, 127, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px dashed var(--accent);
+        }
+
+        .grid-answers {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media(min-width: 768px) {
+            .grid-answers { grid-template-columns: 1fr 1fr; }
+        }
+
+        .btn-answer {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-light);
+            padding: 18px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-answer:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-answer.correct {
+            background: rgba(0, 255, 102, 0.15) !important;
+            border-color: var(--success) !important;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .btn-answer.wrong {
+            background: rgba(255, 0, 127, 0.15) !important;
+            border-color: var(--accent) !important;
+            color: var(--accent);
+        }
+
+        /* --- DESIGN FLASHCARDS --- */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 500px;
+            height: 320px;
+            margin: 30px auto;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, var(--panel-bg), #1a2436);
+            color: var(--primary);
+        }
+
+        .card-front h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #162238, var(--panel-bg));
+            color: var(--text-light);
+            transform: rotateY(180deg);
+            border-color: rgba(255, 0, 127, 0.3);
+        }
+
+        .card-back p {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .mnemo-box {
+            font-size: 0.9rem;
+            background: rgba(255, 0, 127, 0.1);
+            border: 1px solid var(--accent);
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: #ff85c2;
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .btn-nav {
+            background: var(--panel-bg);
+            color: var(--text-light);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-nav:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* --- JEU DE PAIRES (MATCH) --- */
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        @media(min-width: 600px) {
+            .match-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .match-tile {
+            background: var(--panel-bg);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px 10px;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .match-tile:hover {
+            border-color: var(--secondary);
+            transform: scale(1.02);
+        }
+
+        .match-tile.selected {
+            border-color: var(--primary);
+            background: rgba(0, 242, 254, 0.1);
+            box-shadow: 0 0 10px rgba(0,242,254,0.2);
+        }
+
+        .match-tile.matched {
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- ECRAN RESULTATS --- */
+        .results-box {
+            background: var(--panel-bg);
+            border-radius: 16px;
+            padding: 35px;
+            text-align: center;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .score-big {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--success);
+            margin: 15px 0;
+            text-shadow: 0 0 20px rgba(0, 255, 102, 0.3);
+        }
+
+        .stats-list {
+            margin: 20px auto;
+            max-width: 400px;
+            text-align: left;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stats-item:last-child { border: none; }
+
+        .btn-home {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 20px;
+        }
+
+        .btn-home:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles"></div>
+
+    <header>
+        <div class="logo">Brevet Odyssey</div>
+        <div class="subtitle">Entraînement de Français Nouvelle Génération</div>
+    </header>
+
+    <main>
+        <div id="screen-config" class="screen active">
+            <div class="grid-config">
+                <div class="card-selection">
+                    <div class="card-title">🚀 1. Choisis ton Thème</div>
+                    <button class="btn-choice selected" onclick="selectTheme('all', this)">Tout Réviser (Mix Complet)</button>
+                    <button class="btn-choice" onclick="selectTheme('modes', this)">Les Modes Verbaux</button>
+                    <button class="btn-choice" onclick="selectTheme('figures', this)">Les Figures de Style</button>
+                </div>
+
+                <div class="card-selection">
+                    <div class="card-title">🎮 2. Sélectionne ton Mode de Jeu</div>
+                    <button class="btn-choice selected" onclick="selectMode('quiz', this)">🔲 Quiz Classique (Max 20 Qs)</button>
+                    <button class="btn-choice" onclick="selectMode('flashcards', this)">🎴 Flashcards (Fiches Mémo)</button>
+                    <button class="btn-choice" onclick="selectMode('match', this)">🧩 Jeu des Paires (Associer)</button>
+                    <button class="btn-choice" onclick="selectMode('survival', this)">🔥 Mode Survie (Niveaux Facile à Dur)</button>
+                </div>
+
+                <button class="btn-launch" onclick="launchGame()">Lancer l'entraînement</button>
+            </div>
+        </div>
+
+        <div id="screen-playground" class="screen">
+            <div class="game-header">
+                <div class="hud-item">Question : <span id="hud-progress" class="hud-value">1/20</span></div>
+                <div id="survival-lives" class="lives-container" style="display: none;">❤️ ❤️ ❤️</div>
+                <div class="hud-item" id="hud-timer-box">Temps : <span id="hud-timer" class="hud-value">0s</span></div>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div id="game-progress-bar" class="progress-bar"></div>
+            </div>
+
+            <div class="box-question">
+                <p id="question-text" class="question-text">Le texte de la question s'affichera ici.</p>
+            </div>
+
+            <div id="answers-container" class="grid-answers">
+                </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-home" style="padding: 8px 15px; font-size:0.9rem;" onclick="quitToMenu()">Quitter</button>
+            </div>
+        </div>
+
+        <div id="screen-flashcards" class="screen">
+            <h2 style="text-align: center; margin-bottom: 10px;" id="flashcard-category-title">Flashcards</h2>
+            <div class="flashcard-wrapper" onclick="toggleFlashcard()">
+                <div id="flashcard" class="flashcard">
+                    <div class="card-face card-front">
+                        <h3 id="fc-front-title">Concept</h3>
+                        <p style="color:var(--text-muted);">Cliquez pour retourner la carte</p>
+                    </div>
+                    <div class="card-face card-back">
+                        <p id="fc-back-desc">Définition ou exemple détaillé.</p>
+                        <div id="fc-back-mnemo" class="mnemo-box">Moyen mnémotechnique</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard-controls">
+                <button class="btn-nav" onclick="prevFlashcard()">⬅️ Précédent</button>
+                <button class="btn-nav" onclick="nextFlashcard()">Suivant ➡️</button>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn-home" onclick="quitToMenu()">Retour au menu</button>
+            </div>
+        </div>
+
+        <div id="screen-match" class="screen">
+            <h2 style="text-align: center; margin-bottom: 5px;">Jeu des Paires</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px;">Associez chaque élément de gauche à sa paire correspondante.</p>
+            
+            <div id="match-grid-container" class="match-grid">
+                </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn-home" onclick="quitToMenu()">Retour au Menu</button>
+            </div>
+        </div>
+
+        <div id="screen-results" class="screen">
+            <div class="results-box">
+                <h2 id="results-title">Entraînement Terminé !</h2>
+                <div id="results-score-big" class="score-big">15 / 20</div>
+                
+                <div class="stats-list">
+                    <div class="stats-item">
+                        <span>Thème révisé :</span>
+                        <span id="stat-theme" class="hud-value">-</span>
+                    </div>
+                    <div class="stats-item" id="stat-row-time">
+                        <span>Temps total :</span>
+                        <span id="stat-time" class="hud-value">-</span>
+                    </div>
+                    <div class="stats-item" id="stat-row-avg">
+                        <span>Temps moyen par question :</span>
+                        <span id="stat-avg" class="hud-value">-</span>
+                    </div>
+                    <div class="stats-item" id="stat-row-survival" style="display: none;">
+                        <span>Niveau maximal atteint :</span>
+                        <span id="stat-survival-level" class="hud-value">-</span>
+                    </div>
+                </div>
+
+                <button class="btn-home" onclick="quitToMenu()">Recommencer</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // DATA BASE DE DONNÉES DE L'APPLICATION (Basée strictement sur vos éléments fournis)
+        const database = {
+            modes: [
+                { q: "Indiquez le mode du verbe en gras : Il a été puni pour <em>avoir voulu</em> désobéir.", a: "Infinitif", r: "Il s'agit de l'infinitif passé du verbe vouloir." },
+                { q: "Indiquez le mode du verbe en gras : Je ne comprends pas qu'il <em>préfère</em> travailler.", a: "Subjonctif", r: "Le subjonctif présent exprime ici une action incertaine ou soumise à un sentiment après 'comprendre que'." },
+                { q: "Indiquez le mode du verbe en gras : Il <em>aurait pu</em> te le dire.", a: "Conditionnel", r: "C'est le conditionnel passé, exprimant un regret ou un fait soumis à condition." },
+                { q: "Indiquez le mode du verbe en gras : En <em>courant</em>, il s'est foulé la cheville.", a: "Gérondif", r: "Précédé de 'en', la forme en -ant constitue le gérondif." },
+                { q: "Indiquez le mode du verbe en gras : Il faisait du ski en <em>zigzaguant</em> sur la montagne.", a: "Gérondif", r: "La structure 'en + participe présent' forme le gérondif." },
+                { q: "Indiquez le mode du verbe en gras : <em>Avoir passé</em> son diplôme est une véritable fierté.", a: "Infinitif", r: "C'est la forme passée de l'infinitif." },
+                { q: "Indiquez le mode du verbe en gras : Cela <em>aurait été</em> plus simple.", a: "Conditionnel", r: "Il s'agit du conditionnel passé." },
+                { q: "Indiquez le mode du verbe en gras : <em>Soyez</em> gentils avec elle.", a: "Impératif", r: "Ce verbe exprime un ordre ou une prière sans sujet exprimé : c'est de l'impératif." },
+                { q: "Indiquez le mode du verbe en gras : Après son succès, <em>rester</em> le même n'a pas été facile.", a: "Infinitif", r: "Le verbe est à l'infinitif présent, agissant ici comme sujet." },
+                { q: "Indiquez le mode du verbe en gras : <em>Comprenez</em>-moi, ce n'est pas possible.", a: "Impératif", r: "Ordre, conseil ou demande directe sans pronom sujet : impératif." },
+                { q: "Indiquez le mode du verbe en gras : <em>Pourriez</em>-vous me passer le sel ?", a: "Conditionnel", r: "Utilisé ici pour exprimer la politesse au conditionnel présent." },
+                { q: "Indiquez le mode du verbe en gras : Vous <em>aviez fini</em> sans vous en rendre compte.", a: "Indicatif", r: "C'est le plus-que-parfait de l'indicatif, mode du réel." },
+                { q: "Indiquez le mode du verbe en gras : Ils <em>auront compris</em> avant toi.", a: "Indicatif", r: "C'est le futur antérieur de l'indicatif." },
+                { q: "Indiquez le mode du verbe en gras : Il regrette que tu ne <em>puisses</em> pas l'aider.", a: "Subjonctif", r: "Subjonctif présent requis après l'expression d'un sentiment (regretter que)." },
+                { q: "Indiquez le mode du verbe en gras : Ils <em>auraient compris</em> sans toi.", a: "Conditionnel", r: "Conditionnel passé." }
+            ],
+            figures: [
+                { q: "Identifiez la figure : « Pour qui sont ces serpents qui <em>sifflent</em> sur vos têtes ? » (Racine)", a: "Allitération", r: "Répétition de la consonne 's' imitant le sifflement du serpent." },
+                { q: "Identifiez la figure : « [...] je me suis baigné dans le <em>poème / De la mer…</em> » (Rimbaud)", a: "Métaphore", r: "Une comparaison sans outil comparatif liant la mer à un poème." },
+                { q: "Identifiez la figure : « Ce n’était <em>pas un sot</em>, non, non, et croyez-m'en » (La Fontaine)", a: "Litote", r: "Dire moins ('pas un sot') pour signifier beaucoup plus ('il était très intelligent')." },
+                { q: "Identifiez la figure : « Cette <em>obscure clarté</em> qui tombe des étoiles » (Corneille)", a: "Oxymore", r: "Deux termes opposés ('obscure' et 'clarté') côte à côte." },
+                { q: "Identifiez la figure : « Le <em>Malheur</em> a percé mon vieux coeur de sa <em>lance</em> » (Verlaine)", a: "Allégorie", r: "Représentation imagée et concrète avec une majuscule d'une idée abstraite (Le Malheur)." },
+                { q: "Identifiez la figure : « <em>De même que</em> le vent [...] disperse la paille, <em>de même</em> la mer dispersa les poutres. » (Homère)", a: "Comparaison", r: "Mise en relation de deux éléments grâce à l'outil comparatif 'de même que'." },
+                { q: "Identifiez la figure : L'utilisation de « Le septième art » pour désigner le cinéma.", a: "Périphrase", r: "Remplacer un mot simple par une expression descriptive de même sens." },
+                { q: "Identifiez la figure : « Tout lui <em>plaît</em> et <em>déplaît</em>, tout le <em>choque</em> et l'<em>oblige</em>. » (Boileau)", a: "Antithèse", r: "Opposition de deux idées ou mots contraires ('plaît' / 'déplaît') dans une même structure." },
+                { q: "Identifiez la figure : « la chose la plus étonnante, la plus surprenante, la plus merveilleuse, la plus miraculeuse... » (Mme de Sévigné)", a: "Énumération + Hyperbole", r: "Accumulation de termes créant une forte exagération (hyperbole)." },
+                { q: "Identifiez la figure : « Ô <em>Mort</em>, vieux <em>capitaine</em>, il est temps ! » (Baudelaire)", a: "Allégorie", r: "L'idée abstraite de la Mort est personnifiée sous les traits d'un capitaine avec une majuscule." },
+                { q: "Identifiez la figure : « des palais Romains le <em>front audacieux</em> » (Du Bellay)", a: "Personnification", r: "Attribution d'un trait humain ('le front audacieux') à un élément inanimé (les palais)." }
+            ],
+            cours: [
+                { titre: "Indicatif vs Subjonctif", contenu: "L'Indicatif est le mode du réel et des faits certains (Je pars). Le Subjonctif est le mode du possible, du doute ou du sentiment (Il faut qu'il parte).", mnemo: "Astuce : Placez 'Il faut que...' devant pour forcer le subjonctif." },
+                { titre: "Conditionnel & Impératif", contenu: "Le conditionnel exprime un souhait ou une hypothèse (Il partirait). L'impératif sert pour l'ordre, le conseil ou l'interdiction (Pars !).", mnemo: "Rappel : Pas de pronom sujet à l'impératif !" },
+                { titre: "Les formes impersonnelles", contenu: "L'infinitif (partir), le participe (partant/parti) et le gérondif (en partant) ne se conjuguent pas avec des personnes.", mnemo: "Gérondif = EN + participe présent (-ant)." },
+                { titre: "Antithèse vs Oxymore", contenu: "L'antithèse oppose deux contraires dans une phrase. L'oxymore réunit deux mots opposés côte à côte.", mnemo: "Exemple Oxymore : Une obscure clarté." },
+                { titre: "Allégorie vs Personnification", contenu: "La personnification donne des traits humains à un objet. L'allégorie rend vivante une idée abstraite (souvent avec une Majuscule).", mnemo: "Le Malheur avec son arme = Allégorie." }
+            ]
+        };
+
+        // État de l'application
+        let currentTheme = 'all';
+        let currentMode = 'quiz';
+        let activeQuestions = [];
+        let currentIdx = 0;
+        let score = 0;
+        
+        // Variables de temps
+        let timerInterval = null;
+        let totalSeconds = 0;
+        let questionStartTime = 0;
+        let responseTimes = [];
+
+        // Variable survie
+        let survivalLives = 3;
+        let survivalLevel = 1; // 1 = Facile (15s), 2 = Moyen (10s), 3 = Difficile (5s)
+        let survivalTimerWidth = 100;
+        let survivalTimerInterval = null;
+
+        // Variables Flashcards et Match
+        let fcIdx = 0;
+        let matchSelectedTile = null;
+
+        // Sélections de configuration
+        function selectTheme(theme, element) {
+            document.querySelectorAll('#screen-config .card-selection:nth-child(1) .btn-choice').forEach(b => b.classList.remove('selected'));
+            element.classList.add('selected');
+            currentTheme = theme;
+        }
+
+        function selectMode(mode, element) {
+            document.querySelectorAll('#screen-config .card-selection:nth-child(2) .btn-choice').forEach(b => b.classList.remove('selected'));
+            element.classList.add('selected');
+            currentMode = mode;
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function quitToMenu() {
+            clearInterval(timerInterval);
+            clearInterval(survivalTimerInterval);
+            showScreen('screen-config');
+        }
+
+        // Préparation du jeu
+        function launchGame() {
+            // Rassemblement des données selon le thème
+            let pool = [];
+            if (currentTheme === 'all' || currentTheme === 'modes') pool = pool.concat(database.modes);
+            if (currentTheme === 'all' || currentTheme === 'figures') pool = pool.concat(database.figures);
+            
+            // Mélange des données
+            pool = pool.sort(() => Math.random() - 0.5);
+
+            if (currentMode === 'quiz') {
+                activeQuestions = pool.slice(0, 20); // Limite stricte de 20 questions
+                startQuiz();
+            } else if (currentMode === 'survival') {
+                activeQuestions = pool; // Réserve complète pour tenir le coup
+                startSurvival();
+            } else if (currentMode === 'flashcards') {
+                startFlashcards();
+            } else if (currentMode === 'match') {
+                startMatch();
+            }
+        }
+
+        // --- MODE QUIZ CLASSIC ---
+        function startQuiz() {
+            currentIdx = 0;
+            score = 0;
+            totalSeconds = 0;
+            responseTimes = [];
+            
+            document.getElementById('survival-lives').style.display = 'none';
+            document.getElementById('hud-timer-box').style.display = 'block';
+            
+            // Minuteur global
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                totalSeconds++;
+                document.getElementById('hud-timer').innerText = totalSeconds + "s";
+            }, 1000);
+
+            showScreen('screen-playground');
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            if (currentIdx >= activeQuestions.length) {
+                endQuiz();
+                return;
+            }
+
+            questionStartTime = Date.now();
+            
+            // Évolution HUD
+            document.getElementById('hud-progress').innerText = `${currentIdx + 1} / ${activeQuestions.length}`;
+            let percent = ((currentIdx) / activeQuestions.length) * 100;
+            let pBar = document.getElementById('game-progress-bar');
+            pBar.className = "progress-bar";
+            pBar.style.width = percent + "%";
+
+            let qData = activeQuestions[currentIdx];
+            document.getElementById('question-text').innerHTML = qData.q;
+
+            // Détermination des choix de réponses possibles
+            let listDistracteurs = (database.modes.includes(qData)) 
+                ? ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Gérondif"]
+                : ["Allitération", "Métaphore", "Litote", "Oxymore", "Allégorie", "Comparaison", "Périphrase", "Antithèse", "Énumération + Hyperbole", "Personnification"];
+            
+            let filteredDistracteurs = listDistracteurs.filter(item => item.toLowerCase() !== qData.a.toLowerCase());
+            filteredDistracteurs = filteredDistracteurs.sort(() => Math.random() - 0.5).slice(0, 3);
+            
+            let totalAnswers = [qData.a].concat(filteredDistracteurs).sort(() => Math.random() - 0.5);
+
+            // Génération des boutons HTML
+            let container = document.getElementById('answers-container');
+            container.innerHTML = "";
+            totalAnswers.forEach(ans => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-answer';
+                btn.innerText = ans;
+                btn.onclick = () => checkAnswer(ans, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(chosen, btnElement) {
+            // Bloquer temporairement les clics répétitifs
+            let buttons = document.querySelectorAll('.btn-answer');
+            buttons.forEach(b => b.disabled = true);
+
+            // Calcul du temps de réponse pour cette question
+            let duration = (Date.now() - questionStartTime) / 1000;
+            responseTimes.push(duration);
+
+            let correctAns = activeQuestions[currentIdx].a;
+
+            if (chosen.toLowerCase() === correctAns.toLowerCase()) {
+                btnElement.classList.add('correct');
+                score++;
+            } else {
+                btnElement.classList.add('wrong');
+                // Montrer la bonne réponse en vert
+                buttons.forEach(b => {
+                    if (b.innerText.toLowerCase() === correctAns.toLowerCase()) b.classList.add('correct');
+                });
+            }
+
+            // Explication / Rationale affichée dynamiquement au-dessus pendant 2,5 secondes
+            let rBox = document.createElement('p');
+            rBox.style.marginTop = "15px";
+            rBox.style.color = "var(--text-muted)";
+            rBox.style.fontStyle = "italic";
+            rBox.innerHTML = `💡 <strong>Explication :</strong> ${activeQuestions[currentIdx].r}`;
+            document.getElementById('answers-container').appendChild(rBox);
+
+            setTimeout(() => {
+                if (currentMode === 'quiz') {
+                    currentIdx++;
+                    displayQuestion();
+                } else if (currentMode === 'survival') {
+                    if (chosen.toLowerCase() !== correctAns.toLowerCase()) {
+                        survivalLives--;
+                        updateSurvivalLivesUI();
+                    }
+                    if (survivalLives <= 0) {
+                        endSurvival();
+                    } else {
+                        currentIdx++;
+                        // Augmenter le niveau au fil des questions
+                        if (currentIdx === 5) survivalLevel = 2; // Niveau Moyen
+                        if (currentIdx === 10) survivalLevel = 3; // Niveau Difficile
+                        displaySurvivalQuestion();
+                    }
+                }
+            }, 2500);
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            showScreen('screen-results');
+            
+            document.getElementById('results-title').innerText = "Entraînement Terminé !";
+            document.getElementById('results-score-big').innerText = `${score} / ${activeQuestions.length}`;
+            document.getElementById('stat-theme').innerText = getThemeLabel();
+            
+            document.getElementById('stat-row-time').style.display = 'flex';
+            document.getElementById('stat-row-avg').style.display = 'flex';
+            document.getElementById('stat-row-survival').style.display = 'none';
+
+            document.getElementById('stat-time').innerText = totalSeconds + " secondes";
+            
+            let sum = responseTimes.reduce((a, b) => a + b, 0);
+            let avg = (sum / responseTimes.length).toFixed(2);
+            document.getElementById('stat-avg').innerText = avg + "s";
+        }
+
+        // --- MODE SURVIE (STRICT SENS GAMING) ---
+        function startSurvival() {
+            currentIdx = 0;
+            score = 0;
+            survivalLives = 3;
+            survivalLevel = 1;
+            responseTimes = [];
+            
+            document.getElementById('survival-lives').style.display = 'flex';
+            document.getElementById('hud-timer-box').style.display = 'block';
+            updateSurvivalLivesUI();
+
+            showScreen('screen-playground');
+            displaySurvivalQuestion();
+        }
+
+        function updateSurvivalLivesUI() {
+            let container = document.getElementById('survival-lives');
+            container.innerHTML = "";
+            for (let i = 0; i < 3; i++) {
+                container.innerHTML += (i < survivalLives) ? "❤️ " : "🖤 ";
+            }
+        }
+
+        function displaySurvivalQuestion() {
+            if (currentIdx >= activeQuestions.length) {
+                // Si l'élève a répondu à absolument tout sans mourir
+                endSurvival();
+                return;
+            }
+
+            document.getElementById('hud-progress').innerText = `Étape ${currentIdx + 1} (Niv. ${survivalLevel})`;
+            
+            // Configuration de la jauge de temps selon le niveau
+            let timeLimit = 15; // Niveau 1 : 15s
+            if (survivalLevel === 2) timeLimit = 10; // Niveau 2 : 10s
+            if (survivalLevel === 3) timeLimit = 5;  // Niveau 3 : 5s
+
+            document.getElementById('hud-timer').innerText = timeLimit + "s";
+            
+            let pBar = document.getElementById('game-progress-bar');
+            pBar.className = "progress-bar survival-timer";
+            pBar.style.width = "100%";
+
+            // Génération de la question identique au quiz classique
+            let qData = activeQuestions[currentIdx];
+            document.getElementById('question-text').innerHTML = qData.q;
+
+            let listDistracteurs = (database.modes.includes(qData)) 
+                ? ["Indicatif", "Subjonctif", "Conditionnel", "Impératif", "Infinitif", "Gérondif"]
+                : ["Allitération", "Métaphore", "Litote", "Oxymore", "Allégorie", "Comparaison", "Périphrase", "Antithèse", "Énumération + Hyperbole", "Personnification"];
+            
+            let filteredDistracteurs = listDistracteurs.filter(item => item.toLowerCase() !== qData.a.toLowerCase()).sort(() => Math.random() - 0.5).slice(0, 3);
+            let totalAnswers = [qData.a].concat(filteredDistracteurs).sort(() => Math.random() - 0.5);
+
+            let container = document.getElementById('answers-container');
+            container.innerHTML = "";
+            totalAnswers.forEach(ans => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-answer';
+                btn.innerText = ans;
+                btn.onclick = () => {
+                    clearInterval(survivalTimerInterval);
+                    checkAnswer(ans, btn);
+                };
+                container.appendChild(btn);
+            });
+
+            // Lancement du décompte visuel de la barre de survie
+            let timeLeft = timeLimit;
+            let intervalStep = 50; // ms
+            clearInterval(survivalTimerInterval);
+            
+            survivalTimerInterval = setInterval(() => {
+                timeLeft -= (intervalStep / 1000);
+                document.getElementById('hud-timer').innerText = Math.ceil(timeLeft) + "s";
+                let widthPercent = (timeLeft / timeLimit) * 100;
+                pBar.style.width = widthPercent + "%";
+
+                if (timeLeft <= 0) {
+                    clearInterval(survivalTimerInterval);
+                    // Temps écoulé = une vie en moins !
+                    survivalLives--;
+                    updateSurvivalLivesUI();
+                    
+                    // Révéler la bonne réponse
+                    let buttons = document.querySelectorAll('.btn-answer');
+                    buttons.forEach(b => {
+                        b.disabled = true;
+                        if (b.innerText.toLowerCase() === qData.a.toLowerCase()) b.classList.add('correct');
+                    });
+
+                    setTimeout(() => {
+                        if (survivalLives <= 0) {
+                            endSurvival();
+                        } else {
+                            currentIdx++;
+                            displaySurvivalQuestion();
+                        }
+                    }, 2000);
+                }
+            }, intervalStep);
+        }
+
+        function endSurvival() {
+            clearInterval(survivalTimerInterval);
+            showScreen('screen-results');
+            
+            document.getElementById('results-title').innerText = "Game Over - Mode Survie";
+            document.getElementById('results-score-big').innerText = `${currentIdx} Réponse(s) Validée(s)`;
+            document.getElementById('stat-theme').innerText = getThemeLabel();
+            
+            document.getElementById('stat-row-time').style.display = 'none';
+            document.getElementById('stat-row-avg').style.display = 'none';
+            document.getElementById('stat-row-survival').style.display = 'flex';
+            
+            let lvlLabel = "1 - Facile";
+            if (survivalLevel === 2) lvlLabel = "2 - Moyen";
+            if (survivalLevel === 3) lvlLabel = "3 - Expert (Master)";
+            document.getElementById('stat-survival-level').innerText = lvlLabel;
+        }
+
+        // --- MODE FLASHCARDS ---
+        function startFlashcards() {
+            fcIdx = 0;
+            showScreen('screen-flashcards');
+            updateFlashcardContent();
+        }
+
+        function updateFlashcardContent() {
+            let card = document.getElementById('flashcard');
+            card.classList.remove('flipped');
+            
+            let data = database.cours[fcIdx];
+            document.getElementById('flashcard-category-title').innerText = `Fiche Mémo (${fcIdx + 1} / ${database.cours.length})`;
+            document.getElementById('fc-front-title').innerText = data.titre;
+            document.getElementById('fc-back-desc').innerText = data.contenu;
+            document.getElementById('fc-back-mnemo').innerText = data.mnemo;
+        }
+
+        function toggleFlashcard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+        }
+
+        function nextFlashcard() {
+            fcIdx = (fcIdx + 1) % database.cours.length;
+            updateFlashcardContent();
+        }
+
+        function prevFlashcard() {
+            fcIdx = (fcIdx - 1 + database.cours.length) % database.cours.length;
+            updateFlashcardContent();
+        }
+
+        // --- JEU DES PAIRES (MATCHING) ---
+        function startMatch() {
+            showScreen('screen-match');
+            let items = [];
+            
+            if (currentTheme === 'all' || currentTheme === 'modes') {
+                items.push({ text: "Indicatif", pairId: 1 }, { text: "Je pars en vacances.", pairId: 1 });
+                items.push({ text: "Subjonctif", pairId: 2 }, { text: "Il faut qu’il parte.", pairId: 2 });
+                items.push({ text: "Gérondif", pairId: 3 }, { text: "En partant.", pairId: 3 });
+            }
+            if (currentTheme === 'all' || currentTheme === 'figures') {
+                items.push({ text: "Oxymore", pairId: 4 }, { text: "Cette obscure clarté", pairId: 4 });
+                items.push({ text: "Périphrase", pairId: 5 }, { text: "Le septième art", pairId: 5 });
+                items.push({ text: "Antithèse", pairId: 6 }, { text: "Tout lui plaît et déplaît", pairId: 6 });
+            }
+
+            // Mélanger complètement la grille de tuiles
+            items = items.sort(() => Math.random() - 0.5);
+
+            let gridContainer = document.getElementById('match-grid-container');
+            gridContainer.innerHTML = "";
+
+            items.forEach(item => {
+                let tile = document.createElement('div');
+                tile.className = "match-tile";
+                tile.innerText = item.text;
+                tile.dataset.pairId = item.pairId;
+                
+                tile.onclick = () => {
+                    if (tile.classList.contains('selected') || tile.classList.contains('matched')) return;
+
+                    tile.classList.add('selected');
+
+                    if (!matchSelectedTile) {
+                        matchSelectedTile = tile;
+                    } else {
+                        // Comparaison des deux tuiles sélectionnées
+                        if (matchSelectedTile.dataset.pairId === tile.dataset.pairId && matchSelectedTile.innerText !== tile.innerText) {
+                            // Paire Correcte
+                            let first = matchSelectedTile;
+                            setTimeout(() => {
+                                first.classList.add('matched');
+                                tile.classList.add('matched');
+                                checkMatchWin();
+                            }, 300);
+                        } else {
+                            // Paire Fausse
+                            let first = matchSelectedTile;
+                            setTimeout(() => {
+                                first.classList.remove('selected');
+                                tile.classList.remove('selected');
+                            }, 500);
+                        }
+                        matchSelectedTile = null;
+                    }
+                };
+                gridContainer.appendChild(tile);
+            });
+        }
+
+        function checkMatchWin() {
+            let remaining = document.querySelectorAll('.match-tile:not(.matched)');
+            if (remaining.length === 0) {
+                setTimeout(() => {
+                    showScreen('screen-results');
+                    document.getElementById('results-title').innerText = "Félicitations !";
+                    document.getElementById('results-score-big').innerText = "Paires Réussies 🎉";
+                    document.getElementById('stat-theme').innerText = getThemeLabel();
+                    document.getElementById('stat-row-time').style.display = 'none';
+                    document.getElementById('stat-row-avg').style.display = 'none';
+                    document.getElementById('stat-row-survival').style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // Utilitaires de libellés
+        function getThemeLabel() {
+            if (currentTheme === 'all') return "Mix Complet (Modes & Figures)";
+            if (currentTheme === 'modes') return "Les Modes Verbaux";
+            if (currentTheme === 'figures') return "Les Figures de Style";
+            return "";
+        }
+    </script>
+</body>
+</html>

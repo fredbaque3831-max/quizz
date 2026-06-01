@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révision Brevet : Histoire & Géographie</title>
+    <style>
+        /* --- THÈME ROSE CLAIR & PASTEL --- */
+        :root {
+            --primary: #ffb3c6; 
+            --primary-dark: #fb6f92; 
+            --secondary: #ffe5ec; 
+            --accent: #ffc2d1; 
+            --success: #a7c957; 
+            --wrong: #f28482; 
+            --bg: #fff5f6; 
+            --card-bg: #ffffff;
+            --text: #4c3b3e; 
+            --border-radius: 20px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--secondary);
+            color: var(--primary-dark);
+            width: 100%;
+            text-align: center;
+            padding: 25px 0;
+            box-shadow: 0 2px 10px rgba(251, 111, 146, 0.1);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; font-weight: 600; }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 25px auto;
+            text-align: center;
+        }
+
+        /* --- FILTRES DE MATIÈRE --- */
+        .filter-container {
+            background-color: var(--secondary);
+            padding: 8px;
+            border-radius: 30px;
+            display: inline-flex;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary-dark);
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: none;
+        }
+
+        .filter-btn.active {
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .main-nav {
+            background-color: var(--card-bg);
+            color: var(--primary-dark);
+            border: 2px solid var(--accent);
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .main-nav:hover {
+            background-color: var(--secondary);
+        }
+
+        .main-nav.active {
+            background-color: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(251, 111, 146, 0.2);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* --- FLASHCARDS --- */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 550px;
+            height: 320px;
+            margin: 0 auto 20px auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            box-sizing: border-box;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(251, 111, 146, 0.08);
+        }
+
+        .front {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: var(--primary-dark);
+            border: 2px solid white;
+        }
+
+        .category-badge {
+            background-color: white;
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            border: 1px solid var(--accent);
+        }
+
+        .question-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+
+        .back {
+            background-color: var(--card-bg);
+            color: var(--text);
+            transform: rotateY(180deg);
+            font-size: 1.15rem;
+            font-weight: 600;
+            border: 3px solid var(--secondary);
+            line-height: 1.5;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .nav-arrow {
+            background-color: var(--accent);
+            color: var(--text);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        .nav-arrow:hover {
+            background-color: var(--primary-dark);
+            color: white;
+        }
+
+        /* --- QUIZ --- */
+        .quiz-card {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            text-align: left;
+            border: 2px solid var(--secondary);
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            white-space: pre-line;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: #fffbfc;
+            color: var(--text);
+            border: 2px solid var(--secondary);
+            text-align: left;
+            border-radius: 14px;
+            padding: 15px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .option-btn.correct {
+            background-color: var(--success) !important;
+            color: white;
+            border-color: var(--success);
+        }
+
+        .option-btn.wrong {
+            background-color: var(--wrong) !important;
+            color: white;
+            border-color: var(--wrong);
+        }
+
+        .score-container {
+            font-size: 1.25rem;
+            margin-top: 25px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        /* --- FORMULAIRE --- */
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: left;
+            border: 2px solid var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--accent);
+            border-radius: 14px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            background-color: #fffbfc;
+            outline: none;
+            color: var(--text);
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary-dark);
+        }
+
+        .notification {
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin-top: 15px;
+            display: none;
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Révision Brevet • Kit Complet</h1>
+    </header>
+
+    <div class="container">
+        <div>
+            <div class="filter-container">
+                <button id="filter-all" class="filter-btn active" onclick="setSubject('all')">Tout</button>
+                <button id="filter-hist" class="filter-btn" onclick="setSubject('histoire')">📜 Histoire</button>
+                <button id="filter-geo" class="filter-btn" onclick="setSubject('geographie')">🌍 Géographie</button>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button id="btn-flash" class="main-nav active" onclick="switchMode('flashcards')">🃏 Flashcards</button>
+            <button id="btn-quiz" class="main-nav" onclick="switchMode('quiz')">📝 Quiz QCM</button>
+            <button id="btn-add" class="main-nav" onclick="switchMode('add')">➕ Ajouter</button>
+        </div>
+
+        <div id="sec-flashcards" class="section active">
+            <p style="color: var(--primary-dark); font-weight: 500; margin-bottom: 15px;">Clique sur la carte pour la retourner</p>
+            <div class="flashcard-container">
+                <div class="flashcard" id="card" onclick="this.classList.toggle('flipped')">
+                    <div class="front">
+                        <div class="category-badge" id="card-cat">-</div>
+                        <div class="question-title" id="card-question">-</div>
+                    </div>
+                    <div class="back" id="card-answer">-</div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="nav-arrow" onclick="prevCard()">◀</button>
+                <span id="card-index" style="font-weight: 600; color: var(--primary-dark);">0 / 0</span>
+                <button class="nav-arrow" onclick="nextCard()">▶</button>
+            </div>
+        </div>
+
+        <div id="sec-quiz" class="section">
+            <div class="quiz-card">
+                <div class="question-text" id="quiz-question">Question ici</div>
+                <div class="options-container" id="quiz-options"></div>
+            </div>
+            <div class="score-container">
+                Score : <span id="quiz-score">0</span> / <span id="quiz-total">0</span>
+            </div>
+            <button style="margin-top: 20px; width: 100%; background: var(--primary-dark); color: white; border: none;" class="main-nav" onclick="initQuiz()">🔄 Recommencer ce Quiz</button>
+        </div>
+
+        <div id="sec-add" class="section">
+            <div class="form-card">
+                <h2 style="color: var(--primary-dark); margin-top: 0; font-size: 1.4rem;">Créer une carte personnalisée</h2>
+                <div class="form-group">
+                    <label for="new-type">Matière / Type :</label>
+                    <select id="new-type">
+                        <option value="Histoire">Histoire</option>
+                        <option value="Géographie : La France">Géographie : La France</option>
+                        <option value="Géographie : L'Union Européenne">Géographie : L'Union Européenne</option>
+                        <option value="Géographie : Monde">Géographie : Monde</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-question">Question ou Date (Recto) :</label>
+                    <input type="text" id="new-question" placeholder="Ex: Les fleuves de France">
+                </div>
+                <div class="form-group">
+                    <label for="new-answer">Réponse ou Événement (Verso) :</label>
+                    <textarea id="new-answer" placeholder="Ex: La Seine, la Loire, la Garonne..."></textarea>
+                </div>
+                <button style="width: 100%; background: var(--primary-dark); color: white; border: none;" class="main-nav" onclick="addNewFlashcard()">✨ Enregistrer la carte</button>
+                <div id="form-notification" class="notification">🌸 Carte ajoutée ! Mettez à jour vos filtres.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // BASE DE DONNÉES INTEGRALE (32 Histoire + Tout ton programme complet de Géo)
+        let dataset = [
+            // === 📜 HISTOIRE (32 DATES) ===
+            { type: "Histoire", q: "1914-1918", a: "Grande Guerre (Première guerre mondiale)" },
+            { type: "Histoire", q: "1916", a: "Bataille de Verdun" },
+            { type: "Histoire", q: "1917", a: "Révolution(s) russe(s) d'octobre" },
+            { type: "Histoire", q: "11 novembre 1918", a: "Armistice de la Première Guerre mondiale" },
+            { type: "Histoire", q: "1924-1953", a: "Staline au pouvoir en URSS (Régime totalitaire)" },
+            { type: "Histoire", q: "1933-1945", a: "L’Allemagne nazie d’Adolf Hitler" },
+            { type: "Histoire", q: "1936", a: "Front populaire : victoire électorale et lois sociales (congés payés)" },
+            { type: "Histoire", q: "1939-1945", a: "Seconde Guerre mondiale" },
+            { type: "Histoire", q: "18 juin 1940", a: "Appel du général De Gaulle depuis la BBC à Londres" },
+            { type: "Histoire", q: "1940-1944", a: "Régime de Vichy (Collaboration avec l'Allemagne)" },
+            { type: "Histoire", q: "6 juin 1944", a: "Débarquement allié en Normandie (Opération Overlord)" },
+            { type: "Histoire", q: "1944-1945", a: "Libération de la France, GPRF et IVe République" },
+            { type: "Histoire", q: "1944-1945", a: "Droit de vote accordé aux femmes en France" },
+            { type: "Histoire", q: "8 mai 1945", a: "Fin de la Seconde Guerre mondiale en Europe (Capitulation allemande)" },
+            { type: "Histoire", q: "Août 1945", a: "Bombardements atomiques sur Hiroshima et Nagasaki" },
+            { type: "Histoire", q: "1945", a: "Création de l’ONU (Organisation des Nations Unies)" },
+            { type: "Histoire", q: "1947-1991", a: "Guerre Froide (Affrontement bloc Est / bloc Ouest)" },
+            { type: "Histoire", q: "1947-1962", a: "Principale phase de décolonisation mondiale" },
+            { type: "Histoire", q: "1954-1962", a: "Guerre d’Algérie" },
+            { type: "Histoire", q: "1957", a: "Traité de Rome (création de la CEE, future UE)" },
+            { type: "Histoire", q: "1958", a: "Naissance de la Ve République française" },
+            { type: "Histoire", q: "1958-1969", a: "Les années de présidence de Charles De Gaulle" },
+            { type: "Histoire", q: "1962 (Algérie)", a: "Indépendance de l’Algérie (Accords d'Évian)" },
+            { type: "Histoire", q: "1962 (Constitution)", a: "Référendum instituant l'élection du président au suffrage universel direct" },
+            { type: "Histoire", q: "1975", a: "Adoption de la Loi Veil dépénalisant l’IVG en France" },
+            { type: "Histoire", q: "1981-1995", a: "Les années François Mitterrand et première alternance à gauche" },
+            { type: "Histoire", q: "9 novembre 1989", a: "Chute du mur de Berlin" },
+            { type: "Histoire", q: "1991", a: "Dislocation et éclatement de l’URSS" },
+            { type: "Histoire", q: "1992", a: "Signature du Traité de Maastricht (Création officielle de l'UE et de la citoyenneté UE)" },
+            { type: "Histoire", q: "1995-2007", a: "Les années de présidence de Jacques Chirac" },
+            { type: "Histoire", q: "11 septembre 2001", a: "Attentats terroristes d'Al-Qaïda aux États-Unis (World Trade Center)" },
+            { type: "Histoire", q: "2002", a: "L'Euro devient la monnaie unique en circulation" },
+
+            // === 🌍 GÉOGRAPHIE : LA FRANCE ===
+            { type: "Géographie : La France", q: "Comment se compose le territoire de la France ?", a: "La métropole (située sur le continent européen) et les territoires ultramarins (DROM-COM situés dans différents océans)." },
+            { type: "Géographie : La France", q: "Citez une dizaine d’aires urbaines françaises parmi les plus peuplées.", a: "Paris, Lyon, Marseille-Aix, Toulouse, Bordeaux, Lille, Nice, Nantes, Strasbourg, Rennes." },
+            { type: "Géographie : La France", q: "Quels sont les principaux espaces fortement peuplés en France ?", a: "Les grandes aires urbaines (Paris, Lyon...), les littoraux (méditerranéen, atlantique) et les grandes vallées fluviales (Seine, Rhône)." },
+            { type: "Géographie : La France", q: "Donnez des exemples de métropoles et espaces productifs dynamiques intégrés à la mondialisation.", a: "Paris (ville mondiale), le pôle aéronautique de Toulouse (Airbus), l'axe logistique de la Basse-Seine, le pôle agricole de la Beauce." },
+            { type: "Géographie : La France", q: "Quels sont les points d'entrée, façades maritimes et interfaces de la France ?", a: "Ports : Le Havre, Marseille. Aéroports : Paris CDG, Orly. Façades : Manche, Atlantique, Méditerranée. Interface frontalière : frontière Nord-Est." },
+            { type: "Géographie : La France", q: "Quels sont les grands repères physiques de la France ?", a: "Montagnes : Alpes, Pyrénées, Massif central. Fleuves : Seine, Loire, Garonne, Rhône, Rhin. Climats : océanique, continental, méditerranéen, montagnard." },
+            { type: "Géographie : La France", q: "Quelles sont les 13 régions métropolitaines françaises ?", a: "Auvergne-Rhône-Alpes, Bourgogne-Franche-Comté, Bretagne, Centre-Val de Loire, Corse, Grand Est, Hauts-de-France, Île-de-France, Normandie, Nouvelle-Aquitaine, Occitanie, Pays de la Loire, PACA." },
+            { type: "Géographie : La France", q: "Quels rôles jouent les axes de transport en France ?", a: "Ils connectent les métropoles entre elles et relient la France au reste de l'Europe, organisés en étoile autour de Paris (réseau radial TGV / Autoroutes)." },
+            { type: "Géographie : La France", q: "Quels sont les grands traits de l’organisation du territoire national ?", a: "Le poids démesuré de Paris (macrocéphalie urbaine), la littoralisation des activités, et le dynamisme des régions frontalières et du Sud (héliotropisme)." },
+            { type: "Géographie : La France", q: "Quels sont les territoires ultra-marins de la France ?", a: "DROM : Guadeloupe, Martinique, Guyane, La Réunion, Mayotte.\nCOM : Polynésie française, Nouvelle-Calédonie, Saint-Pierre-et-Miquelon, Wallis-et-Futuna." },
+            { type: "Géographie : La France", q: "Citez quelques États ou provinces francophones dans le monde.", a: "Le Québec (Canada), la Belgique, la Suisse, le Sénégal, la Côte d'Ivoire, Madagascar, la République Démocratique du Congo." },
+
+            // === 🇪🇺 GÉOGRAPHIE : L'UNION EUROPÉENNE ===
+            { type: "Géographie : L'Union Européenne", q: "Quels sont les 27 États membres de l'UE et leurs principales capitales ?", a: "27 pays. Exemples clés :\nFrance (Paris), Allemagne (Berlin), Italie (Rome), Espagne (Madrid), Belgique (Bruxelles), Pologne (Varsovie), Pays-Bas (Amsterdam)." },
+            { type: "Géographie : L'Union Européenne", q: "Quels sont les grands pôles économiques mondiaux face à l’UE ?", a: "L'Amérique du Nord (Portée par les États-Unis) et l'Asie de l'Est (Portée par la Chine et le Japon)." },
+            { type: "Géographie : L'Union Européenne", q: "Quelles sont les principales métropoles européennes et sièges institutionnels ?", a: "Bruxelles (Commission et Conseil), Strasbourg (Parlement européen), Luxembourg (Cour de justice européenne), Francfort (BCE)." },
+            { type: "Géographie : L'Union Européenne", q: "Qu'est-ce que la mégalopole européenne et ses grands axes ?", a: "Une zone urbaine continue à forte concentration économique s'étendant de Londres à Milan. Les grands axes suivent la vallée du Rhin et les réseaux de transport majeurs." },
+            { type: "Géographie : L'Union Européenne", q: "Donnez des exemples de régions transfrontalières en Europe.", a: "L'espace Sarre-Lor-Lux (Allemagne-France-Luxembourg) ou l'Eurodistrict Strasbourg-Ortenau (France-Allemagne)." },
+            { type: "Géographie : L'Union Européenne", q: "Quelles sont les façades maritimes européennes et les fleuves principaux ?", a: "Façade : La Northern Range (Mer du Nord, premier pôle portuaire). Fleuves : Le Rhin (axe marchand majeur) et le Danube." },
+
+            // === 🗺️ GÉOGRAPHIE : GRANDS REPÈRES TERRESTRES ===
+            { type: "Géographie : Monde", q: "Quels sont les continents, océans et lignes imaginaires clés ?", a: "Continents : Europe, Asie, Afrique, Amérique, Océanie, Antarctique.\nOcéans : Pacifique, Atlantique, Indien, Arctique, Antarctique.\nLignes : Équateur, Tropiques (Cancer/Capricorne), Cercles polaires." },
+            { type: "Géographie : Monde", q: "Quelles sont les grandes zones thermiques et domaines bioclimatiques ?", a: "Zone chaude (équatorial, tropical, désertique), Zones tempérées (océanique, continental, méditerranéen), Zones froides (polaire, haute montagne)." },
+            { type: "Géographie : Monde", q: "Quelles sont les 4 grandes chaînes de montagnes mondiales à retenir ?", a: "L'Himalaya (Asie), les Andes (Amérique du Sud), les Rocheuses (Amérique du Nord) et les Alpes (Europe)." },
+            { type: "Géographie : Monde", q: "Quelles sont les grandes forêts denses du globe ?", a: "La forêt amazonienne (Amérique du Sud) et la forêt du bassin du Congo (Afrique centrale)." },
+            { type: "Géographie : Monde", q: "Quel est le grand désert chaud de référence au collège ?", a: "Le désert du Sahara (situé en Afrique du Nord)." },
+            { type: "Géographie : Monde", q: "Quels sont les 6 grands fleuves mondiaux du programme ?", a: "Le Nil, le Congo, le Gange, le Yangzi (Fleuve Bleu), l'Amazone et le Mississippi." },
+            { type: "Géographie : Monde", q: "Quels sont les isthmes et détroits stratégiques mondiaux ?", a: "Les isthmes de Suez (Égypte) et de Panama (Amérique Centrale), et le détroit de Gibraltar (entre Espagne et Maroc)." },
+            { type: "Géographie : Monde", q: "Où se trouvent les foyers de fortes densités humaines et les mégalopoles ?", a: "Foyers : Asie du Sud (Inde), Asie de l'Est (Chine), Europe.\nMégalopoles : La mégalopole américaine (BosWash) et la mégalopole japonaise." },
+            { type: "Géographie : Monde", q: "Quels sont les grands États du monde à savoir situer ?", a: "Les États-Unis, le Canada, le Mexique, le Brésil, la Chine, l'Union Indienne, le Japon, l'Égypte, l'Indonésie." },
+            { type: "Géographie : Monde", q: "Quelles sont les grandes métropoles mondiales à connaître ?", a: "Tokyo, Le Caire, Pékin (Beijing), Shanghai, Bombay (Mumbai), Calcutta, New-York, Dacca, Sao Paulo, Mexico." }
+        ];
+
+        let currentSubject = 'all'; 
+        let activeDataset = [...dataset];
+        let currentCardIndex = 0;
+        let currentMode = 'flashcards';
+
+        // --- Tri par matière ---
+        function setSubject(subject) {
+            currentSubject = subject;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if(subject === 'all') {
+                document.getElementById('filter-all').classList.add('active');
+                activeDataset = [...dataset];
+            } else if (subject === 'histoire') {
+                document.getElementById('filter-hist').classList.add('active');
+                activeDataset = dataset.filter(item => item.type === 'Histoire');
+            } else if (subject === 'geographie') {
+                document.getElementById('filter-geo').classList.add('active');
+                activeDataset = dataset.filter(item => item.type.startsWith('Géographie'));
+            }
+            
+            currentCardIndex = 0;
+            if(currentMode === 'flashcards') updateCard();
+            if(currentMode === 'quiz') initQuiz();
+        }
+
+        // --- Logique Flashcards ---
+        function updateCard() {
+            if (activeDataset.length === 0) {
+                document.getElementById('card-cat').innerText = "Vide";
+                document.getElementById('card-question').innerText = "Aucune carte.";
+                document.getElementById('card-answer').innerText = "-";
+                document.getElementById('card-index').innerText = "0 / 0";
+                return;
+            }
+            const card = document.getElementById('card');
+            card.classList.remove('flipped');
+            setTimeout(() => {
+                document.getElementById('card-cat').innerText = activeDataset[currentCardIndex].type;
+                document.getElementById('card-question').innerText = activeDataset[currentCardIndex].q;
+                document.getElementById('card-answer').innerText = activeDataset[currentCardIndex].a;
+                document.getElementById('card-index').innerText = `${currentCardIndex + 1} / ${activeDataset.length}`;
+            }, 50);
+        }
+
+        function nextCard() {
+            if (activeDataset.length === 0) return;
+            currentCardIndex = (currentCardIndex + 1) % activeDataset.length;
+            updateCard();
+        }
+
+        function prevCard() {
+            if (activeDataset.length === 0) return;
+            currentCardIndex = (currentCardIndex - 1 + activeDataset.length) % activeDataset.length;
+            updateCard();
+        }
+
+        // --- Ajouter des cartes ---
+        function addNewFlashcard() {
+            const typeInput = document.getElementById('new-type').value;
+            const qInput = document.getElementById('new-question').value.trim();
+            const aInput = document.getElementById('new-answer').value.trim();
+            
+            if (qInput === "" || aInput === "") {
+                alert("Oups ! Remplis d'abord le recto et le verso. 🌸");
+                return;
+            }
+            
+            dataset.push({ type: typeInput, q: qInput, a: aInput });
+            document.getElementById('form-notification').style.display = 'block';
+            document.getElementById('new-question').value = '';
+            document.getElementById('new-answer').value = '';
+            
+            setTimeout(() => { document.getElementById('form-notification').style.display = 'none'; }, 3000);
+            setSubject(currentSubject);
+        }
+
+        // --- Logique Quiz QCM ---
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+        let score = 0;
+        let canAnswer = true;
+
+        function initQuiz() {
+            if (activeDataset.length < 4) {
+                document.getElementById('quiz-question').innerText = "Il faut au moins 4 cartes dans cette catégorie pour faire un quiz ! Modifie tes filtres en haut. 💕";
+                document.getElementById('quiz-options').innerHTML = '';
+                document.getElementById('quiz-total').innerText = '0';
+                return;
+            }
+            quizQuestions = [...activeDataset].sort(() => Math.random() - 0.5);
+            currentQuizIndex = 0;
+            score = 0;
+            document.getElementById('quiz-score').innerText = score;
+            document.getElementById('quiz-total').innerText = quizQuestions.length;
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            if (currentQuizIndex >= quizQuestions.length) {
+                document.getElementById('quiz-question').innerText = `🌸 Entraînement fini ! \nTon score final : ${score} / ${quizQuestions.length}.`;
+                document.getElementById('quiz-options').innerHTML = '';
+                return;
+            }
+            canAnswer = true;
+            const currentItem = quizQuestions[currentQuizIndex];
+            
+            let questionText = "";
+            let correctAnswer = "";
+            let pool = [];
+
+            if (currentItem.type === "Histoire" && Math.random() > 0.5) {
+                questionText = `Quelle est la date correspondante à :\n"${currentItem.a}" ?`;
+                correctAnswer = currentItem.q;
+                pool = dataset.filter(i => i.type === "Histoire").map(i => i.q);
+            } else {
+                questionText = `[${currentItem.type}] \n👉 Repère : ${currentItem.q}`;
+                correctAnswer = currentItem.a;
+                pool = dataset.map(i => i.a);
+            }
+            
+            document.getElementById('quiz-question').innerText = questionText;
+            
+            let wrongAnswers = [...new Set(pool.filter(ans => ans !== correctAnswer))].sort(() => Math.random() - 0.5).slice(0, 3);
+            while(wrongAnswers.length < 3) { wrongAnswers.push("Autre option du programme"); }
+            
+            let options = [correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, correctAnswer);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(btn, selected, correct) {
+            if (!canAnswer) return;
+            canAnswer = false;
+            if (selected === correct) {
+                btn.classList.add('correct');
+                score++;
+                document.getElementById('quiz-score').innerText = score;
+                setTimeout(() => { currentQuizIndex++; showQuizQuestion(); }, 1200);
+            } else {
+                btn.classList.add('wrong');
+                document.querySelectorAll('.option-btn').forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
+                setTimeout(() => { currentQuizIndex++; showQuizQuestion(); }, 3500); // 3,5s pour bien mémoriser la correction longue
+            }
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.main-nav').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('sec-' + mode).classList.add('active');
+            document.getElementById('btn-' + mode).classList.add('active');
+            if (mode === 'quiz') initQuiz();
+            if (mode === 'flashcards') updateCard();
+        }
+
+        updateCard();
+    </script>
+</body>
+</html>

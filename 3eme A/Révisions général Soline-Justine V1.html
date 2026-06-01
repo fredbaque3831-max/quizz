@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BREVET ARCADE - Révisions Ultimes</title>
+    <style>
+        :root {
+            --bg-color: #0f0c1b;
+            --panel-bg: #1d1836;
+            --primary: #ff007f;
+            --secondary: #00f0ff;
+            --success: #39ff14;
+            --text: #ffffff;
+            --text-muted: #aaa4c9;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+            letter-spacing: 4px;
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            font-weight: bold;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--panel-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.15);
+            border: 1px solid rgba(255, 0, 127, 0.3);
+        }
+
+        /* CONFIGURATION SCREEN */
+        .setup-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 5px;
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .opt-btn {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .opt-btn:hover {
+            border-color: var(--secondary);
+            background: rgba(0, 240, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .opt-btn.active {
+            border-color: var(--primary);
+            background: rgba(255, 0, 127, 0.2);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, var(--primary), #b30059);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 0 20px var(--primary);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 30px var(--primary);
+        }
+
+        /* GAME SCREENS GENERAL */
+        .game-screen {
+            display: none;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-content: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+            border-color: #fff;
+        }
+
+        /* MODE: QUIZZ & VRAI/FAUX & SURVIE */
+        .question-box {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            min-height: 80px;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .answer-btn {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 18px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .answer-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--secondary);
+        }
+
+        /* MODE: FLASHCARDS */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin: 0 auto 30px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            font-size: 1.3rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #2e1a47, #160d29);
+            border: 2px solid var(--secondary);
+            color: #fff;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #160d29, #2e1a47);
+            border: 2px solid var(--primary);
+            color: #fff;
+            transform: rotateY(180deg);
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* MODE: PAIRS (MEMORY) */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mem-card {
+            background: #110924;
+            border: 2px solid var(--secondary);
+            border-radius: 8px;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            padding: 5px;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .mem-card.hidden-content {
+            background: linear-gradient(45deg, var(--panel-bg), #0f0c1b);
+            color: transparent !important;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .mem-card.matched {
+            background: rgba(57, 255, 20, 0.15);
+            border-color: var(--success);
+            color: var(--success);
+            pointer-events: none;
+        }
+
+        /* RESULTS SCREEN */
+        .results-box {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .score-big {
+            font-size: 4rem;
+            color: var(--success);
+            font-weight: bold;
+            text-shadow: 0 0 15px var(--success);
+        }
+
+        /* SURVIVAL ELEMENTS */
+        .heart-life {
+            color: var(--primary);
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .memory-grid { grid-template-columns: repeat(2, 1fr); }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Brevet Arcade</h1>
+        <div class="subtitle">Entraînement Ludique Révolutionnaire</div>
+    </header>
+
+    <div class="container">
+        
+        <div id="setupScreen" class="setup-screen">
+            <div>
+                <div class="section-title">1. Choisis tes matières / thèmes</div>
+                <div class="grid-options" id="themeGrid">
+                    <div class="opt-btn active" data-type="theme" data-value="all">Tout mélanger 🔥</div>
+                    <div class="opt-btn" data-type="theme" data-value="maths">Mathématiques 📐</div>
+                    <div class="opt-btn" data-type="theme" data-value="francais">Français (Modes/Styles) ✍️</div>
+                    <div class="opt-btn" data-type="theme" data-value="histoire">Histoire-Géo 🌍</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">2. Sélectionne ton Mode de Jeu</div>
+                <div class="grid-options" id="modeGrid">
+                    <div class="opt-btn active" data-type="mode" data-value="quizz">Quizz Éclat (20 Q) ⚡</div>
+                    <div class="opt-btn" data-type="mode" data-value="flashcards">Flashcards Flash 🎴</div>
+                    <div class="opt-btn" data-type="mode" data-value="vraiFaux">Vrai ou Faux 🛑</div>
+                    <div class="opt-btn" data-type="mode" data-value="paires">Jeu des Paires 🧩</div>
+                    <div class="opt-btn" data-type="mode" data-value="survie">Mode Survie 💀</div>
+                </div>
+            </div>
+
+            <div id="difficultySection" style="display:none;">
+                <div class="section-title">3. Difficulté Survie (Vies & Chrono réduits)</div>
+                <div class="grid-options" id="diffGrid">
+                    <div class="opt-btn active" data-type="diff" data-value="facile">Facile (5 Vies) 🌱</div>
+                    <div class="opt-btn" data-type="diff" data-value="moyen">Moyen (3 Vies) ⚔️</div>
+                    <div class="opt-btn" data-type="diff" data-value="difficile">Hardcore (1 Vie) ☠️</div>
+                </div>
+            </div>
+
+            <button class="start-btn" id="startBtn">Lancer la Partie</button>
+        </div>
+
+        <div id="gameScreen" class="game-screen">
+            <div class="game-header">
+                <button class="back-btn" id="quitBtn">Menu Principal</button>
+                <div id="gameStats" style="font-weight: bold; color: var(--secondary);"></div>
+                <div id="survivalLives" class="heart-life"></div>
+            </div>
+
+            <div id="standardGameLayout">
+                <div class="question-box" id="questionText">La question s'affiche ici...</div>
+                <div class="answers-grid" id="answersContainer"></div>
+                <div class="feedback" id="actionFeedback"></div>
+            </div>
+
+            <div id="flashcardLayout" style="display:none;">
+                <div class="flashcard-wrapper">
+                    <div class="flashcard" id="clickableCard">
+                        <div class="card-face card-front" id="cardFrontText">Question</div>
+                        <div class="card-face card-back" id="cardBackText">Réponse</div>
+                    </div>
+                </div>
+                <div class="controls-row">
+                    <button class="opt-btn" id="prevCardBtn">⬅️ Précédent</button>
+                    <button class="opt-btn" id="nextCardBtn">Suivant ➡️</button>
+                </div>
+            </div>
+
+            <div id="pairsLayout" style="display:none;">
+                <div class="memory-grid" id="memoryGridContainer"></div>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="results-box" style="display:none;">
+            <h2 style="color: var(--secondary); font-size: 2rem;">Partie Terminée !</h2>
+            <div id="scoreDisplay" class="score-big">15 / 20</div>
+            <div id="statsDisplay" style="font-size: 1.2rem; line-height: 1.6;">
+                Temps moyen par question : <span style="color:var(--secondary);">3.2s</span>
+            </div>
+            <button class="start-btn" id="retryBtn" style="width: auto; align-self: center; padding: 12px 40px;">Rejouer</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- BASE DE DONNÉES DE RÉVISION INTEGRALE ---
+        const database = {
+            maths: [
+                { q: "Qu'est-ce que le résultat d'une addition ?", a: "Somme", o: ["Différence", "Produit", "Quotient"], type: "choice" },
+                { q: "Qu'est-ce que le résultat d'une soustraction ?", a: "Différence", o: ["Somme", "Produit", "Quotient"], type: "choice" },
+                { q: "Qu'est-ce que le résultat d'une multiplication ?", a: "Produit", o: ["Somme", "Différence", "Quotient"], type: "choice" },
+                { q: "Qu'est-ce que le résultat d'une division ?", a: "Quotient", o: ["Somme", "Produit", "Différence"], type: "choice" },
+                { q: "Cite un diviseur de 15.", a: "5", o: ["2", "4", "7"], type: "choice" },
+                { q: "7 est-il un multiple de 14 ?", a: "Faux, c'est un diviseur", o: ["Vrai, car 14 = 7x2", "Vrai, tous les entiers marchent"], type: "choice" },
+                { q: "Comment repère-t-on un nombre divisible par 3 ?", a: "La somme de ses chiffres est dans la table de 3", o: ["Il se termine par 3", "Il est impair", "Son dernier chiffre est divisible par 3"], type: "choice" },
+                { q: "Quelle est la définition d'un nombre premier ?", a: "Un nombre qui a exactement deux diviseurs (1 et lui-même)", o: ["Un nombre impair", "Un nombre qui finit par 1, 3 ou 7", "Un nombre divisible par 2"], type: "choice" },
+                { q: "Lequel de ces ensembles ne contient QUE des nombres premiers ?", a: "2, 3, 5, 7, 11, 13", o: ["1, 2, 3, 5, 7", "3, 5, 7, 9, 11", "2, 4, 6, 8, 10"], type: "choice" },
+                { q: "Soustraire un nombre revient à...", a: "Ajouter son opposé", o: ["Multiplier par son inverse", "Diviser par son opposé", "Soustraire son inverse"], type: "choice" },
+                { q: "Quelle est la formule du cosinus d'un angle dans un triangle rectangle ?", a: "Côté adjacent / Hypoténuse", o: ["Côté opposé / Hypoténuse", "Côté adjacent / Côté opposé", "Hypoténuse / Côté adjacent"], type: "choice" },
+                { q: "A quoi sert le théorème de Pythagore ?", a: "Calculer une longueur dans un triangle rectangle", o: ["Prouver que deux droites sont parallèles", "Calculer des angles", "Calculer le volume d'une sphère"], type: "choice" },
+                { q: "Quelle est la somme des angles dans un triangle ?", a: "180°", o: ["90°", "360°", "120°"], type: "choice" },
+                { q: "Que devient l'aire d'une figure si on applique un agrandissement de rapport k ?", a: "Elle est multipliée par k²", o: ["Elle est multipliée par k", "Elle est multipliée par k³", "Elle reste identique"], type: "choice" },
+                { q: "Quelle est l'aire d'un disque de rayon R ?", a: "π x R²", o: ["2 x π x R", "4/3 x π x R³", "Côté x Côté"], type: "choice" },
+                { q: "Sur un graphique, sur quel axe lit-on l'image d'un nombre ?", a: "L'axe des ordonnées (vertical)", o: ["L'axe des abscisses (horizontal)", "L'origine", "La diagonale"], type: "choice" }
+            ],
+            francais: [
+                { q: "Identifiez le mode : 'Il faut qu'il **parte**.'", a: "Subjonctif", o: ["Indicatif", "Conditionnel", "Impératif"], type: "choice" },
+                { q: "Identifiez le mode : 'Il **partirait** avec toi si tu le voulais.'", a: "Conditionnel", o: ["Indicatif", "Subjonctif", "Participe"], type: "choice" },
+                { q: "Identifiez le mode : '**Pars** !'", a: "Impératif", o: ["Infinitif", "Gérondif", "Indicatif"], type: "choice" },
+                { q: "Identifiez le mode : 'En **courant**, il s'est foulé la cheville.'", a: "Gérondif", o: ["Participe", "Infinitif", "Subjonctif"], type: "choice" },
+                { q: "Quelle figure oppose deux termes contradictoires juxtaposés (ex: 'Cette obscure clarté') ?", a: "Oxymore", o: ["Antithèse", "Périphrase", "Allégorie"], type: "choice" },
+                { q: "Quelle figure remplace un mot par une expression équivalente (ex: 'Le septième art') ?", a: "Périphrase", o: ["Personnification", "Métaphore", "Litote"], type: "choice" },
+                { q: "Quelle figure est présente ici : 'Le Malheur a percé mon vieux cœur de sa lance.' (avec majuscule) ?", a: "Allégorie", o: ["Comparaison", "Oxymore", "Hyperbole"], type: "choice" },
+                { q: "Identifiez la figure : 'Ce n’était pas un sot, non, non...'", a: "Litote", o: ["Allitération", "Antithèse", "Personnification"], type: "choice" }
+            ],
+            histoire: [
+                { q: "Quelles sont les dates de la Première Guerre mondiale ?", a: "1914-1918", o: ["1939-1945", "1916-1919", "1870-1875"], type: "choice" },
+                { q: "En quelle année a eu lieu la bataille de Verdun ?", a: "1916", o: ["1914", "1917", "1918"], type: "choice" },
+                { q: "Quand le droit de vote des femmes a-t-il été adopté en France ?", a: "1944", o: ["1918", "1936", "1962"], type: "choice" },
+                { q: "Quel événement majeur s'est produit le 9 novembre 1989 ?", a: "Chute du mur de Berlin", o: ["Traité de Maastricht", "Attentats aux États-Unis", "Fin de l'URSS"], type: "choice" },
+                { q: "Qu'est-ce que le méridien de référence terrestre ?", a: "Le méridien de Greenwich", o: ["L'Équateur", "Le Tropique du Cancer", "Le cercle polaire"], type: "choice" },
+                { q: "Combien d'États membres compte l'Union Européenne en 2026 ?", a: "27", o: ["25", "28", "30"], type: "choice" },
+                { q: "Qui était au pouvoir en URSS de 1924 à 1953 ?", a: "Staline", o: ["Lénine", "Khrouchtchev", "Gorbatchev"], type: "choice" }
+            ]
+        };
+
+        // --- STATE MANAGEMENT ---
+        let selectedTheme = "all";
+        let selectedMode = "quizz";
+        let survivalDifficulty = "facile";
+        
+        let activeQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let lives = 5;
+        let questionStartTimes = [];
+        let totalQuestionsToPlay = 20;
+
+        // UI Target bindings
+        const setupScreen = document.getElementById("setupScreen");
+        const gameScreen = document.getElementById("gameScreen");
+        const resultsScreen = document.getElementById("resultsScreen");
+        const startBtn = document.getElementById("startBtn");
+        const quitBtn = document.getElementById("quitBtn");
+        const retryBtn = document.getElementById("retryBtn");
+        
+        const questionText = document.getElementById("questionText");
+        const answersContainer = document.getElementById("answersContainer");
+        const gameStats = document.getElementById("gameStats");
+        const survivalLives = document.getElementById("survivalLives");
+        const actionFeedback = document.getElementById("actionFeedback");
+
+        const standardGameLayout = document.getElementById("standardGameLayout");
+        const flashcardLayout = document.getElementById("flashcardLayout");
+        const pairsLayout = document.getElementById("pairsLayout");
+
+        // --- INIT & CONFIGURATION CLICK HANDLERS ---
+        document.querySelectorAll(".opt-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const type = btn.dataset.type;
+                const value = btn.dataset.value;
+
+                document.querySelectorAll(`.opt-btn[data-type="${type}"]`).forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                if (type === "theme") selectedTheme = value;
+                if (type === "mode") {
+                    selectedMode = value;
+                    document.getElementById("difficultySection").style.display = (value === "survie") ? "block" : "none";
+                }
+                if (type === "diff") survivalDifficulty = value;
+            });
+        });
+
+        startBtn.addEventListener("click", initGame);
+        quitBtn.addEventListener("click", showMenu);
+        retryBtn.addEventListener("click", showMenu);
+
+        function showMenu() {
+            resultsScreen.style.display = "none";
+            gameScreen.style.display = "none";
+            setupScreen.style.display = "flex";
+        }
+
+        // --- CORE GAME ENGINE ---
+        function initGame() {
+            // Pool questions from selected categories
+            let pool = [];
+            if (selectedTheme === "all") {
+                pool = [...database.maths, ...database.francais, ...database.histoire];
+            } else {
+                pool = [...database[selectedTheme]];
+            }
+
+            // Shuffle pool
+            pool.sort(() => Math.random() - 0.5);
+
+            // Settings based on mode
+            currentQuestionIndex = 0;
+            score = 0;
+            questionStartTimes = [];
+            actionFeedback.style.display = "none";
+            survivalLives.innerHTML = "";
+
+            if (selectedMode === "quizz" || selectedMode === "vraiFaux") {
+                totalQuestionsToPlay = Math.min(20, pool.length);
+                activeQuestions = pool.slice(0, totalQuestionsToPlay);
+                if(selectedMode === "vraiFaux") filterToVraiFauxMode();
+                
+                setupLayouts("standard");
+                loadQuestion();
+            } 
+            else if (selectedMode === "survie") {
+                if (survivalDifficulty === "facile") lives = 5;
+                else if (survivalDifficulty === "moyen") lives = 3;
+                else lives = 1;
+
+                totalQuestionsToPlay = pool.length; // Play until death or dry
+                activeQuestions = pool;
+                
+                setupLayouts("standard");
+                updateSurvivalHearts();
+                loadQuestion();
+            }
+            else if (selectedMode === "flashcards") {
+                activeQuestions = pool;
+                totalQuestionsToPlay = pool.length;
+                setupLayouts("flashcard");
+                loadFlashcard();
+            }
+            else if (selectedMode === "paires") {
+                activeQuestions = pool.slice(0, 6); // 6 pairs = 12 cards
+                setupLayouts("pairs");
+                initPairsGame();
+            }
+
+            setupScreen.style.display = "none";
+            gameScreen.style.display = "block";
+        }
+
+        function setupLayouts(type) {
+            standardGameLayout.style.display = (type === "standard") ? "block" : "none";
+            flashcardLayout.style.display = (type === "flashcard") ? "block" : "none";
+            pairsLayout.style.display = (type === "pairs") ? "block" : "none";
+        }
+
+        function filterToVraiFauxMode() {
+            // Transform common questions into dynamically generated True/False questions
+            activeQuestions = activeQuestions.map(q => {
+                const isTrue = Math.random() > 0.5;
+                if (isTrue) {
+                    return { q: `Vrai ou Faux ? <br><b>${q.q}</b> <br>👉 Réponse proposée : ${q.a}`, a: "Vrai", o: ["Faux"] };
+                } else {
+                    const fake = q.o[Math.floor(Math.random() * q.o.length)];
+                    return { q: `Vrai ou Faux ? <br><b>${q.q}</b> <br>👉 Réponse proposée : ${fake}`, a: "Faux", o: ["Vrai"] };
+                }
+            });
+        }
+
+        // --- STAGE: STANDARD QUESTION RUNNER (QUIZ, T/F, SURVIVAL) ---
+        function loadQuestion() {
+            if (currentQuestionIndex >= totalQuestionsToPlay || (selectedMode === "survie" && lives <= 0)) {
+                endGame();
+                return;
+            }
+
+            actionFeedback.style.display = "none";
+            gameStats.innerText = `Question : ${currentQuestionIndex + 1} / ${totalQuestionsToPlay}`;
+            
+            const qData = activeQuestions[currentQuestionIndex];
+            questionText.innerHTML = qData.q;
+            answersContainer.innerHTML = "";
+
+            // Create choices list and shuffle them
+            const choices = [qData.a, ...qData.o].sort(() => Math.random() - 0.5);
+            
+            questionStartTimes.push(Date.now());
+
+            choices.forEach(choice => {
+                const button = document.createElement("button");
+                button.className = "answer-btn";
+                button.innerText = choice;
+                button.addEventListener("click", () => handleAnswerSubmit(choice, qData.a));
+                answersContainer.appendChild(button);
+            });
+        }
+
+        function handleAnswerSubmit(chosen, correct) {
+            const timeSpent = (Date.now() - questionStartTimes[questionStartTimes.length - 1]) / 1000;
+            // Overriding record with duration taken instead of timestamp
+            questionStartTimes[questionStartTimes.length - 1] = timeSpent;
+
+            if (chosen === correct) {
+                score++;
+                showFeedback(true, "Excellent ! Correct ✨");
+            } else {
+                if (selectedMode === "survie") {
+                    lives--;
+                    updateSurvivalHearts();
+                }
+                showFeedback(false, `Oups ! La bonne réponse était : ${correct}`);
+            }
+
+            // Lock all buttons
+            document.querySelectorAll(".answer-btn").forEach(b => b.disabled = true);
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (selectedMode === "survie" && lives <= 0) {
+                    endGame();
+                } else {
+                    loadQuestion();
+                }
+            }, 1600);
+        }
+
+        function showFeedback(isCorrect, text) {
+            actionFeedback.innerText = text;
+            actionFeedback.style.backgroundColor = isCorrect ? "rgba(57, 255, 20, 0.2)" : "rgba(255, 0, 127, 0.2)";
+            actionFeedback.style.color = isCorrect ? varColor('--success') : varColor('--primary');
+            actionFeedback.style.display = "block";
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        function updateSurvivalHearts() {
+            survivalLives.innerHTML = "❤️".repeat(Math.max(0, lives)) + "💀".repeat(Math.max(0, (survivalDifficulty==="facile"?5:survivalDifficulty==="moyen"?3:1)-lives));
+        }
+
+        // --- STAGE: FLASHCARDS MANAGER ---
+        const cardObj = document.getElementById("clickableCard");
+        cardObj.addEventListener("click", () => cardObj.classList.toggle("flipped"));
+
+        function loadFlashcard() {
+            cardObj.classList.remove("flipped");
+            gameStats.innerText = `Carte : ${currentQuestionIndex + 1} / ${totalQuestionsToPlay}`;
+            
+            const qData = activeQuestions[currentQuestionIndex];
+            document.getElementById("cardFrontText").innerText = qData.q.replace(/<[^>]*>/g, ''); // strip html tags
+            document.getElementById("cardBackText").innerText = `Réponse :\n\n ${qData.a}`;
+        }
+
+        document.getElementById("nextCardBtn").addEventListener("click", () => {
+            if(currentQuestionIndex < totalQuestionsToPlay - 1) {
+                currentQuestionIndex++;
+                loadFlashcard();
+            } else { alert("Vous avez fait le tour de vos flashcards !"); showMenu(); }
+        });
+        document.getElementById("prevCardBtn").addEventListener("click", () => {
+            if(currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadFlashcard();
+            }
+        });
+
+        // --- STAGE: PAIRS / MEMORY MATCHING GAME ---
+        let firstCardSelected = null;
+        let secondCardSelected = null;
+        let canSelectMemory = true;
+
+        function initPairsGame() {
+            gameStats.innerText = "Associez les Questions aux Bonnes Réponses !";
+            const container = document.getElementById("memoryGridContainer");
+            container.innerHTML = "";
+
+            let deck = [];
+            activeQuestions.forEach((q, idx) => {
+                deck.push({ id: idx, text: q.q.replace(/<[^>]*>/g, ''), type: "Q" });
+                deck.push({ id: idx, text: q.a, type: "A" });
+            });
+
+            // Shuffle cards
+            deck.sort(() => Math.random() - 0.5);
+
+            deck.forEach(item => {
+                const cEl = document.createElement("div");
+                cEl.className = "mem-card hidden-content";
+                cEl.innerText = item.text;
+                cEl.dataset.id = item.id;
+                
+                cEl.addEventListener("click", () => {
+                    if(!canSelectMemory || cEl.classList.contains("matched") || cEl === firstCardSelected) return;
+
+                    cEl.classList.remove("hidden-content");
+
+                    if (!firstCardSelected) {
+                        firstCardSelected = cEl;
+                    } else {
+                        secondCardSelected = cEl;
+                        canSelectMemory = false;
+
+                        // Check match logic
+                        if (firstCardSelected.dataset.id === secondCardSelected.dataset.id) {
+                            firstCardSelected.classList.add("matched");
+                            secondCardSelected.classList.add("matched");
+                            firstCardSelected = null;
+                            secondCardSelected = null;
+                            canSelectMemory = true;
+
+                            // Check Win state
+                            if(document.querySelectorAll(".mem-card.matched").length === deck.length) {
+                                setTimeout(() => { alert("Félicitations ! Tableau entièrement résolu ! 🎉"); showMenu(); }, 500);
+                            }
+                        } else {
+                            setTimeout(() => {
+                                firstCardSelected.classList.add("hidden-content");
+                                secondCardSelected.classList.add("hidden-content");
+                                firstCardSelected = null;
+                                secondCardSelected = null;
+                                canSelectMemory = true;
+                            }, 1200);
+                        }
+                    }
+                });
+                container.appendChild(cEl);
+            });
+        }
+
+        // --- STAGE: ENDGAME AND PERFORMANCE METRICS ---
+        function endGame() {
+            gameScreen.style.display = "none";
+            resultsScreen.style.display = "flex";
+
+            if (selectedMode === "survie") {
+                document.getElementById("scoreDisplay").innerText = `${currentQuestionIndex} Réponses`;
+                document.getElementById("statsDisplay").innerHTML = `Tu as survécu jusqu'au niveau / question <b>${currentQuestionIndex + 1}</b> en mode <b>${survivalDifficulty}</b> !`;
+            } else {
+                document.getElementById("scoreDisplay").innerText = `${score} / ${totalQuestionsToPlay}`;
+                
+                // Average response speed compute
+                const validTimes = questionStartTimes.filter(t => typeof t === 'number');
+                const avgTime = validTimes.length > 0 ? (validTimes.reduce((a,b)=>a+b, 0) / validTimes.length).toFixed(1) : 0;
+                
+                document.getElementById("statsDisplay").innerHTML = `
+                    Temps moyen de réponse : <span style="color:var(--secondary); font-weight:bold;">${avgTime}s</span> par question.<br>
+                    Matière révisée : ${selectedTheme === 'all' ? 'Toutes' : selectedTheme.toUpperCase()}
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
