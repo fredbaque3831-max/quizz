@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Flashcards Histoire</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Poppins', sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b,#334155);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    color:white;
+}
+
+.container{
+    width:100%;
+    max-width:850px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    border-radius:30px;
+    padding:35px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.5);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:10px;
+    font-size:42px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#cbd5e1;
+    margin-bottom:30px;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.badge{
+    background:rgba(255,255,255,0.1);
+    padding:12px 20px;
+    border-radius:15px;
+    font-weight:600;
+}
+
+.card{
+    background:rgba(255,255,255,0.08);
+    border-radius:25px;
+    padding:40px;
+    text-align:center;
+    min-height:180px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:30px;
+    font-weight:600;
+    margin-bottom:30px;
+    transition:0.5s;
+}
+
+.qcm{
+    display:grid;
+    gap:15px;
+}
+
+.qcm button{
+    background:rgba(255,255,255,0.12);
+    border:none;
+    padding:18px;
+    border-radius:15px;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.qcm button:hover{
+    background:#3b82f6;
+    transform:scale(1.02);
+}
+
+.bottom{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-top:25px;
+    flex-wrap:wrap;
+}
+
+.control{
+    border:none;
+    padding:14px 22px;
+    border-radius:15px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.next{
+    background:#f59e0b;
+    color:white;
+}
+
+.restart{
+    background:#ec4899;
+    color:white;
+}
+
+.control:hover{
+    transform:translateY(-3px);
+}
+
+#resultat{
+    text-align:center;
+    margin-top:25px;
+    font-size:24px;
+    font-weight:600;
+    min-height:40px;
+}
+
+.final{
+    text-align:center;
+    font-size:35px;
+    color:#4ade80;
+    margin-top:20px;
+}
+
+@media(max-width:700px){
+
+    h1{
+        font-size:30px;
+    }
+
+    .card{
+        font-size:24px;
+        padding:25px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📚 Flashcards Histoire</h1>
+
+    <p class="subtitle">
+        Révise les grandes dates avec des QCM interactifs
+    </p>
+
+    <div class="top">
+        <div class="badge" id="progression">
+            Question 1 / 30
+        </div>
+
+        <div class="badge" id="score">
+            Score : 0
+        </div>
+    </div>
+
+    <div class="card" id="question">
+        Chargement...
+    </div>
+
+    <div class="qcm" id="qcm"></div>
+
+    <div id="resultat"></div>
+
+    <div class="bottom">
+
+        <button class="control next" onclick="suivant()">
+            ➡️ Question suivante
+        </button>
+
+        <button class="control restart" onclick="recommencer()">
+            🔄 Recommencer
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+const questions = [
+
+{ evenement:"Grande Guerre (Première Guerre mondiale)", date:"1914-1918" },
+{ evenement:"Verdun", date:"1916" },
+{ evenement:"Révolutions russes", date:"1917" },
+{ evenement:"Armistice de la Première Guerre mondiale", date:"11 novembre 1918" },
+{ evenement:"Staline au pouvoir en URSS", date:"1924-1953" },
+{ evenement:"Allemagne nazie d'Adolf Hitler", date:"1933-1945" },
+{ evenement:"Victoire électorale du Front populaire", date:"1936" },
+{ evenement:"Seconde Guerre mondiale", date:"1939-1945" },
+{ evenement:"Appel du général De Gaulle", date:"18 juin 1940" },
+{ evenement:"Débarquement allié en Normandie", date:"6 juin 1944" },
+{ evenement:"Libération de la France", date:"1944-1945" },
+{ evenement:"Droit de vote des femmes en France", date:"1944-1945" },
+{ evenement:"Capitulation allemande", date:"8 mai 1945" },
+{ evenement:"Bombes atomiques sur Hiroshima et Nagasaki", date:"Août 1945" },
+{ evenement:"Régime de Vichy", date:"1940-1944" },
+{ evenement:"Création de l'ONU", date:"1945" },
+{ evenement:"Guerre froide", date:"1947-1991" },
+{ evenement:"Décolonisation", date:"1947-1962" },
+{ evenement:"Traité de Rome", date:"1957" },
+{ evenement:"Naissance de la Ve République", date:"1958" },
+{ evenement:"Les années De Gaulle", date:"1958-1969" },
+{ evenement:"Guerre d'Algérie", date:"1954-1962" },
+{ evenement:"Indépendance de l'Algérie", date:"1962" },
+{ evenement:"Election du président au suffrage universel direct", date:"1962" },
+{ evenement:"Loi Veil sur l'IVG", date:"1975" },
+{ evenement:"Chute du mur de Berlin", date:"9 novembre 1989" },
+{ evenement:"Dislocation de l'URSS", date:"1991" },
+{ evenement:"Traité de Maastricht", date:"1992" },
+{ evenement:"Attentats du 11 septembre", date:"11 septembre 2001" },
+{ evenement:"Euro monnaie européenne", date:"2002" }
+
+];
+
+let liste = [];
+let index = 0;
+let score = 0;
+
+function melanger(tab){
+    return tab.sort(() => Math.random() - 0.5);
+}
+
+function genererQCM(bonne){
+
+    let propositions = [bonne];
+
+    while(propositions.length < 4){
+
+        let aleatoire =
+        questions[Math.floor(Math.random()*questions.length)].date;
+
+        if(!propositions.includes(aleatoire)){
+            propositions.push(aleatoire);
+        }
+    }
+
+    return melanger(propositions);
+}
+
+function afficherQuestion(){
+
+    if(index >= liste.length){
+
+        document.getElementById("question").innerHTML =
+        "🎉 Quiz terminé !";
+
+        document.getElementById("qcm").innerHTML = "";
+
+        document.getElementById("resultat").innerHTML =
+        `🏆 Score final : ${score} / ${liste.length}`;
+
+        return;
+    }
+
+    let question = liste[index];
+
+    document.getElementById("question").innerHTML =
+    question.evenement;
+
+    document.getElementById("progression").innerHTML =
+    `Question ${index + 1} / ${liste.length}`;
+
+    document.getElementById("score").innerHTML =
+    `Score : ${score}`;
+
+    document.getElementById("resultat").innerHTML = "";
+
+    let propositions = genererQCM(question.date);
+
+    let html = "";
+
+    propositions.forEach(rep => {
+
+        html += `
+        <button onclick="verifier('${rep}')">
+            ${rep}
+        </button>
+        `;
+    });
+
+    document.getElementById("qcm").innerHTML = html;
+}
+
+function verifier(reponse){
+
+    let bonne = liste[index].date;
+
+    if(reponse === bonne){
+
+        score++;
+
+        document.getElementById("resultat").innerHTML =
+        "✅ Bonne réponse !";
+
+        document.getElementById("resultat").style.color =
+        "#4ade80";
+
+    }else{
+
+        document.getElementById("resultat").innerHTML =
+        `❌ Mauvaise réponse<br>📖 Réponse : ${bonne}`;
+
+        document.getElementById("resultat").style.color =
+        "#f87171";
+    }
+
+    document.getElementById("score").innerHTML =
+    `Score : ${score}`;
+}
+
+function suivant(){
+
+    index++;
+
+    afficherQuestion();
+}
+
+function recommencer(){
+
+    liste = melanger([...questions]);
+
+    index = 0;
+    score = 0;
+
+    afficherQuestion();
+}
+
+recommencer();
+
+</script>
+
+</body>
+</html>

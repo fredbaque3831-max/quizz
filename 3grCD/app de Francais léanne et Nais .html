@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Français Révisions - Présent, Modes & Figures</title>
+    <style>
+        :root {
+            --rose-pale: #FCE1E4;
+            --rose-accent: #E8A7B5;
+            --turquoise: #4EA8DE;
+            --turquoise-dark: #0077B6;
+            --success: #2A9D8F;
+            --danger: #E76F51;
+            --background: #F8F9FA;
+            --text: #2B2D42;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--rose-pale), #BEE9E8, var(--turquoise));
+            color: #1D3557;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h1 { margin: 0; font-size: 2.2rem; font-weight: 800; text-shadow: 1px 1px 2px rgba(255,255,255,0.6); }
+        p.subtitle { margin: 0.5rem 0 0 0; opacity: 0.9; font-weight: 600; }
+
+        .container {
+            max-width: 850px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Onglets de Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            background-color: #E9ECEF;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #6C757D;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--rose-accent), var(--turquoise));
+            color: white;
+            box-shadow: 0 4px 12px rgba(78, 168, 222, 0.3);
+        }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* Style des Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 550px;
+            height: 340px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2.2rem;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .card-front { background-color: var(--card-bg); border: 3px solid var(--rose-accent); }
+        .card-back { 
+            background: linear-gradient(135deg, #FAD2E1, #BDE0FE); 
+            color: #1D3557; 
+            transform: rotateY(180deg);
+            border: 3px solid var(--turquoise); 
+        }
+
+        .card-front h3 { color: var(--turquoise-dark); font-size: 1.4rem; margin: 0 0 0.8rem 0; }
+        .card-front p { font-size: 1.2rem; font-style: italic; color: #3D5A80; margin: 0; }
+        .card-back h3 { font-size: 1.5rem; color: #1D3557; margin-bottom: 0.5rem; font-weight: 700; }
+        .card-back p { font-size: 1.05rem; color: #2B2D42; margin: 0; }
+
+        .controls { display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin-top: 1.5rem; }
+
+        .btn {
+            background: linear-gradient(135deg, var(--turquoise), var(--turquoise-dark));
+            color: white;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 119, 182, 0.2);
+            transition: all 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0, 119, 182, 0.3); }
+
+        /* Style des zones d'exercice et de QCM */
+        .qcm-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .options-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+        .option-item {
+            background-color: #F8F9FA;
+            border: 2px solid #E9ECEF;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-item:hover { background-color: #F1F3F5; border-color: var(--rose-accent); transform: translateX(3px); }
+        .option-item.correct { background-color: #E8F5E9; border-color: var(--success); color: #1B5E20; font-weight: bold; }
+        .option-item.wrong { background-color: #FFEBEE; border-color: var(--danger); color: #B71C1C; }
+
+        #feedback, #modes-feedback { font-weight: 700; font-size: 1.1rem; margin-top: 1rem; min-height: 24px; }
+        .explanation {
+            background-color: #EBF8FF;
+            border-left: 4px solid var(--turquoise);
+            padding: 1rem;
+            border-radius: 4px;
+            font-style: italic;
+            color: #2B6CB0;
+            margin-top: 0.8rem;
+            display: none;
+        }
+
+        /* Sélecteurs stylisés pour l'exercice des modes */
+        .select-mode {
+            padding: 0.4rem 0.8rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--rose-accent);
+            background-color: white;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 10px;
+            outline: none;
+        }
+        .select-mode:focus { border-color: var(--turquoise); }
+
+        .mode-row {
+            padding: 1rem;
+            border-bottom: 1px solid #ECEFF1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .mode-row.checked-correct { background-color: #E8F5E9; border-radius: 8px; }
+        .mode-row.checked-wrong { background-color: #FFEBEE; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Français : Fiches & Exercices Interactifs</h1>
+        <p class="subtitle">Présent de l'indicatif • Modes du verbe • Figures de style</p>
+    </header>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('flashcards')">🃏 Flashcards Leçons</button>
+            <button class="tab-btn" onclick="switchTab('qcm')">📝 Quiz : Valeurs du Présent</button>
+            <button class="tab-btn" onclick="switchTab('modes')" onclick="initModesExercise()">🎯 Exercice : Les Modes</button>
+        </div>
+
+        <div id="flashcards-panel" class="panel active">
+            <div class="flashcard-container" onclick="toggleCard()">
+                <div class="flashcard" id="main-card">
+                    <div class="card-face card-front">
+                        <small id="card-category" style="color: var(--turquoise-dark); font-weight: bold; letter-spacing: 1px; margin-bottom: 0.5rem;"></small>
+                        <p id="card-example">Chargement...</p>
+                        <span style="font-size: 0.8rem; color: #999; margin-top: auto;">💡 Cliquez pour retourner la carte</span>
+                    </div>
+                    <div class="card-face card-back">
+                        <h3 id="card-title">Valeur</h3>
+                        <p id="card-desc">Description de la règle.</p>
+                        <span style="font-size: 0.8rem; color: #555; margin-top: auto;">👋 Cliquez pour revenir à l'exemple</span>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="prevCard()">◀ Précédent</button>
+                <span id="card-counter" style="font-weight: bold; color: #495057;">1 / X</span>
+                <button class="btn" onclick="nextCard()">Suivant ▶</button>
+            </div>
+        </div>
+
+        <div id="qcm-panel" class="panel">
+            <div class="qcm-card">
+                <div style="display: flex; justify-content: space-between; color: #888; font-size: 0.9rem; font-weight: 600;">
+                    <span>Question <span id="q-num">1</span> / <span id="q-total">5</span></span>
+                    <span id="qcm-score-live" style="color: var(--turquoise-dark);">Score : 0/0</span>
+                </div>
+                <h3 id="qcm-question" style="margin: 1.5rem 0; color: #1D3557;">Phrase à analyser...</h3>
+                <ul class="options-list" id="qcm-options"></ul>
+                <div id="feedback"></div>
+                <div id="qcm-explanation" class="explanation"></div>
+                <div style="text-align: right; margin-top: 1.5rem;">
+                    <button id="next-q-btn" class="btn" onclick="nextQuestion()" style="display: none;">Question suivante ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modes-panel" class="panel">
+            <div class="qcm-card">
+                <h2 style="color: #1D3557; margin-top: 0;">Exercice : Identifiez le mode des verbes en gras</h2>
+                <p style="font-size: 0.95rem; color: #555; margin-bottom: 1.5rem;">Sélectionnez le bon mode dans la liste déroulante pour chaque phrase, puis validez vos réponses tout en bas.</p>
+                
+                <div id="modes-questions-list">
+                    </div>
+
+                <div id="modes-feedback" style="text-align: center; margin: 1.5rem 0;"></div>
+
+                <div style="text-align: center; margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem;">
+                    <button class="btn" onclick="validateModesExercise()">✅ Vérifier mes réponses</button>
+                    <button class="btn" style="background: #6C757D;" onclick="resetModesExercise()">↻ Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- BASE DE DONNÉES GÉO-PÉDAGOGIQUE (Flashcards intégrées) ---
+        const flashcardsData = [
+            // Valeurs du présent
+            { cat: "VALEUR DU PRÉSENT", exemple: "Le froid est vif ce matin.", valeur: "Le présent d'énonciation", desc: "Il évoque un événement qui se produit en même temps que la parole ou que l’écriture." },
+            { cat: "VALEUR DU PRÉSENT", exemple: "Il vaut mieux prévenir que guérir. / L’eau gèle à zéro degré.", valeur: "Le présent de vérité générale", desc: "Il s’emploie pour exprimer des notions intemporelles, des faits vrais de tout temps (définitions, proverbes, lois scientifiques)." },
+            { cat: "VALEUR DU PRÉSENT", exemple: "Je marchais dans la rue. Soudain, un ami vient vers moi et m’offre une fleur.", valeur: "Le présent de narration", desc: "Il s’utilise pour rendre l’action plus vivante dans un récit au passé. Il donne au lecteur l’impression de vivre la scène." },
+            { cat: "VALEUR DU PRÉSENT", exemple: "Tous les matins, je bois un grand verre d’eau. / Je suis isolé, comme toujours...", valeur: "Le présent itératif / d'habitude", desc: "Il permet d'exprimer l’habitude, la répétition régulière d'une action." },
+            { cat: "VALEUR DU PRÉSENT", exemple: "Je termine ce devoir et j’arrive. → FUTUR PROCHE.\nIl sort de chez moi à l’instant. → PASSÉ RÉCENT.", valeur: "Futur proche ou Passé récent", desc: "Permet d'exprimer une action imminente dans le futur ou tout juste achevée dans le passé." },
+            // Modes
+            { cat: "MODE DU VERBE", exemple: "Je pars en vacances.", valeur: "L'indicatif", desc: "Mode du réel, des faits ancrés dans la certitude ou le concret." },
+            { cat: "MODE DU VERBE", exemple: "Il faut qu’il parte.", valeur: "Le subjonctif", desc: "Mode du possible, de l'obligation, du souhait ou du doute. Souvent introduit par 'que'." },
+            { cat: "MODE DU VERBE", exemple: "Il partirait avec toi si tu le voulais. / Il serait parti si tu l’avais voulu.", valeur: "Le conditionnel", desc: "Exprime une action soumise à une condition ou une hypothèse imaginaire." },
+            { cat: "MODE DU VERBE", exemple: "Pars ! (ordre, conseil)", valeur: "L'impératif", desc: "Mode de l'ordre, du conseil, de l'interdiction ou de la prière. Se conjugue sans sujet exprimé." },
+            { cat: "MODE DU VERBE", exemple: "partir / être parti", valeur: "L'infinitif", desc: "Mode impersonnel correspondant à la forme nominale du verbe (telle qu'on la trouve dans le dictionnaire)." },
+            { cat: "MODE DU VERBE", exemple: "partant / parti(e)", valeur: "Le participe", desc: "Mode impersonnel fonctionnant un peu comme un adjectif (présent en -ant ou passé)." },
+            { cat: "MODE DU VERBE", exemple: "en partant.", valeur: "Le gérondif", desc: "Formé de 'en' + participe présent. Indique la simultanéité, la cause ou la manière." },
+            // Moyen Mnémotechnique
+            { cat: "MOYEN MNÉMOTECHNIQUE", exemple: "Comment retenir facilement les 7 modes du verbe ?", valeur: "L'Impératif Conditionnel de l'Indicatif Subjonctif...", desc: "Astuce : Retenez la phrase logique 'L'<b>In</b>di<b>g</b>ne <b>In</b>génieur <b>Pa</b>rle <b>Co</b>mme un <b>Im</b>bécile <b>Su</b>rvolté' pour : <b>In</b>dicatif, <b>G</b>érondif, <b>In</b>finitif, <b>Pa</b>rticipe, <b>Co</b>nditionnel, <b>Im</b>pératif, <b>Su</b>bjonctif !" },
+            // Figures de style
+            { cat: "FIGURE DE STYLE", exemple: "« Vous êtes aujourd'hui ce qu'autrefois je fus. » (Corneille, Le Cid)", valeur: "L'antithèse", desc: "Figure de style qui consiste à opposer deux mots ou deux groupes de mots contraires dans un même énoncé (ici 'aujourd'hui' vs 'autrefois')." },
+            { cat: "FIGURE DE STYLE", exemple: "Une obscure clarté, un silence assourdissant.", valeur: "L'oxymore", desc: "Figure de style qui consiste à rapprocher de manière immédiate deux mots juxtaposés ou coordonnés dont le sens s'oppose directement." }
+        ];
+
+        // --- DONNÉES DU QUIZ PRÉSENT ---
+        const qcmDataset = [
+            { exemple: "Le froid est vif ce matin.", valeur: "Présent d'énonciation", explication: "L'action coïncide exactement avec le moment où l'on écrit/parle." },
+            { exemple: "L’eau gèle à zéro degré.", valeur: "Présent de vérité générale", explication: "C'est une loi scientifique immuable." },
+            { exemple: "Soudain, un ami vient vers moi et m’offre une fleur.", valeur: "Présent de narration", explication: "Inséré au milieu d'un récit au passé pour rendre la scène vivante." },
+            { description: "Tous les matins, je bois un grand verre d’eau.", valeur: "Présent itératif / d'habitude", explication: "Exprime une habitude matinale répétée." },
+            { exemple: "Je termine ce devoir et j’arrive dans deux minutes.", valeur: "Présent à valeur de futur proche / passé récent", explication: "Indique une action imminente (futur proche)." }
+        ];
+
+        // --- DONNÉES DE L'EXERCICE SUR LES MODES (Vos 15 phrases) ---
+        const modesPhrases = [
+            { num: 1, texte: "Il a été puni pour <b>avoir voulu</b> désobéir.", reponse: "infinitif" },
+            { num: 2, texte: "Je ne comprends pas qu'il <b>préfère</b> travailler.", reponse: "subjonctif" },
+            { num: 3, texte: "Il <b>aurait pu</b> te le dire.", reponse: "conditionnel" },
+            { num: 4, textuel: true, texte: "En <b>courant</b>, il s'est foulé la cheville.", reponse: "gérondif" }, // en + ...ant = gérondif
+            { num: 5, texte: "Il faisait du ski en <b>zigzaguant</b> sur la montagne.", reponse: "gérondif" },
+            { num: 6, texte: "<b>Avoir passé</b> son diplôme est une véritable fierté.", reponse: "infinitif" },
+            { num: 7, texte: "Cela <b>aurait été</b> plus simple.", reponse: "conditionnel" },
+            { num: 8, texte: "<b>Soyez</b> gentils avec elle.", reponse: "impératif" },
+            { num: 9, texte: "Après son succès, <b>rester</b> le même n'a pas été facile.", reponse: "infinitif" },
+            { num: 10, texte: "<b>Comprenez</b>-moi, ce n'est pas possible.", reponse: "impératif" },
+            { num: 11, texte: "<b>Pourriez</b>-vous me passer le sel ?", reponse: "conditionnel" },
+            { num: 12, texte: "Vous <b>aviez fini</b> sans vous en rendre compte.", reponse: "indicatif" }, // plus-que-parfait de l'indicatif
+            { num: 13, texte: "Ils <b>auront compris</b> avant toi.", reponse: "indicatif" }, // futur antérieur de l'indicatif
+            { num: 14, texte: "Il regrette que tu ne <b>puisses</b> pas l'aider.", reponse: "subjonctif" },
+            { num: 15, texte: "Ils <b>auraient compris</b> sans toi.", reponse: "conditionnel" } // conditionnel passé
+        ];
+
+        const modesDisponibles = ["indicatif", "subjonctif", "conditionnel", "impératif", "infinitif", "participe", "gérondif"];
+
+        // --- NAVIGATION ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+            
+            if(tabName === 'flashcards') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('flashcards-panel').classList.add('active');
+            } else if (tabName === 'qcm') {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('qcm-panel').classList.add('active');
+                initQCM();
+            } else {
+                document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+                document.getElementById('modes-panel').classList.add('active');
+                initModesExercise();
+            }
+        }
+
+        // --- INTERACTION FLASHCARDS ---
+        let currentCardIndex = 0;
+        const mainCard = document.getElementById('main-card');
+
+        function updateCard() {
+            mainCard.classList.remove('flipped');
+            setTimeout(() => {
+                const data = flashcardsData[currentCardIndex];
+                document.getElementById('card-category').textContent = data.cat;
+                document.getElementById('card-example').innerHTML = data.exemple.replace(/\n/g, "<br>");
+                document.getElementById('card-title').textContent = data.valeur;
+                document.getElementById('card-desc').innerHTML = data.desc;
+                document.getElementById('card-counter').textContent = `${currentCardIndex + 1} / ${flashcardsData.length}`;
+            }, 150);
+        }
+
+        function toggleCard() { mainCard.classList.toggle('flipped'); }
+        function nextCard() { currentCardIndex = (currentCardIndex + 1) % flashcardsData.length; updateCard(); }
+        function prevCard() { currentCardIndex = (currentCardIndex - 1 + flashcardsData.length) % flashcardsData.length; updateCard(); }
+
+
+        // --- INTERACTION QCM (Valeurs du présent) ---
+        let currentQIndex = 0;
+        let qcmScore = 0;
+        let qcmActiveQuestions = [];
+        let qcmAnswered = false;
+
+        function initQCM() {
+            qcmActiveQuestions = [...qcmDataset].sort(() => Math.random() - 0.5);
+            currentQIndex = 0;
+            qcmScore = 0;
+            document.getElementById('q-total').textContent = qcmActiveQuestions.length;
+            loadQCMQuestion();
+        }
+
+        function loadQCMQuestion() {
+            qcmAnswered = false;
+            document.getElementById('next-q-btn').style.display = 'none';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('qcm-explanation').style.display = 'none';
+            
+            const q = qcmActiveQuestions[currentQIndex];
+            document.getElementById('q-num').textContent = currentQIndex + 1;
+            document.getElementById('qcm-score-live').textContent = `Score : ${qcmScore}/${currentQIndex}`;
+            document.getElementById('qcm-question').innerHTML = `Quelle est la valeur du présent ici ? <br><br><strong style='color: var(--turquoise-dark); font-size:1.2rem;'>"${q.exemple || q.description}"</strong>`;
+
+            const optionsList = document.getElementById('qcm-options');
+            optionsList.innerHTML = '';
+
+            const valeursPossibles = ["Présent d'énonciation", "Présent de vérité générale", "Présent de narration", "Présent itératif / d'habitude", "Présent à valeur de futur proche / passé récent"];
+            
+            valeursPossibles.forEach(val => {
+                const li = document.createElement('li');
+                li.className = 'option-item';
+                li.textContent = val;
+                li.onclick = () => checkQCMAnswer(li, val, q.valeur, q.explication);
+                optionsList.appendChild(li);
+            });
+        }
+
+        function checkQCMAnswer(el, selected, correct, explication) {
+            if (qcmAnswered) return;
+            qcmAnswered = true;
+
+            const items = document.querySelectorAll('#qcm-options .option-item');
+            if (selected === correct) {
+                el.classList.add('correct');
+                document.getElementById('feedback').textContent = "✨ Excellent travail !";
+                document.getElementById('feedback').style.color = "var(--success)";
+                qcmScore++;
+            } else {
+                el.classList.add('wrong');
+                document.getElementById('feedback').textContent = "❌ Ce n'est pas tout à fait ça.";
+                document.getElementById('feedback').style.color = "var(--danger)";
+                items.forEach(i => { if(i.textContent === correct) i.classList.add('correct'); });
+            }
+
+            const exp = document.getElementById('qcm-explanation');
+            exp.innerHTML = `<b>Explication :</b> ${explication}`;
+            exp.style.display = 'block';
+
+            document.getElementById('qcm-score-live').textContent = `Score : ${qcmScore}/${currentQIndex + 1}`;
+            document.getElementById('next-q-btn').style.display = 'inline-block';
+            document.getElementById('next-q-btn').textContent = currentQIndex === qcmActiveQuestions.length - 1 ? "Recommencer ↻" : "Suivant ➔";
+        }
+
+        function nextQuestion() {
+            if (currentQIndex < qcmActiveQuestions.length - 1) {
+                currentQIndex++;
+                loadQCMQuestion();
+            } else {
+                initQCM();
+            }
+        }
+
+
+        // --- INTERACTION EXERCICE : LES MODES ---
+        function initModesExercise() {
+            const container = document.getElementById('modes-questions-list');
+            container.innerHTML = '';
+            document.getElementById('modes-feedback').textContent = '';
+
+            modesPhrases.forEach((p, idx) => {
+                const row = document.createElement('div');
+                row.className = 'mode-row';
+                row.id = `mode-row-${idx}`;
+
+                const textSpan = document.createElement('span');
+                textSpan.innerHTML = `${p.num}. ${p.texte}`;
+
+                const select = document.createElement('select');
+                select.className = 'select-mode';
+                select.id = `select-mode-${idx}`;
+
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = "";
+                defaultOpt.textContent = "-- Choisir le mode --";
+                select.appendChild(defaultOpt);
+
+                modesDisponibles.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = m.charAt(0).toUpperCase() + m.slice(1);
+                    select.appendChild(opt);
+                });
+
+                row.appendChild(textSpan);
+                row.appendChild(select);
+                container.appendChild(row);
+            });
+        }
+
+        function validateModesExercise() {
+            let correctCount = 0;
+            
+            modesPhrases.forEach((p, idx) => {
+                const select = document.getElementById(`select-mode-${idx}`);
+                const row = document.getElementById(`mode-row-${idx}`);
+                const userAns = select.value;
+
+                row.classList.remove('checked-correct', 'checked-wrong');
+
+                if (userAns === p.reponse) {
+                    row.classList.add('checked-correct');
+                    correctCount++;
+                } else {
+                    row.classList.add('checked-wrong');
+                }
+            });
+
+            const fb = document.getElementById('modes-feedback');
+            fb.innerHTML = `📊 <b>Résultat : ${correctCount} / ${modesPhrases.length} correctes.</b><br>` + 
+                           (correctCount === modesPhrases.length ? "🎉 Sans faute ! Tu maîtrises parfaitement les modes !" : "💡 Relis bien les phrases surlignées en rouge et aide-toi des Flashcards !");
+            fb.style.color = correctCount === modesPhrases.length ? "var(--success)" : "var(--text)";
+        }
+
+        function resetModesExercise() {
+            initModesExercise();
+        }
+
+        // Lancement au démarrage
+        updateCard();
+    </script>
+</body>
+</html>

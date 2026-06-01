@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Maths Révisions 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* PALETTE DE COULEURS PASTEL ET CONFIGURATION GLOBALE */
+        :root {
+            --violet-pastel: #E8DFF5;
+            --rose-pastel: #FCE1E4;
+            --jaune-pastel: #FCF6BD;
+            --bleu-pastel: #D8E2DC;
+            --violet-fonce: #6D597A;
+            --texte: #4A4E69;
+            --blanc: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #F7F5FA;
+            color: var(--texte);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* CONTENEUR PRINCIPAL DE L'APPLICATION */
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--blanc);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(109, 89, 122, 0.1);
+            overflow: hidden;
+            border: 4px solid var(--violet-pastel);
+            position: relative;
+        }
+
+        /* EN-TÊTE ET NAVIGATION */
+        header {
+            background: linear-gradient(135deg, var(--violet-pastel), var(--rose-pastel));
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            border-bottom: 3px solid var(--rose-pastel);
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--violet-fonce);
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-home {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--blanc);
+            border: 2px solid var(--violet-fonce);
+            padding: 10px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--violet-fonce);
+            font-weight: bold;
+            display: none;
+        }
+
+        .btn-home:hover {
+            background: var(--jaune-pastel);
+        }
+
+        /* ÉCRANS DE L'APPLICATION */
+        .screen {
+            display: none;
+            padding: 40px 30px;
+            min-height: 500px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* PAGE D'ACCUEIL */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .menu-card {
+            background: var(--blanc);
+            border-radius: 20px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 8px 0 var(--shadow-color);
+            border: 3px solid var(--shadow-color);
+            transform: translateY(0);
+            transition: all 0.2s ease;
+        }
+
+        .menu-card:active {
+            transform: translateY(8px);
+            box-shadow: 0 0 0 transparent;
+        }
+
+        .menu-card i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--violet-fonce);
+        }
+
+        .menu-card h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--violet-fonce);
+        }
+
+        /* MODE QCM */
+        .qcm-box {
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: var(--jaune-pastel);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px dashed var(--violet-fonce);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: var(--blanc);
+            border: 3px solid var(--violet-pastel);
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--texte);
+            transition: background 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: var(--rose-pastel);
+        }
+
+        /* MODE FLASHCARDS (AVEC EFFET DE RETOURNEMENT) */
+        .flashcard-wrapper {
+            width: 450px;
+            height: 280px;
+            perspective: 1000px; /* Indispensable pour la 3D */
+            margin-bottom: 30px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        /* Classe CSS ajoutée en JS pour faire pivoter la carte */
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Cache le dos pendant le retournement */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .card-front {
+            background: var(--rose-pastel);
+            border: 4px solid #FBC4CB;
+            color: var(--violet-fonce);
+        }
+
+        .card-front .badge {
+            position: absolute;
+            top: 15px;
+            background: var(--blanc);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .card-back {
+            background: var(--jaune-pastel);
+            border: 4px solid #EAE29C;
+            transform: rotateY(180deg); /* Positionne la réponse à l'envers par défaut */
+            color: #5C5414;
+        }
+
+        .card-face h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .flashcard-actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn-success { background-color: #C8E6C9; color: #2E7D32; }
+        .btn-danger { background-color: #FFCDD2; color: #C62828; }
+        .action-btn:active { transform: translateY(3px); box-shadow: none; }
+
+        /* MODE COURS */
+        .cours-container {
+            width: 100%;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 100px;
+        }
+
+        .cours-block {
+            background: #FDFBF7;
+            border-left: 6px solid var(--violet-pastel);
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 0 15px 15px 0;
+        }
+
+        .cours-block.highlight {
+            border-left-color: #FF80AB;
+            background: #FFF0F5;
+        }
+
+        .cours-block h4 {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--violet-fonce);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        /* RECOMMANDATION DE COURS (POP-UP INTELLIGENT) */
+        .alert-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(74, 78, 105, 0.4);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .alert-box {
+            background: var(--blanc);
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            max-width: 500px;
+            border: 4px solid #FF80AB;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .alert-box i {
+            font-size: 3.5rem;
+            color: #FF4081;
+            margin-bottom: 15px;
+        }
+
+        .alert-box h3 {
+            font-family: 'Fredoka', sans-serif;
+            margin-bottom: 15px;
+            color: var(--violet-fonce);
+        }
+
+        .alert-box p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .alert-box button {
+            background: var(--jaune-pastel);
+            border: 2px solid var(--violet-fonce);
+            padding: 12px 25px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        /* INDICATION POUR TOURNER LA CARTE */
+        .flip-hint {
+            font-size: 0.9rem;
+            color: var(--violet-fonce);
+            margin-top: 5px;
+            opacity: 0.7;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <button class="btn-home" id="btnHome" onclick="goHome()"><i class="fa-solid fa-arrow-left"></i> Accueil</button>
+        <h1 id="app-title">Brevet Maths ✨</h1>
+    </header>
+
+    <div id="screen-home" class="screen active">
+        <div class="menu-grid">
+            <div class="menu-card" style="--shadow-color: var(--violet-pastel);" onclick="startApp('qcm')">
+                <i class="fa-solid fa-circle-question"></i>
+                <h3>QCM</h3>
+                <p>Trouve la bonne réponse parmi les propositions.</p>
+            </div>
+            <div class="menu-card" style="--shadow-color: var(--rose-pastel);" onclick="startApp('flashcards')">
+                <i class="fa-solid fa-layer-group"></i>
+                <h3>Flashcards</h3>
+                <p>Devine la réponse et retourne la carte pour vérifier.</p>
+            </div>
+            <div class="menu-card" style="--shadow-color: var(--jaune-pastel);" onclick="showScreen('cours')">
+                <i class="fa-solid fa-book-open"></i>
+                <h3>Cours</h3>
+                <p>Consulte toutes les fiches de révision directement.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-qcm" class="screen">
+        <div class="qcm-box">
+            <div class="question-text" id="qcm-question">Question ici ?</div>
+            <div class="options-grid" id="qcm-options">
+                </div>
+        </div>
+    </div>
+
+    <div id="screen-flashcards" class="screen">
+        <div class="flashcard-wrapper">
+            <div class="flashcard" id="interactive-card" onclick="this.classList.toggle('flipped')">
+                <div class="card-face card-front">
+                    <span class="badge">RECTO - QUESTION</span>
+                    <h2 id="fc-question">Chargement de la question...</h2>
+                    <span class="flip-hint"><i class="fa-solid fa-rotate"></i> Clique pour retourner</span>
+                </div>
+                <div class="card-face card-back">
+                    <span class="badge" style="background:#5C5414; color:white;">VERSO - RÉPONSE</span>
+                    <h2 id="fc-réponse">Chargement de la réponse...</h2>
+                    <span class="flip-hint"><i class="fa-solid fa-rotate"></i> Clique pour revoir la question</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flashcard-actions">
+            <button class="action-btn btn-success" onclick="handleFlashcardResult(true)">Je savais !  ✅</button>
+            <button class="action-btn btn-danger" onclick="handleFlashcardResult(false)">Je ne savais pas ❌</button>
+        </div>
+    </div>
+
+    <div id="screen-cours" class="screen">
+        <div class="cours-container" id="cours-list">
+            </div>
+    </div>
+</div>
+
+<div class="alert-overlay" id="course-alert">
+    <div class="alert-box">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <h3>Besoin d'un petit coup de pouce ?</h3>
+        <p>Tu as rencontré des difficultés <strong>3 fois</strong> sur cette notion : <br><em id="alert-concept-name" style="color:#C62828;">"..."</em>.<br><br>Prenons un instant pour relire le cours ensemble !</p>
+        <button onclick="goToSuggestedCourse()">Consulter le cours ciblé 📖</button>
+    </div>
+</div>
+
+<script>
+    // BASE DE DONNÉES DES QUESTIONS / RÉPONSES CONCORDANT PARFAITEMENT AU FORMAT DU DOCUMENT
+    const data = [
+        { q: "Dire les noms du résultat de l’addition, la soustraction, la multiplication, la division.", a: "Somme (addition), Différence (soustraction), Produit (multiplication), Quotient (division)." },
+        { q: "Écrire l’égalité correspondante à la division euclidienne de a par b avec un reste r.", a: "a = b × q + r avec r < b (où q est le quotient)." },
+        { q: "Cite un multiple de 12.", a: "12, 24, 36, 48, 60... (un nombre présent dans sa table)." },
+        { q: "Cite un diviseur de 15.", a: "1, 3, 5, ou 15." },
+        { q: "7 est-il un multiple de 14 ?", a: "Non, 7 est plus petit. 7 est un diviseur de 14 (car 14 = 7 × 2)." },
+        { q: "Comment repère-t-on un nombre qui se divise par 2 ?", a: "C'est un nombre pair : il se termine par 0, 2, 4, 6 ou 8." },
+        { q: "Comment repère-t-on un nombre qui se divise par 3 (ou par 9) ?", a: "La somme de ses chiffres est dans la table du 3 (ou du 9)." },
+        { q: "Comment repère-t-on un nombre qui se divise par 5 ?", a: "Le nombre se termine par 0 ou par 5." },
+        { q: "Quelle est l’écriture mathématique d’un nombre pair ? d'un nombre impair ?", a: "Pair : 2n (avec n entier) | Impair : 2n + 1 (avec n entier)." },
+        { q: "Quelle est l’écriture mathématique d’un nombre multiple de 7 ?", a: "7n (avec n entier)." },
+        { q: "Qu’est-ce qu’un nombre premier ?", a: "Un nombre entier positif qui possède exactement deux diviseurs distincts : 1 et lui-même." },
+        { q: "Récite les nombres premiers entre 1 et 30.", a: "2, 3, 5, 7, 11, 13, 17, 19, 23, 29." },
+        { q: "Qu’est-ce qu’un fraction irréductible ?", a: "Une fraction qu’on ne peut plus simplifier car son numérateur et son dénominateur n'ont plus de diviseur commun autre que 1." },
+        { q: "Comment rendre une fraction irréductible ?", a: "2 méthodes : par divisions successives ou en décomposant en produit de facteurs premiers puis en barrant les facteurs communs." },
+        { q: "Comment ajoute-t-on deux nombres négatifs ?", a: "On garde le signe '-' et on ajoute leurs distances à zéro." },
+        { q: "Comment ajoute-t-on deux nombres de signes contraires ?", a: "On prend le signe de celui qui a la plus grande distance à zéro et on soustrait les distances." },
+        { q: "Soustraire un nombre cela revient à...", a: "Ajouter son opposé." },
+        { q: "Comment ajouter ou soustraire deux fractions ?", a: "On les met d'abord au même dénominateur, puis on ajoute/soustrait les numérateurs en gardant le dénominateur commun." },
+        { q: "Comment multiplier deux fractions ?", a: "On multiplie les numérateurs entre eux et les dénominateurs entre eux. On pense à simplifier avant de calculer." },
+        { q: "Comment calcule-t-on la fraction d’une quantité ?", a: "On multiplie la quantité de départ par la fraction." },
+        { q: "Qu’est-ce que deux nombres opposés ?", a: "Deux nombres dont la somme vaut 0 (Exemple : 3 et -3)." },
+        { q: "Qu’est-ce que deux nombres inverses ?", a: "Deux nombres dont le produit vaut 1 (Exemple : 3 et 1/3)." },
+        { q: "Comment diviser deux fractions ?", a: "On conserve la première fraction et on la multiplie par l’inverse de la deuxième fraction." },
+        { q: "Que signifie a³ ?", a: "a × a × a (Le nombre a multiplié par lui-même 3 fois)." },
+        { q: "Que signifie a^n ?", a: "a × a × ... × a (Le produit de n facteurs égaux à a)." },
+        { q: "Que signifie a^-n ?", a: "L'inverse de a^n, soit 1 / a^n." },
+        { q: "Comment multiplie-t-on un nombre par 10^n ?", a: "On décale la virgule de n rangs vers la droite (on ajoute des zéros si nécessaire)." },
+        { q: "Comment multiplie-t-on un nombre par 10^-n ?", a: "On décale la virgule de n rangs vers la gauche (on ajoute des zéros si nécessaire)." },
+        { q: "Que signifie le préfixe méga ?", a: "Multiplié par 1 000 000 (1 million, ou 10^6)." },
+        { q: "Que signifie le préfixe giga ?", a: "Multiplié par 1 000 000 000 (1 milliard, ou 10^9)." },
+        { q: "Que signifie le préfixe micro ?", a: "Multiplié par 0,000 001 (1 millionième, ou 10^-6)." },
+        { q: "Que signifie le préfixe nano ?", a: "Multiplié par 0,000 000 001 (1 milliardième, ou 10^-9)." },
+        { q: "Quelles sont les deux formules de distributivité (simple et double) ?", a: "Simple : k(a+b) = ka+kb | Double : (a+b)(c+d) = ac+ad+bc+bd." },
+        { q: "Quelle est la forme factorisée de a² - b² ?", a: "(a - b)(a + b)." },
+        { q: "Comment factoriser une expression ?", a: "Il faut identifier un facteur commun évident ou utiliser une identité remarquable." },
+        { q: "Comment résoudre une équation du 1er degré ?", a: "Isoler les x d’un côté et les nombres de l’autre en effectuant les mêmes opérations sur les deux membres." },
+        { q: "Comment appelle-t-on le type d'équation (ax+b)(cx+d)=0 ?", a: "Une équation-produit nul." },
+        { q: "Comment résoudre une équation produit ?", a: "Dire qu’un produit est nul revient à dire qu’au moins un de ses facteurs est nul (on résout séparément chaque équation égale à 0)." },
+        { q: "Quelles sont les solutions de x² = a avec a positif ?", a: "Il y a deux solutions : x = √a et x = -√a." },
+        { q: "Que vaut la somme des angles dans un triangle ?", a: "Elle vaut toujours 180°." },
+        { q: "Quelles sont les propriétés d’un triangle isocèle ?", a: "Il possède deux côtés égaux et ses deux angles à la base ont la même mesure." },
+        { q: "Quelles sont les propriétés d’un triangle équilatéral ?", a: "Ses trois côtés sont égaux et ses trois angles mesurent chacun 60°." },
+        { q: "Comment s’appelle le côté le plus long dans un triangle rectangle ?", a: "L’hypoténuse (c’est aussi le côté situé en face de l’angle droit)." },
+        { q: "À quoi sert le théorème de Pythagore ?", a: "À calculer la longueur d'un troisième côté dans un triangle rectangle dont on connaît déjà deux côtés." },
+        { q: "Dans quelle configuration peut-on utiliser le théorème de Pythagore ?", a: "Uniquement dans un triangle rectangle." },
+        { q: "Quelles données faut-il pour utiliser la réciproque ou la contraposée du théorème de Pythagore ?", a: "Il faut se situer dans un triangle dont on connaît précisément la longueur des 3 côtés." },
+        { q: "À quoi servent la réciproque et la contraposée du théorème de Pythagore ?", a: "La réciproque prouve qu’un triangle EST rectangle. La contraposée prouve qu’il NE l'EST PAS." },
+        { q: "Qu’est-ce que la médiatrice d’un segment ?", a: "C'est la droite qui coupe ce segment perpendiculairement en son milieu." },
+        { q: "Quelles sont les propriétés principales d’un parallélogramme ?", a: "Côtés opposés parallèles et de même longueur, diagonales qui se coupent en leur milieu." },
+        { q: "Quelles sont les propriétés d’un rectangle ?", a: "4 angles droits, côtés opposés égaux, diagonales de même longueur se coupant en leur milieu." },
+        { q: "Quelles sont les propriétés d’un losange ?", a: "4 côtés de même longueur, diagonales perpendiculaires se coupant en leur milieu." },
+        { q: "Quelles sont les propriétés d’un carré ?", a: "4 angles droits et 4 côtés égaux (à la fois rectangle et losange). Diagonales perpendiculaires, égales et de même milieu." },
+        { q: "À quoi sert le théorème de Thalès ?", a: "À calculer des longueurs de côtés de triangles." },
+        { q: "Dans quelles configurations peut-on utiliser le théorème de Thalès ?", a: "En configuration triangles emboîtés ou configuration papillon, à condition d'avoir deux droites parallèles." },
+        { q: "Énonce le théorème de Thalès.", a: "Si deux droites (BC) et (MN) sont parallèles, alors les rapports des longueurs sont égaux : AM/AB = AN/AC = MN/BC." },
+        { q: "À quoi servent la réciproque et la contraposée du théorème de Thalès ?", a: "La réciproque montre que deux droites sont parallèles. La contraposée montre qu'elles ne le sont pas." },
+        { q: "À quoi sert la trigonométrie ?", a: "Dans un triangle rectangle, elle sert à calculer la longueur d'un côté ou la mesure d'un angle aigu." },
+        { q: "Donne les formules du cosinus, sinus et tangente d’un angle.", a: "Cos = Adjacent/Hypoténuse | Sin = Opposé/Hypoténuse | Tan = Opposé/Adjacent (Mémo : SOH CAH TOA)." },
+        { q: "En quoi consiste une translation ? une rotation ?", a: "Translation : glisser une figure sans la tourner. Rotation : faire tourner une figure autour d'un point fixe d'un certain angle." },
+        { q: "En quoi consiste une homothétie (rapport k positif ou négatif) ?", a: "Agrandir ou réduire une figure depuis un centre. Si k > 0 la figure reste du même côté, si k < 0 elle pivote de 180° de l'autre côté." },
+        { q: "Comment reconnaître deux triangles semblables ?", a: "Ils ont leurs angles deux à deux égaux ou les longueurs de leurs côtés proportionnelles." },
+        { q: "Méridien et Parallèle de référence sur la Terre ?", a: "Méridien de référence : Greenwich (longitude 0°). Parallèle de référence : L’Équateur (latitude 0°)." },
+        { q: "Aires usuelles (Rectangle, Carré, Triangle, Disque) ?", a: "Rectangle : L × l | Carré : Côté² | Triangle : (Base × Hauteur) / 2 | Disque : π × Rayon²." },
+        { q: "Volumes usuelles (Cube, Pavé, Cylindre, Pyramide/Cône, Sphère) ?", a: "Cube : Côté³ | Pavé : L × l × h | Cylindre : π × R² × h | Pyramide/Cône : (Aire Base × h)/3 | Sphère : (4/3) × π × R³." },
+        { q: "Que deviennent l'Aire et le Volume après agrandissement/réduction de rapport k ?", a: "L'aire est multipliée par k² et le volume est multiplié par k³." },
+        { q: "Comment reconnaître graphiquement une situation de proportionnalité ?", a: "Les points forment une ligne droite alignée qui passe obligatoirement par l’origine du repère (0;0)." },
+        { q: "Donne la formule reliant vitesse, distance et temps.", a: "Vitesse = Distance / Temps (v = d/t)." },
+        { q: "Augmenter ou diminuer une quantité de a% revient à...", a: "Augmenter : multiplier par (1 + a/100) | Diminuer : multiplier par (1 - a/100)." },
+        { q: "Qu'est-ce qu'une fonction ? Image ? Antécédent ?", a: "Fonction : machine qui transforme x en un unique nombre. Image : résultat de sortie (axe vertical). Antécédent : valeur de départ (axe horizontal)." },
+        { q: "Formule d'une fonction linéaire ? Fonction affine ?", a: "Linéaire : f(x) = ax (droite passant par l'origine) | Affine : f(x) = ax + b (droite quelconque)." },
+        { q: "Comment calculer la moyenne, médiane et étendue en statistiques ?", a: "Moyenne : somme des valeurs divisée par l'effectif. Médiane : valeur centrale du classement ordonné. Étendue : Valeur Max - Valeur Min." }
+    ];
+
+    // GESTIONNAIRE D'ÉTAT DE L'APPLICATION
+    let state = {
+        currentMode: '',
+        currentQuestion: null,
+        errorCounter: {}, // Stocke le nombre d'erreurs par question
+        lastFailedQuestion: null // Pour aiguiller vers le cours ciblé
+    };
+
+    // NAVIGATION ENTRE ÉCRANS
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(`screen-${screenId}`).classList.add('active');
+        
+        // Affichage ou non du bouton de retour à l'accueil
+        const btnHome = document.getElementById('btnHome');
+        if (screenId === 'home') {
+            btnHome.style.display = 'none';
+            document.getElementById('app-title').innerText = "Brevet Maths ✨";
+        } else {
+            btnHome.style.display = 'block';
+            document.getElementById('app-title').innerText = screenId.toUpperCase();
+        }
+    }
+
+    function goHome() {
+        showScreen('home');
+    }
+
+    // INITIALISATION DU MODE SÉLECTIONNÉ
+    function startApp(mode) {
+        state.currentMode = mode;
+        showScreen(mode);
+        pickRandomQuestion();
+    }
+
+    // SÉLECTION ALÉATOIRE D'UNE QUESTION
+    function pickRandomQuestion() {
+        const randomIndex = Math.floor(Math.random() * data.length);
+        state.currentQuestion = data[randomIndex];
+
+        if (state.currentMode === 'qcm') {
+            setupQCM();
+        } else if (state.currentMode === 'flashcards') {
+            setupFlashcard();
+        }
+    }
+
+    // LOGIQUE MODE QCM
+    function setupQCM() {
+        const qElem = document.getElementById('qcm-question');
+        const optionsContainer = document.getElementById('qcm-options');
+        
+        qElem.innerText = state.currentQuestion.q;
+        optionsContainer.innerHTML = '';
+
+        // Créer une liste d'options combinant la bonne réponse et 3 fausses réponses différentes
+        let options = [state.currentQuestion.a];
+        while (options.length < 4) {
+            let fakeAnswer = data[Math.floor(Math.random() * data.length)].a;
+            if (!options.includes(fakeAnswer)) {
+                options.push(fakeAnswer);
+            }
+        }
+
+        // Mélanger les propositions de réponse
+        options.sort(() => Math.random() - 0.5);
+
+        // Injecter les propositions sous forme de boutons
+        options.forEach(optionText => {
+            const button = document.createElement('button');
+            button.className = 'option-btn';
+            button.innerText = optionText;
+            button.onclick = () => handleQCMSelection(optionText);
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function handleQCMSelection(selectedAnswer) {
+        if (selectedAnswer === state.currentQuestion.a) {
+            alert("Excellent ! Bonne réponse ! 🎉");
+            pickRandomQuestion();
+        } else {
+            alert("Ce n'est pas tout à fait ça. Réessaie ! 🔄");
+            registerError(state.currentQuestion);
+        }
+    }
+
+    // LOGIQUE MODE FLASHCARDS
+    function setupFlashcard() {
+        const card = document.getElementById('interactive-card');
+        card.classList.remove('flipped'); // Remet la carte face recto au changement
+
+        document.getElementById('fc-question').innerText = state.currentQuestion.q;
+        document.getElementById('fc-réponse').innerText = state.currentQuestion.a;
+    }
+
+    function handleFlashcardResult(knewIt) {
+        if (knewIt) {
+            pickRandomQuestion();
+        } else {
+            registerError(state.currentQuestion);
+            pickRandomQuestion();
+        }
+    }
+
+    // ENREGISTREMENT ET VÉRIFICATION DES ERREURS (SEUIL DE 3)
+    function registerError(questionObj) {
+        const qText = questionObj.q;
+        if (!state.errorCounter[qText]) {
+            state.errorCounter[qText] = 0;
+        }
+        state.errorCounter[qText]++;
+
+        if (state.errorCounter[qText] >= 3) {
+            state.lastFailedQuestion = questionObj;
+            document.getElementById('alert-concept-name').innerText = questionObj.q;
+            document.getElementById('course-alert').style.display = 'flex';
+            // Réinitialise le compteur d'erreurs pour cette question après déclenchement
+            state.errorCounter[qText] = 0;
+        }
+    }
+
+    // REDIRECTION AUTOMATIQUE VERS LE COURS RECOMMANDÉ
+    function goToSuggestedCourse() {
+        document.getElementById('course-alert').style.display = 'none';
+        showScreen('cours');
+        generateCoursView(state.lastFailedQuestion.q);
+    }
+
+    // CONSTRUIRE LA VUE DU MODE COURS
+    function generateCoursView(highlightQuestionText = null) {
+        const container = document.getElementById('cours-list');
+        container.innerHTML = '';
+
+        data.forEach(item => {
+            const block = document.createElement('div');
+            block.className = 'cours-block';
+            
+            // Si l'élève a été redirigé ici à la suite d'une erreur répétée, on met le bloc en valeur
+            if (highlightQuestionText && item.q === highlightQuestionText) {
+                block.className = 'cours-block highlight';
+                setTimeout(() => {
+                    block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 200);
+            }
+
+            block.innerHTML = `
+                <h4><i class="fa-solid fa-graduation-cap" style="color:var(--violet-fonce);"></i> ${item.q}</h4>
+                <p>${item.a}</p>
+            `;
+            container.appendChild(block);
+        });
+    }
+
+    // INITIALISATION GLOBALE DES COURS AU CHARGEMENT
+    window.onload = () => {
+        generateCoursView();
+    };
+</script>
+
+</body>
+</html>

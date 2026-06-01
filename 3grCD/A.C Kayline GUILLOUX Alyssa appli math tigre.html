@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le QCM des Tigres 🐯</title>
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --accent: #ffe66d;
+            --dark: #2f2f2f;
+            --light: #f7f7f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border: 4px solid var(--dark);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px var(--accent);
+        }
+
+        .punchline {
+            font-style: italic;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            border: 3px solid var(--dark);
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 4px 4px 0px var(--dark);
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--dark);
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--dark);
+        }
+
+        .btn-option {
+            background-color: var(--light);
+            color: var(--dark);
+            text-align: left;
+            margin-bottom: 12px;
+        }
+
+        .btn-option:hover {
+            background-color: var(--accent);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-bar {
+            background-color: #ddd;
+            border-radius: 10px;
+            height: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 2px solid var(--dark);
+        }
+
+        .progress {
+            background-color: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            padding: 10px;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+            border: 3px solid var(--dark);
+        }
+
+        .feedback-correct {
+            background-color: #a8ffb2;
+        }
+
+        .feedback-wrong {
+            background-color: #ffb1b1;
+        }
+
+        .score-img {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="home-page">
+            <h1>Le QCM des Monstres 🐯</h1>
+            <p class="punchline">Alors le sang, t'es un vrai tigre des maths ou une petite biche du zoo ? 🔥</p>
+            <p style="margin-bottom: 20px; font-weight: 500;">On t'a préparé un mix hardcore de 20 questions de la banque de données. Prépare tes neurones.</p>
+            <button class="btn" onclick="startQuiz()">ACTIVER LE MODE TIGRE 🚀</button>
+        </div>
+
+        <div id="quiz-page" class="hidden">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px;">
+                <span id="question-counter">Question: 1/20</span>
+                <span id="score-counter">Force: 0 XP</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <div class="question-text" id="question-box">Ici la question...</div>
+            <div id="options-box"></div>
+            
+            <div id="feedback-box" class="feedback hidden"></div>
+            <button class="btn hidden" id="next-btn" onclick="nextQuestion()">SUIVANT, J'AI FAIM ➡️</button>
+        </div>
+
+        <div id="score-page" class="hidden">
+            <h1>FIN DU GAME ! 🏁</h1>
+            <div class="score-img" id="final-emoji">🐯</div>
+            <h2 id="final-score-text" style="margin-bottom: 15px;">Score : 0/20</h2>
+            <p id="final-comment" class="punchline">Commentaire de tigre...</p>
+            <button class="btn" onclick="restartQuiz()">REPRENDRE UN SHOT DE MATHS 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // La grosse banque de questions du seigneur
+        const rawData = [
+            { q: "Quels sont les noms des résultats de l’addition, la soustraction, la multiplication et la division ?", a: "Somme, différence, produit, quotient", f1: "Plus, moins, multiplier, diviser", f2: "Total, reste, fois, fraction" },
+            { q: "Cite un multiple de 12.", a: "24", f1: "6", f2: "5" },
+            { q: "Cite un diviseur de 15.", a: "5", f1: "30", f2: "2" },
+            { q: "7 est-il un multiple de 14 ?", a: "Non, 7 est un diviseur de 14", f1: "Ouais bien sûr", f2: "C'est la même chose mon frère" },
+            { q: "Comment repère-t-on un nombre qui se divise par 2 ?", a: "Il se termine par 0, 2, 4, 6, 8", f1: "La somme de ses chiffres fait 2", f2: "Il se termine par 2 obligatoire" },
+            { q: "Comment repère-t-on un nombre qui se divise par 3 (ou par 9) ?", a: "La somme de ses chiffres est dans la table du 3 (ou du 9)", f1: "Il se termine par 3 ou 9", f2: "C'est un nombre impair d'office" },
+            { q: "Comment repère-t-on un nombre qui se divise par 5 ?", a: "Il se termine par 0 ou 5", f1: "Il se termine par 5 uniquement", f2: "Il est pair" },
+            { q: "Qu'est-ce qu'un nombre premier ?", a: "Un nombre qui a exactement deux diviseurs distincts", f1: "Le tout premier nombre d'une suite", f2: "Un nombre qui est toujours impair" },
+            { q: "Récite les nombres premiers entre 1 et 30.", a: "2, 3, 5, 7, 11, 13, 17, 19, 23, 29", f1: "1, 3, 5, 7, 9, 11, 13, 15, 17", f2: "2, 4, 6, 8, 10, 12, 14, 16, 18" },
+            { q: "Qu’est-ce qu’une fraction irréductible ?", a: "Une fraction qu’on ne peut pas simplifier", f1: "Une fraction magique", f2: "Une fraction avec un 0 en bas" },
+            { q: "Comment rendre une fraction irréductible ?", a: "Par divisions successives ou décomposition en facteurs premiers", f1: "En lui enlevant 1 au numérateur", f2: "On peut pas, c'est le destin" },
+            { q: "Comment ajoute-t-on deux nombres négatifs ?", a: "On ajoute les distances à zéro et on met le signe -", f1: "Ça devient positif direct", f2: "On fait une soustraction classique" },
+            { q: "Comment ajoute-t-on deux nombres de signes contraires ?", a: "On soustrait les distances à zéro et on met le signe du « plus fort »", f1: "Le résultat est toujours négatif", f2: "On jette une pièce à pile ou face" },
+            { q: "Soustraire cela revient à...", a: "Ajouter l’opposé", f1: "Multiplier par l'inverse", f2: "Diviser par le même nombre" },
+            { q: "Comment ajouter ou soustraire deux fractions ?", a: "On met au même dénominateur, on calcule les numérateurs", f1: "On ajoute le haut avec le haut et le bas avec le bas", f2: "On multiplie tout en croix" },
+            { q: "Comment multiplier deux fractions ?", a: "On multiplie les numérateurs entre eux et les dénominateurs entre eux", f1: "On met au même dénominateur d'abord", f2: "On inverse la deuxième fraction" },
+            { q: "Comment calcule-t-on la fraction d’une quantité ?", a: "On multiplie la quantité par la fraction", f1: "On divise la quantité par la fraction", f2: "On fait une soustraction" },
+            { q: "Qu’est-ce que deux nombres opposés ?", a: "Le leur somme vaut 0 (ex: 3 et -3)", f1: "Leur produit vaut 1 (ex: 3 et 1/3)", f2: "Ils s'aiment pas du tout" },
+            { q: "Qu’est-ce que deux nombres inverses ?", a: "Leur produit vaut 1 (ex: 3 et 1/3)", f1: "Leur somme vaut 0 (ex: 3 et -3)", f2: "C'est les mêmes mais à l'envers" },
+            { q: "Comment diviser deux fractions ?", a: "On multiplie par l’inverse de la deuxième", f1: "On divise le haut par le bas", f2: "On supprime les dénominateurs" },
+            { q: "Comment multiplie-t-on un nombre par 10^n ?", a: "On décale la virgule de n rangs vers la droite", f1: "On décale la virgule de n rangs vers la gauche", f2: "On ajoute juste un zéro" },
+            { q: "Que signifie le préfixe Méga ?", a: "1 000 000 ou 1 million", f1: "1 000 ou 1 mille", f2: "1 000 000 000 ou 1 milliard" },
+            { q: "Que signifie le préfixe Giga ?", a: "1 000 000 000 ou 1 milliard", f1: "1 000 000 ou 1 million", f2: "0,000 001" },
+            { q: "Que signifie le préfixe Micro ?", a: "0,000 001 ou 1 millionième", f1: "0,001 ou 1 millième", f2: "1 milliard" },
+            { q: "Que signifie le préfixe Nano ?", a: "0,000 000 001 ou 1 milliardième", f1: "C'est une voiture", f2: "0,000 01" },
+            { q: "Comment factoriser une expression ?", a: "Trouver un facteur commun ou une identité remarquable", f1: "Développer toutes les parenthèses", f2: "Supprimer les x" },
+            { q: "Comment résoudre une équation produit nul ?", a: "Un des facteurs est nul, on résout les deux équations égales à 0", f1: "On divise tout par zéro", f2: "On passe tout au carré" },
+            { q: "Que vaut la somme des angles dans un triangle ?", a: "180°", f1: "90°", f2: "360°" },
+            { q: "Quelles sont les propriétés d’un triangle isocèle ?", a: "Deux côtés égaux et deux angles à la base de même mesure", f1: "Trois côtés égaux et angles de 60°", f2: "Un angle droit obligatoirement" },
+            { q: "Comment s’appelle le côté le plus long dans un triangle rectangle ?", a: "L’hypoténuse", f1: "L'hippopotame", f2: "La diagonale" },
+            { q: "A quoi sert le théorème de Pythagore ?", a: "À calculer une longueur dans un triangle rectangle", f1: "À prouver que des droites sont parallèles", f2: "À calculer des angles" },
+            { q: "A quoi servent la réciproque et la contraposée de Pythagore ?", a: "Prouver qu’un triangle est ou n’est pas rectangle", f1: "Calculer des aires géantes", f2: "Trouver le milieu d'un segment" },
+            { q: "Qu’est-ce que la médiatrice d’un segment ?", a: "La droite perpendiculaire au segment qui coupe en son milieu", f1: "Une droite qui coupe un angle en deux", f2: "Le côté le plus long" },
+            { q: "A quoi sert le théorème de Thalès ?", a: "À calculer une longueur avec des parallèles", f1: "À mesurer la hauteur de la lune", f2: "À prouver qu'un angle fait 90°" },
+            { q: "A quoi sert la trigonométrie ?", a: "À calculer une longueur ou un angle dans un triangle rectangle", f1: "À faire des figures géométriques stylées", f2: "À calculer le périmètre d'un cercle" },
+            { q: "En quoi consiste une translation ?", a: "Faire glisser une figure sans la déformer ni la tourner", f1: "Faire tourner une figure autour d'un point", f2: "Agrandir ou réduire une figure" },
+            { q: "Comment se nomment le méridien et le parallèle de référence sur Terre ?", a: "Méridien de Greenwich et l'Équateur", f1: "Méridien de Paris et les Tropiques", f2: "L'axe X et l'axe Y" },
+            { q: "Comment calcule-t-on le volume d’une pyramide ou d'un cône ?", a: "(Aire de la base × hauteur) ÷ 3", f1: "Côté × Côté × Côté", f2: "Longueur × Largeur × Hauteur" },
+            { q: "Comment reconnaît-on une situation de proportionnalité sur un graphique ?", a: "Le graphique est une droite qui passe par l’origine", f1: "C'est une courbe qui monte très haut", f2: "C'est une ligne droite horizontale" },
+            { q: "Quelle est la formule qui lie vitesse, distance et temps ?", a: "v = d / t", f1: "v = d × t", f2: "v = t / d" },
+            { q: "Augmenter une quantité de a% revient à la multiplier par quoi ?", a: "1 + a/100", f1: "1 - a/100", f2: "a/100" },
+            { q: "Qu’est-ce qu’une image pour une fonction ?", a: "C’est le nombre obtenu en sortie", f1: "Le nombre qu'on met à l'entrée", f2: "Une photo de la courbe" }
+        ];
+
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // Punchlines de bg
+        const correctPunchlines = [
+            "Tié un tigre ma parole ! 💪",
+            "Propre ! Tu les as foudroyés ! 🔥",
+            "C'est carré le sang ! 📐",
+            "Une machine ! Rien d'autre à dire. 🤖",
+            "Ah ouais t'es déter toi ! ⚡"
+        ];
+
+        const wrongPunchlines = [
+            "Aïe... Tié une biche sur ce coup là 🦌",
+            "Mais non ! Réveille-toi le sang ! 💀",
+            "Tu t'es crashé l'ami, concentre-toi ! 🛑",
+            "C'est pas ça du tout ! Secoue le cocotier ! 🌴",
+            "Dors pas au gaz, t'es un lion ou un poney ? 🐴"
+        ];
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startQuiz() {
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('score-page').classList.add('hidden');
+            document.getElementById('quiz-page').classList.remove('hidden');
+            
+            // Sélectionner 20 questions au hasard
+            quizQuestions = shuffle([...rawData]).slice(0, 20);
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('feedback-box').classList.add('hidden');
+            
+            let currentQuestion = quizQuestions[currentQuestionIndex];
+            
+            // Compteurs
+            document.getElementById('question-counter').innerText = `Question: ${currentQuestionIndex + 1}/20`;
+            document.getElementById('score-counter').innerText = `Force: ${score} XP`;
+            
+            // Barre de progression
+            let progressPercent = ((currentQuestionIndex) / 20) * 100;
+            document.getElementById('progress').style.width = `${progressPercent}%`;
+
+            // Question text
+            document.getElementById('question-box').innerText = currentQuestion.q;
+
+            // Options mélangées
+            let options = [
+                { text: currentQuestion.a, isCorrect: true },
+                { text: currentQuestion.f1, isCorrect: false },
+                { text: currentQuestion.f2, isCorrect: false }
+            ];
+            options = shuffle(options);
+
+            let optionsBox = document.getElementById('options-box');
+            optionsBox.innerHTML = '';
+
+            options.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'btn btn-option';
+                btn.innerText = opt.text;
+                btn.onclick = () => selectOption(btn, opt.isCorrect, currentQuestion.a);
+                optionsBox.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedBtn, isCorrect, correctAnswer) {
+            // Désactiver tous les boutons d'options
+            let buttons = document.querySelectorAll('.btn-option');
+            buttons.forEach(btn => btn.disabled = true);
+
+            let feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.remove('hidden');
+
+            if (isCorrect) {
+                score++;
+                document.getElementById('score-counter').innerText = `Force: ${score} XP`;
+                selectedBtn.style.backgroundColor = '#a8ffb2';
+                let randomPunch = correctPunchlines[Math.floor(Math.random() * correctPunchlines.length)];
+                feedbackBox.className = "feedback feedback-correct";
+                feedbackBox.innerHTML = `${randomPunch} <br><small>La bonne réponse était bien : ${correctAnswer}</small>`;
+            } else {
+                selectedBtn.style.backgroundColor = '#ffb1b1';
+                let randomPunch = wrongPunchlines[Math.floor(Math.random() * wrongPunchlines.length)];
+                feedbackBox.className = "feedback feedback-wrong";
+                feedbackBox.innerHTML = `${randomPunch} <br><strong>La vérité :</strong> ${correctAnswer}`;
+            }
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < 20) {
+                showQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function showFinalScore() {
+            document.getElementById('quiz-page').classList.add('hidden');
+            document.getElementById('score-page').classList.remove('hidden');
+
+            document.getElementById('final-score-text').innerText = `Score Final : ${score} / 20`;
+
+            let emojiBox = document.getElementById('final-emoji');
+            let commentBox = document.getElementById('final-comment');
+
+            if (score >= 16) {
+                emojiBox.innerText = "👑🐯🔥";
+                commentBox.innerText = "TIÉ UN VRAI TIGRE DE LA JUNGLE DES MATHS ! Personne peut te tester, t'as tout plié !";
+            } else if (score >= 10) {
+                emojiBox.innerText = "🦁👍";
+                commentBox.innerText = "Pas mal le sang, t'as des bonnes griffes mais tu peux faire encore plus de dégâts ! Lâche rien !";
+            } else {
+                emojiBox.innerText = "🐱🍼";
+                commentBox.innerText = "Aïe aïe aïe... Là tié un petit chaton tout fragile. Retourne réviser l'entraînement avant que le prof te dévore !";
+            }
+        }
+
+        function restartQuiz() {
+            startQuiz();
+        }
+    </script>
+</body>
+</html>

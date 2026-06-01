@@ -1,0 +1,501 @@
+```html id="9u2sfd"
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Quiz Brevet 3e</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Poppins', sans-serif;
+    min-height:100vh;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:900px;
+    background:white;
+    border-radius:25px;
+    padding:35px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+    animation:fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+h1{
+    text-align:center;
+    color:#4b3ca7;
+    margin-bottom:25px;
+    font-size:2.5rem;
+}
+
+.top-bar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    justify-content:center;
+    margin-bottom:25px;
+}
+
+select{
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:#f2f2f2;
+    font-size:16px;
+    font-weight:600;
+}
+
+button{
+    padding:12px 22px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(102,126,234,0.4);
+}
+
+.progress-container{
+    width:100%;
+    height:12px;
+    background:#eee;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:30px;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#00c6ff,#0072ff);
+    transition:0.4s;
+}
+
+.question{
+    background:#fafafa;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:20px;
+    border:2px solid transparent;
+    transition:0.3s;
+}
+
+.question:hover{
+    border-color:#667eea;
+    transform:scale(1.01);
+}
+
+.question p{
+    font-size:18px;
+    margin-bottom:15px;
+    color:#333;
+    font-weight:600;
+}
+
+label{
+    display:block;
+    background:white;
+    padding:12px;
+    margin-bottom:10px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.2s;
+    border:1px solid #ddd;
+}
+
+label:hover{
+    background:#f0f4ff;
+    border-color:#667eea;
+}
+
+input[type="radio"]{
+    margin-right:10px;
+}
+
+input[type="text"]{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+
+#resultat{
+    margin-top:30px;
+    padding:25px;
+    border-radius:20px;
+    background:#f8f9ff;
+    text-align:center;
+    animation:fadeIn 0.5s ease;
+}
+
+.score{
+    font-size:3rem;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.success{
+    color:#2ecc71;
+}
+
+.medium{
+    color:#f39c12;
+}
+
+.fail{
+    color:#e74c3c;
+}
+
+.correction{
+    margin-top:20px;
+    text-align:left;
+}
+
+.correct{
+    color:#27ae60;
+    margin-bottom:10px;
+}
+
+.wrong{
+    color:#c0392b;
+    margin-bottom:10px;
+}
+
+.footer-buttons{
+    display:flex;
+    gap:15px;
+    justify-content:center;
+    margin-top:25px;
+    flex-wrap:wrap;
+}
+
+@media(max-width:700px){
+
+    h1{
+        font-size:2rem;
+    }
+
+    .container{
+        padding:20px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎓 Quiz Brevet 3e</h1>
+
+<div class="top-bar">
+
+<select id="nbQuestions">
+    <option value="3">3 Questions</option>
+    <option value="5">5 Questions</option>
+    <option value="6">6 Questions</option>
+</select>
+
+<select id="difficulte">
+    <option value="facile">🟢 Facile</option>
+    <option value="moyen">🟠 Moyen</option>
+    <option value="difficile">🔴 Difficile</option>
+</select>
+
+<button onclick="genererQuiz()">
+🚀 Lancer le quiz
+</button>
+
+</div>
+
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<form id="quizForm">
+
+<div id="quizZone"></div>
+
+<div class="footer-buttons">
+
+<button type="button" onclick="corriger()">
+✅ Corriger
+</button>
+
+<button type="button" onclick="genererQuiz()">
+🔄 Rejouer
+</button>
+
+</div>
+
+</form>
+
+<div id="resultat"></div>
+
+</div>
+
+<script>
+
+const questions = {
+
+facile:[
+    {type:"qcm", q:"Synonyme de 'grand' ?", rep:["petit","énorme","rapide"], correct:1},
+    {type:"qcm", q:"2 + 2 ?", rep:["3","4","5"], correct:1},
+    {type:"text", q:"Année de la Révolution française ?", correct:"1789"},
+    {type:"qcm", q:"Nombre de jambes d'une araignée ?", rep:["6","8","10"], correct:1},
+    {type:"text", q:"Continent de la France ?", correct:"europe"},
+    {type:"qcm", q:"Traduction anglaise de 'chat' ?", rep:["dog","cat","bird"], correct:1}
+],
+
+moyen:[
+    {type:"qcm", q:"'Ils ont mangé' est au ?", rep:["présent","passé composé","futur"], correct:1},
+    {type:"qcm", q:"12 × 6 ?", rep:["72","60","80"], correct:0},
+    {type:"text", q:"Capitale de la France ?", correct:"paris"},
+    {type:"qcm", q:"Organe qui pompe le sang ?", rep:["foie","cerveau","coeur"], correct:2},
+    {type:"text", q:"Traduction anglaise de 'bonjour' ?", correct:"hello"},
+    {type:"qcm", q:"Formule chimique de l'eau ?", rep:["CO2","H2O","O2"], correct:1}
+],
+
+difficile:[
+    {type:"qcm", q:"Figure de style 'Je suis mort de rire' ?", rep:["métaphore","hyperbole","comparaison"], correct:1},
+    {type:"qcm", q:"√144 ?", rep:["10","11","12"], correct:2},
+    {type:"text", q:"Fin de la Seconde Guerre mondiale ?", correct:"1945"},
+    {type:"qcm", q:"Valeur approchée de π ?", rep:["3,14","2,17","4,12"], correct:0},
+    {type:"text", q:"Plus grand océan ?", correct:"pacifique"},
+    {type:"qcm", q:"Unité de la tension électrique ?", rep:["volt","ampère","watt"], correct:0}
+]
+
+};
+
+let quizActuel = [];
+
+function melanger(tableau){
+    return tableau.sort(() => Math.random() - 0.5);
+}
+
+function updateProgress(){
+
+    const total = quizActuel.length;
+
+    let answered = 0;
+
+    quizActuel.forEach((q,i)=>{
+
+        if(q.type==="qcm"){
+
+            if(document.querySelector(`input[name="q${i}"]:checked`)){
+                answered++;
+            }
+
+        }else{
+
+            const val = document.querySelector(`input[name="q${i}"]`).value;
+
+            if(val.trim()!==""){
+                answered++;
+            }
+
+        }
+
+    });
+
+    const percent = (answered / total) * 100;
+
+    document.getElementById("progressBar").style.width = percent + "%";
+}
+
+function genererQuiz(){
+
+    const nb = parseInt(document.getElementById("nbQuestions").value);
+
+    const diff = document.getElementById("difficulte").value;
+
+    let base = [...questions[diff]];
+
+    base = melanger(base);
+
+    quizActuel = base.slice(0, nb);
+
+    let html = "";
+
+    quizActuel.forEach((q,i)=>{
+
+        html += `<div class="question">`;
+
+        html += `<p>${i+1}. ${q.q}</p>`;
+
+        if(q.type==="qcm"){
+
+            q.rep.forEach((r,j)=>{
+
+                html += `
+                <label>
+                    <input type="radio"
+                    name="q${i}"
+                    value="${j}"
+                    onchange="updateProgress()">
+
+                    ${r}
+                </label>
+                `;
+            });
+
+        }else{
+
+            html += `
+            <input type="text"
+            name="q${i}"
+            placeholder="Écris ta réponse..."
+            oninput="updateProgress()">
+            `;
+        }
+
+        html += `</div>`;
+    });
+
+    document.getElementById("quizZone").innerHTML = html;
+
+    document.getElementById("resultat").innerHTML = "";
+
+    document.getElementById("progressBar").style.width = "0%";
+}
+
+function corriger(){
+
+    let score = 0;
+
+    let corrections = "";
+
+    quizActuel.forEach((q,i)=>{
+
+        if(q.type==="qcm"){
+
+            let rep = document.querySelector(`input[name="q${i}"]:checked`);
+
+            if(rep && parseInt(rep.value)===q.correct){
+
+                score++;
+
+                corrections += `
+                <p class="correct">
+                ✅ Question ${i+1} correcte
+                </p>
+                `;
+
+            }else{
+
+                corrections += `
+                <p class="wrong">
+                ❌ Question ${i+1} incorrecte
+                <br>
+                ✔ Bonne réponse :
+                ${q.rep[q.correct]}
+                </p>
+                `;
+            }
+
+        }else{
+
+            let rep = document.querySelector(`input[name="q${i}"]`).value;
+
+            if(rep.toLowerCase().trim()===q.correct.toLowerCase()){
+
+                score++;
+
+                corrections += `
+                <p class="correct">
+                ✅ Question ${i+1} correcte
+                </p>
+                `;
+
+            }else{
+
+                corrections += `
+                <p class="wrong">
+                ❌ Question ${i+1} incorrecte
+                <br>
+                ✔ Bonne réponse :
+                ${q.correct}
+                </p>
+                `;
+            }
+        }
+
+    });
+
+    let classe = "";
+    let message = "";
+
+    if(score === quizActuel.length){
+
+        classe = "success";
+        message = "🏆 Parfait !";
+
+    }else if(score >= quizActuel.length/2){
+
+        classe = "medium";
+        message = "👍 Très bien !";
+
+    }else{
+
+        classe = "fail";
+        message = "📚 Continue à t'entraîner";
+    }
+
+    document.getElementById("resultat").innerHTML = `
+
+        <div class="score ${classe}">
+            ${score} / ${quizActuel.length}
+        </div>
+
+        <h2>${message}</h2>
+
+        <div class="correction">
+            ${corrections}
+        </div>
+
+    `;
+}
+
+</script>
+
+</body>
+</html>
+```

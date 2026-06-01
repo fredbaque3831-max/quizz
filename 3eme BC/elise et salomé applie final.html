@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objectif Brevet - Base de Données Complète 3ème</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --warning-color: #e67e22;
+            --info-color: #3498db;
+            --bg-color: #1e272e; 
+            --card-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.4s ease;
+        }
+
+        .quiz-container {
+            background-color: var(--card-color);
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 780px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 28px;
+            color: var(--primary-color);
+            border-bottom: 3px solid #eaecee;
+            padding-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 20px;
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 25px;
+        }
+
+        .menu-btn {
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 18px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            text-align: center;
+        }
+
+        .menu-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 25px;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background-color: #626567;
+        }
+
+        .quiz-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .quiz-nav-home-btn {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .quiz-stats {
+            text-align: right;
+            font-size: 16px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-badge {
+            background-color: #eaecee;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .question {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .option-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #eaecee;
+            border-radius: 10px;
+            padding: 18px;
+            font-size: 17px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            color: var(--primary-color);
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #eaecee;
+            border-color: #bdc3c7;
+        }
+
+        .option-btn[disabled] {
+            cursor: not-allowed;
+        }
+
+        .correct {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white !important;
+        }
+
+        .input-gap-container {
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .gap-input {
+            font-size: 20px;
+            padding: 12px 20px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .gap-input:focus {
+            border-color: var(--info-color);
+        }
+
+        .gap-feedback {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 27px;
+        }
+
+        .course-container {
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--info-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        .course-block {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .course-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .course-term {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .course-definition {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 35px;
+        }
+
+        .next-btn {
+            flex: 1;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .skip-btn {
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 18px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .flashcard-wrapper {
+            perspective: 1000px;
+            margin: 20px auto;
+            width: 100%;
+            height: 250px;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .card-front {
+            background-color: #f4f6f7;
+            border: 3px dashed #bdc3c7;
+            color: var(--primary-color);
+        }
+
+        .card-back {
+            background-color: #eafaf1;
+            border: 3px solid var(--success-color);
+            color: #117a65;
+            transform: rotateY(180deg);
+        }
+
+        .card-hint {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-container {
+            text-align: center;
+        }
+
+        .score-text {
+            font-size: 26px;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .restart-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="subject-screen">
+        <h1>🎓 Objectif Brevet v2 : Choisissez une matière</h1>
+        <div class="menu-container">
+            <button class="menu-btn" style="background-color: #8e44ad;" onclick="selectSubject('francais')">✍️ Français</button>
+            <button class="menu-btn" style="background-color: #2980b9;" onclick="selectSubject('maths')">📐 Mathématiques</button>
+            <button class="menu-btn" style="background-color: #c0392b;" onclick="selectSubject('histoire')">📜 Histoire-Géographie</button>
+            <button class="menu-btn" style="background-color: #16a085;" onclick="selectSubject('physique')">🧪 Physique-Chimie</button>
+            <button class="menu-btn" style="background-color: #27ae60;" onclick="selectSubject('svt')">🌱 SVT</button>
+            <button class="menu-btn" style="background-color: #d35400; border: 2px solid #f39c12;" onclick="selectSubject('brevet')">🏆 Brevet Blanc Général (Mélange)</button>
+        </div>
+    </div>
+
+    <div id="theme-screen" class="hidden">
+        <h1>📚 Choisissez votre thème de révision</h1>
+        <h2 id="selected-subject-title">Matière</h2>
+        <div class="menu-container" id="themes-buttons-container"></div>
+        <button class="back-btn" onclick="showSubjectScreen()">↩️ Changer de matière</button>
+    </div>
+
+    <div id="mode-screen" class="hidden">
+        <h1>⚡ Choisissez votre méthode</h1>
+        <h2 id="selected-theme-title">Thème sélectionné</h2>
+        <div class="menu-container">
+            <button class="menu-btn" style="background-color: #34495e;" onclick="launchModule('course')">📖 Lire la Fiche de Cours</button>
+            <button class="menu-btn" style="background-color: #2c3e50;" onclick="launchModule('quiz')">📝 Lancer le Quiz Évaluation (QCM)</button>
+            <button class="menu-btn" style="background-color: #2980b9;" onclick="launchModule('gap')">✏️ Questions à compléter (Texte à trous)</button>
+            <button class="menu-btn" style="background-color: #e67e22;" onclick="launchModule('revision')">🃏 Mode Révision (Flashcards Recto/Verso)</button>
+        </div>
+        <button class="back-btn" onclick="backToThemes()">↩️ Changer de thème</button>
+    </div>
+
+    <div id="course-screen" class="hidden">
+        <div class="quiz-header-actions">
+            <button class="quiz-nav-home-btn" onclick="showSubjectScreen()">🏠 Accueil</button>
+        </div>
+        <h1 id="course-title" style="font-size: 20px;">Fiche de Révision</h1>
+        <div class="course-container" id="course-content-area"></div>
+        <button class="back-btn" style="background-color: #27ae60;" onclick="backToModesFromCourse()">🎯 S'évaluer maintenant</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="quiz-header-actions">
+            <button class="quiz-nav-home-btn" onclick="showSubjectScreen()">🏠 Accueil</button>
+            <div class="quiz-stats">
+                <span class="stat-badge">Question : <span id="current-question-num">1</span>/<span id="total-questions-num">10</span></span>
+                <span class="stat-badge" style="background-color: #d5f5e3; color: #1e8449;">Score : <span id="live-score">0</span></span>
+            </div>
+        </div>
+        <h1 id="quiz-title" style="font-size: 20px;">Quiz</h1>
+        <div class="question" id="question-text">Chargement...</div>
+        <div class="options-container" id="options-container"></div>
+        
+        <div class="action-buttons">
+            <button id="skip-button" class="skip-btn" onclick="skipQuestion()">Passer ➡️</button>
+            <button id="next-button" class="next-btn hidden" onclick="nextQuestion()">Question suivante</button>
+        </div>
+    </div>
+
+    <div id="gap-screen" class="hidden">
+        <div class="quiz-header-actions">
+            <button class="quiz-nav-home-btn" onclick="showSubjectScreen()">🏠 Accueil</button>
+            <div class="quiz-stats">
+                <span class="stat-badge">Question : <span id="gap-question-num">1</span>/<span id="gap-total-num">10</span></span>
+                <span class="stat-badge" style="background-color: #d5f5e3; color: #1e8449;">Score : <span id="live-score-gap">0</span></span>
+            </div>
+        </div>
+        <h1 id="gap-title" style="font-size: 20px;">Complétez la réponse</h1>
+        <div class="question" id="gap-question-text">Chargement...</div>
+        
+        <div class="input-gap-container">
+            <input type="text" id="gap-user-input" class="gap-input" placeholder="Tapez votre réponse ici..." autocomplete="off">
+            <div id="gap-feedback-msg" class="gap-feedback"></div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="gap-validate-btn" class="next-btn" style="background-color: #3498db;" onclick="validateGapAnswer()">Valider la réponse ✔️</button>
+            <button id="gap-next-btn" class="next-btn hidden" onclick="nextGapQuestion()">Suivant ➡️</button>
+        </div>
+    </div>
+
+    <div id="revision-screen" class="hidden">
+        <div class="quiz-header-actions">
+            <button class="quiz-nav-home-btn" onclick="showSubjectScreen()">🏠 Accueil</button>
+            <div class="quiz-stats">
+                <span class="stat-badge">Carte : <span id="card-index-num">1</span>/10</span>
+            </div>
+        </div>
+        <h1 id="revision-title" style="font-size: 20px;">Révision</h1>
+        
+        <div class="flashcard-wrapper" onclick="toggleCardFlip()">
+            <div class="flashcard" id="flashcard-object">
+                <div class="card-face card-front">
+                    <div class="question" id="card-question" style="margin: 0;">Question ?</div>
+                    <div class="card-hint">👇 Cliquez pour voir la réponse</div>
+                </div>
+                <div class="card-face card-back">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px;">💡 RÉPONSE CORRECTE :</h3>
+                    <div class="question" id="card-answer" style="margin: 0; color: #117a65;">Réponse</div>
+                    <div class="card-hint">Cliquez pour revenir à la question</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="skip-btn" style="background-color: #7f8c8d;" onclick="prevCard()">⬅️ Précédent</button>
+            <button class="next-btn" style="background-color: #3498db;" onclick="nextCard()">Suivant ➡️</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="result-container hidden">
+        <h1>🎉 Session Terminée !</h1>
+        <p class="score-text">Votre score final : <span id="score">0</span></p>
+        <p id="feedback-message" style="font-size: 18px; line-height: 1.5;"></p>
+        <button class="restart-btn" onclick="showSubjectScreen()">Retour au menu principal</button>
+    </div>
+</div>
+
+<script>
+    const subjectColors = {
+        'default': '#1e272e',   
+        'francais': '#3b1f47',  
+        'maths': '#15314b',     
+        'histoire': '#4a1515',  
+        'physique': '#0b3c33',  
+        'svt': '#143d22',
+        'brevet': '#5e2700'
+    };
+
+    // BASE DE DONNÉES SÉCURISÉE COMPLÈTE - 3 THÈMES ET MINIMUM 10 QUESTIONS PAR THÈME
+    const brevetDatabase = {
+        francais: { title: "✍️ Français", color: "#8e44ad", themes: {
+            modes: { 
+                title: "Les modes verbaux (Indicatif, Subjonctif, Impératif...)", 
+                course: [
+                    { term: "Indicatif", def: "Exprime une action certaine et réelle dans le temps." },
+                    { term: "Subjonctif", def: "Exprime le doute, l'ordre indirect, le souhait ou la virtualité." },
+                    { term: "Conditionnel", def: "Exprime un fait imaginaire ou soumis à une condition." },
+                    { term: "Impératif", def: "Exprime un ordre, un conseil fort ou une interdiction sans sujet formulé." }
+                ],
+                questions: [
+                    { q: "À quel mode appartient le verbe dans : 'Il regrette que tu ne puisses pas l'aider' ?", options: ["Subjonctif", "Indicatif", "Conditionnel"], correct: "Subjonctif" },
+                    { q: "Identifiez le mode du verbe gras : 'Ils auraient compris sans toi.'", options: ["Conditionnel", "Indicatif", "Subjonctif"], correct: "Conditionnel" },
+                    { q: "À quel mode est le verbe : 'Soyez gentils avec elle.' ?", options: ["Impératif", "Indicatif", "Subjonctif"], correct: "Impératif" },
+                    { q: "Dans la phrase 'En courant, il s'est foulé la cheville', quel est le mode de 'courant' ?", options: ["Gérondif", "Participe", "Infinitif"], correct: "Gérondif" },
+                    { q: "Quel est le mode verbal employé dans 'Avoir passé son diplôme est une fierté' ?", options: ["Infinitif", "Participe", "Indicatif"], correct: "Infinitif" },
+                    { q: "À quel mode est le verbe gras : 'Il a été puni pour avoir voulu désobéir.' ?", options: ["Infinitif", "Participe", "Indicatif"], correct: "Infinitif" },
+                    { q: "À quel mode est le verbe gras : 'Je ne comprends pas qu'il préfère travailler.' ?", options: ["Subjonctif", "Indicatif", "Conditionnel"], correct: "Subjonctif" },
+                    { q: "À quel mode est le verbe gras : 'Il faisait du ski en zigzaguant.' ?", options: ["Gérondif", "Participe", "Indicatif"], correct: "Gérondif" },
+                    { q: "À quel mode est le verbe gras : 'Comprenez-moi, ce n'est pas possible.' ?", options: ["Impératif", "Indicatif", "Subjonctif"], correct: "Impératif" },
+                    { q: "À quel mode est le verbe gras : 'Pourriez-vous me passer le sel ?' ?", options: ["Conditionnel", "Indicatif", "Subjonctif"], correct: "Conditionnel" }
+                ]
+            },
+            valeurs: {
+                title: "Les valeurs du présent de l'indicatif",
+                course: [
+                    { term: "Présent d'énonciation", def: "Action se déroulant au moment précis où l'on parle." },
+                    { term: "Présent de vérité générale", def: "Faits vrais de tout temps (proverbes, sciences)." },
+                    { term: "Présent de narration", def: "Insère du présent au milieu d'un récit au passé pour dynamiser." },
+                    { term: "Présent d'habitude", def: "Exprime des actions répétitives ou régulières." }
+                ],
+                questions: [
+                    { q: "Quelle est la valeur du présent dans : 'En Laponie, l'hiver, le soleil ne se lève pas.' ?", options: ["Présent de vérité générale", "Présent d'énonciation", "Présent d'habitude"], correct: "Présent de vérité générale" },
+                    { q: "Quelle est la valeur du présent dans : 'Elle téléphone tous les jours à ses amies.' ?", options: ["Présent d'habitude", "Présent d'énonciation", "Présent de narration"], correct: "Présent d'habitude" },
+                    { q: "Dans un récit au passé : 'Un terrible craquement les fait soudain sursauter.' Quelle est la valeur de 'fait' ?", options: ["Présent de narration", "Présent de vérité générale", "Présent d'énonciation"], correct: "Présent de narration" },
+                    { q: "Quelle est la valeur du présent dans : 'Je te téléphone parce que je m'ennuie.' ?", options: ["Présent d'énonciation", "Présent d'habitude", "Présent de vérité générale"], correct: "Présent d'énonciation" },
+                    { q: "Quelle est la valeur de 'commencent' dans : 'Encore une semaine et les vacances commencent.' ?", options: ["Futur proche", "Passé récent", "Présent d'énonciation"], correct: "Futur proche" },
+                    { q: "Quelle est la valeur du présent dans : 'Le 26 décembre 1999, une tempête ravage les forêts.' ?", options: ["Présent de narration", "Présent d'énonciation", "Présent d'habitude"], correct: "Présent de narration" },
+                    { q: "Quelle est la valeur du présent dans : 'Le granit est une roche dure formée de cristaux.' ?", options: ["Présent de vérité générale", "Présent d'énonciation", "Présent d'habitude"], correct: "Présent de vérité générale" },
+                    { q: "Quelle est la valeur du présent dans : 'Pendant ses trajets en bus, il lit le journal.' ?", options: ["Présent d'habitude", "Présent de narration", "Présent d'énonciation"], correct: "Présent d'habitude" },
+                    { q: "Quelle est la valeur de 'sort' dans : 'Il sort de chez moi à l'instant.' ?", options: ["Passé récent", "Futur proche", "Présent d'énonciation"], correct: "Passé récent" },
+                    { q: "Quelle est la valeur du présent dans : 'L'eau gèle à zéro degré.' ?", options: ["Présent de vérité générale", "Présent d'énonciation", "Présent d'habitude"], correct: "Présent de vérité générale" }
+                ]
+            },
+            figures: { 
+                title: "Les figures de style", 
+                course: [
+                    { term: "Oxymore", def: "Deux mots opposés placés l'un à côté de l'autre." },
+                    { term: "Antithèse", def: "Opposition entre deux idées disjointes dans une phrase." },
+                    { term: "Métaphore", def: "Comparaison globale directe sans outil de comparaison." }
+                ],
+                questions: [
+                    { q: "Quelle figure est présente dans : 'Cette obscure clarté qui tombe des étoiles' ?", options: ["Oxymore", "Antithèse", "Périphrase"], correct: "Oxymore" },
+                    { q: "Quelle figure est illustrée par : 'Tout lui plaît et déplaît, tout le choque et l'oblige.' ?", options: ["Antithèse", "Oxymore", "Métaphore"], correct: "Antithèse" },
+                    { q: "Quelle figure de style est employée dans : 'Le Malheur a percé mon vieux cœur de sa lance' ?", options: ["Personnification", "Hyperbole", "Litote"], correct: "Personnification" },
+                    { q: "Dans 'Je me suis baigné dans le poème de la mer', quelle figure est utilisée ?", options: ["Métaphore", "Comparaison", "Oxymore"], correct: "Métaphore" },
+                    { q: "Quelle figure trouve-t-on dans : 'Pour qui sont ces serpents qui sifflent sur vos têtes ?' ?", options: ["Allitération", "Métaphore", "Personnification"], correct: "Allitération" },
+                    { q: "Quelle figure correspond à : 'Ce n'était pas un sot, non, non, croyez-m'en' ?", options: ["Litote", "Hyperbole", "Oxymore"], correct: "Litote" },
+                    { q: "Quelle figure de style est une exagération extrême de la réalité ?", options: ["Hyperbole", "Litote", "Antithèse"], correct: "Hyperbole" },
+                    { q: "Quelle figure remplace un mot par sa définition (ex: Le roi des animaux) ?", options: ["Périphrase", "Métaphore", "Oxymore"], correct: "Périphrase" },
+                    { q: "Quelle figure rapproche deux éléments avec un outil comme 'tel' ou 'comme' ?", options: ["Comparaison", "Métaphore", "Personnification"], correct: "Comparaison" },
+                    { q: "Quelle figure attribue des caractéristiques humaines à un objet inanimé ?", options: ["Personnification", "Antithèse", "Oxymore"], correct: "Personnification" }
+                ]
+            }
+        }},
+        maths: { title: "📐 Mathématiques", color: "#2980b9", themes: {
+            arithmetique: { 
+                title: "Arithmétique & Nombres premiers", 
+                course: [
+                    { term: "Division Euclidienne", def: "a = b x q + r où r est strictement plus petit que b." },
+                    { term: "Nombre premier", def: "Nombre entier divisible uniquement par 1 et par lui-même." }
+                ],
+                questions: [
+                    { q: "Si 498 = 29 × 17 + 5, quel est le reste de la division euclidienne de 498 par 29 ?", options: ["5", "17", "29"], correct: "5" },
+                    { q: "Le nombre 7 est-il un multiple de 14 ?", options: ["Non, c'est un diviseur", "Oui", "Non, c'est un nombre premier"], correct: "Non, c'est un diviseur" },
+                    { q: "Comment reconnaît-on un nombre divisible par 3 ?", options: ["La somme de ses chiffres est divisible par 3", "Il finit par 3", "Il est impair"], correct: "La somme de ses chiffres est divisible par 3" },
+                    { q: "Quelle est l'écriture mathématique générale d'un nombre pair ?", options: ["2k", "2k+1", "k^2"], correct: "2k" },
+                    { q: "Quelle est l'écriture mathématique générale d'un nombre impair ?", options: ["2k+1", "2k", "7k"], correct: "2k+1" },
+                    { q: "Quel est le seul nombre premier pair ?", options: ["2", "0", "4"], correct: "2" },
+                    { q: "Le nombre 1 est-il un nombre premier ?", options: ["Non", "Oui", "Ça dépend"], correct: "Non" },
+                    { q: "Trouvez un diviseur du nombre 15 parmi ces propositions :", options: ["3", "2", "30"], correct: "3" },
+                    { q: "Parmi ces nombres, lequel est premier ?", options: ["13", "15", "9"], correct: "13" },
+                    { q: "Quelle est l'écriture d'un nombre multiple de 7 ?", options: ["7k", "2k+7", "k/7"], correct: "7k" }
+                ]
+            },
+            fonctions: { 
+                title: "Généralités sur les fonctions", 
+                course: [
+                    { term: "Axe des abscisses", def: "Axe horizontal où se lisent les antécédents x." },
+                    { term: "Axe des ordonnées", def: "Axe vertical où se lisent les images f(x)." }
+                ],
+                questions: [
+                    { q: "Sur quel axe lit-on l'image d'un nombre par une fonction ?", options: ["L'axe des ordonnées (vertical)", "L'axe des abscisses (horizontal)", "L'origine"], correct: "L'axe des ordonnées (vertical)" },
+                    { q: "On sait que f(3) = 8. Quel nombre est l'antécédent ?", options: ["3", "8", "Aucun"], correct: "3" },
+                    { q: "Si f(3) = 8, quel nombre est l'image ?", options: ["8", "3", "f"], correct: "8" },
+                    { q: "Sur quel axe lit-on l'antécédent d'un nombre ?", options: ["L'axe des abscisses (horizontal)", "L'axe des ordonnées (vertical)", "La pente"], correct: "L'axe des abscisses (horizontal)" },
+                    { q: "Comment calcule-t-on l'image d'un nombre à partir d'une formule ?", options: ["On remplace x par ce nombre", "On résout l'équation f(x)=0", "On divise par x"], correct: "On remplace x par ce nombre" },
+                    { q: "Si le point M(-4;6) appartient à la courbe de g, quelle égalité est vraie ?", options: ["g(-4) = 6", "g(6) = -4", "g(-4) + 6 = 0"], correct: "g(-4) = 6" },
+                    { q: "Quelle est la notation correcte pour exprimer qu'une fonction h associe à x le nombre y ?", options: ["h(x) = y", "h(y) = x", "x(h) = y"], correct: "h(x) = y" },
+                    { q: "Combien d'images au maximum possède un nombre donné par une fonction ?", options: ["1", "2", "Une infinité"], correct: "1" },
+                    { q: "Combien d'antécédents peut avoir un nombre donné ?", options: ["Plusieurs, un seul ou aucun", "Exactement un", "Toujours deux"], correct: "Plusieurs, un seul ou aucun" },
+                    { q: "Que signifie graphiquement h(0) = 4 ?", options: ["La courbe coupe l'axe vertical à la hauteur 4", "La courbe passe par l'origine", "La courbe est plate"], correct: "La courbe coupe l'axe vertical à la hauteur 4" }
+                ]
+            },
+            affine: {
+                title: "Fonctions Linéaires et Affines",
+                course: [
+                    { term: "Fonction linéaire", def: "f(x) = ax (droite passant par l'origine, proportionnalité)." },
+                    { term: "Fonction affine", def: "f(x) = ax + b (droite quelconque)." }
+                ],
+                questions: [
+                    { q: "Quelle est la forme générale d'une fonction linéaire ?", options: ["f(x) = a * x", "f(x) = a * x + b", "f(x) = x^2"], correct: "f(x) = a * x" },
+                    { q: "Quelle situation concrète se modélise par une fonction linéaire ?", options: ["Une situation de proportionnalité", "Une trajectoire de ballon", "Une baisse constante"], correct: "Une situation de proportionnalité" },
+                    { q: "Par quel type de courbe est représentée graphiquement une fonction linéaire ?", options: ["Une droite passant par l'origine", "Une droite quelconque", "Une parabole courbe"], correct: "Une droite passant par l'origine" },
+                    { q: "Quelle est la forme générale d'une fonction affine ?", options: ["f(x) = a * x + b", "f(x) = a * x", "f(x) = a / x"], correct: "f(x) = a * x + b" },
+                    { q: "Dans la formule f(x) = ax + b, comment s'appelle le coefficient 'a' ?", options: ["Le coefficient directeur", "L'ordonnée à l'origine", "L'antécédent initial"], correct: "Le coefficient directeur" },
+                    { q: "Dans la formule f(x) = ax + b, comment s'appelle le coefficient 'b' ?", options: ["L'ordonnée à l'origine", "Le coefficient directeur", "La pente de base"], correct: "L'ordonnée à l'origine" },
+                    { q: "Par quel type de tracé graphique est représentée une fonction affine ?", options: ["Une droite", "Une courbe", "Un cercle"], correct: "Une droite" },
+                    { q: "Une fonction constante est une fonction affine où :", options: ["a = 0", "b = 0", "x = 0"], correct: "a = 0" },
+                    { q: "Si f(x) = -3x, de quel type de fonction s'agit-il ?", options: ["Linéaire", "Affine non linéaire", "Constante"], correct: "Linéaire" },
+                    { q: "Si f(x) = 2x + 5, quelle est l'ordonnée à l'origine ?", options: ["5", "2", "-5"], correct: "5" }
+                ]
+            }
+        }},
+        histoire: { title: "📜 Histoire-Géographie", color: "#c0392b", themes: {
+            guerre1: { 
+                title: "La Première Guerre Mondiale (1914-1918)", 
+                course: [
+                    { term: "Guerre totale", def: "Mobilisation de l'ensemble des ressources économiques, humaines et technologiques." }
+                ], 
+                questions: [
+                    { q: "Pendant quelles années s'est déroulée la Première Guerre mondiale ?", options: ["1914-1918", "1939-1945", "1916-1920"], correct: "1914-1918" },
+                    { q: "En quelle année s'est déroulée la terrible bataille de Verdun ?", options: ["1916", "1914", "1918"], correct: "1916" },
+                    { q: "Quel jour précis est signé l'armistice de la Grande Guerre ?", options: ["11 novembre 1918", "8 mai 1945", "14 juillet 1919"], correct: "11 novembre 1918" },
+                    { q: "Comment appelait-on les soldats français envoyés au front dans les tranchées ?", options: ["Les Poilus", "Les FFI", "Les Partisans"], correct: "Les Poilus" },
+                    { q: "Quel événement déclenche le début de la guerre en été 1914 ?", options: ["L'assassinat de François-Ferdinand", "L'invasion de la Pologne", "Le krach boursier"], correct: "L'assassinat de François-Ferdinand" },
+                    { q: "Quel pays rejoint l'Entente en 1917, changeant le cours de la guerre ?", options: ["Les États-Unis", "L'Italie", "L'Espagne"], correct: "Les États-Unis" },
+                    { q: "Quel traité de paix officiel est signé en 1919 pour régler le sort de la guerre ?", options: ["Le traité de Versailles", "Le traité de Paris", "Les accords de Munich"], correct: "Le traité de Versailles" },
+                    { q: "Quel nom donne-t-on au génocide subi par le peuple arménien en 1915 ?", options: ["Le génocide arménien", "La Shoah", "Le Holodomor"], correct: "Le génocide arménien" },
+                    { q: "Qui prend le pouvoir en Russie lors des révolutions de 1917 ?", options: ["Les Bolcheviks (Lénine)", "Le Tsar Nicolas II", "Staline"], correct: "Les Bolcheviks (Lénine)" },
+                    { q: "Quel type de guerre succède à la guerre de mouvement dès la fin 1914 ?", options: ["La guerre de position (tranchées)", "La guerre éclair", "La guerre civile"], correct: "La guerre de position (tranchées)" }
+                ] 
+            },
+            guerre2: {
+                title: "La Seconde Guerre Mondiale (1939-1945)",
+                course: [
+                    { term: "Guerre d'anéantissement", def: "Guerre visant la destruction totale des capacités militaires et des populations de l'ennemi." }
+                ],
+                questions: [
+                    { q: "Quelles sont les dates de la Seconde Guerre mondiale en Europe ?", options: ["1939-1945", "1914-1918", "1940-1946"], correct: "1939-1945" },
+                    { q: "Quel dictateur dirige l'Allemagne nazie à partir de 1933 ?", options: ["Adolf Hitler", "Benito Mussolini", "Joseph Staline"], correct: "Adolf Hitler" },
+                    { q: "En quelle année l'Allemagne envahit-elle la Pologne, déclenchant le conflit ?", options: ["1939", "1940", "1938"], correct: "1939" },
+                    { q: "Quelle base navale américaine est attaquée par surprise par le Japon en décembre 1941 ?", options: ["Pearl Harbor", "Midway", "Hiroshima"], correct: "Pearl Harbor" },
+                    { q: "Quelle grande bataille urbaine marque le tournant de la guerre à l'Est en 1942-1943 ?", options: ["Stalingrad", "Berlin", "Moscou"], correct: "Stalingrad" },
+                    { q: "Quel jour a eu lieu le grand débarquement allié en Normandie ?", options: ["6 juin 1944", "8 mai 1945", "15 août 1944"], correct: "6 juin 1944" },
+                    { q: "Quel terme désigne l'extermination systématique et industrielle des Juifs d'Europe ?", options: ["La Shoah", "Le Goulag", "La Relocalisation"], correct: "La Shoah" },
+                    { q: "Quelle conférence réunit de Gaulle, Churchill et Roosevelt pour l'après-guerre ?", options: ["Yalta", "Versailles", "Berlin"], correct: "Yalta" },
+                    { q: "Sur quelles villes du Japon sont larguées les bombes atomiques en août 1945 ?", options: ["Hiroshima et Nagasaki", "Tokyo et Kyoto", "Osaka et Okinawa"], correct: "Hiroshima et Nagasaki" },
+                    { q: "Quelle organisation internationale est créée en 1945 pour maintenir la paix ?", options: ["L'ONU", "La SDN", "L'OTAN"], correct: "L'ONU" }
+                ]
+            },
+            vichy: {
+                title: "Le Régime de Vichy & la Résistance",
+                course: [
+                    { term: "Régime de Vichy", def: "Gouvernement autoritaire et collaborateur dirigé par Pétain (1940-1944)." }
+                ],
+                questions: [
+                    { q: "Quel maréchal dirige l'État français et s'engage dans la collaboration ?", options: ["Philippe Pétain", "Charles de Gaulle", "Jean Moulin"], correct: "Philippe Pétain" },
+                    { q: "Depuis quelle ville le général de Gaulle lance-t-il son appel le 18 juin 1940 ?", options: ["Londres", "Paris", "Vichy"], correct: "Londres" },
+                    { q: "Quelle est la nouvelle devise officielle de la France sous le Régime de Vichy ?", options: ["Travail, Famille, Patrie", "Liberté, Égalité, Fraternité", "Paix, Pain, Liberté"], correct: "Travail, Famille, Patrie" },
+                    { q: "Qui fut chargé par de Gaulle d'unifier les mouvements de Résistance intérieure (CNR) ?", options: ["Jean Moulin", "Philippe Leclerc", "Pierre Laval"], correct: "Jean Moulin" },
+                    { q: "Quel nom porte la rafle de Juifs à Paris en juillet 1942 par la police française ?", options: ["La rafle du Vel' d'Hiv'", "La rafle de Marseille", "L'opération rousse"], correct: "La rafle du Vel' d'Hiv'" },
+                    { q: "Qu'est-ce que le STO mis en place par Vichy pour aider l'Allemagne ?", options: ["Service du Travail Obligatoire", "Système de Transport Ouvrier", "Service Tactique de l'Ouest"], correct: "Service du Travail Obligatoire" },
+                    { q: "Comment appelait-on les groupes de résistants cachés dans les zones montagneuses ?", options: ["Le Maquis", "La Milice", "Les tranchées"], correct: "Le Maquis" },
+                    { q: "Quelle organisation paramilitaire française aidait la Gestapo à traquer les résistants ?", options: ["La Milice", "Les FFI", "La police d'élite"], correct: "La Milice" },
+                    { q: "En quelle année Paris est-elle libérée de l'occupation nazie ?", options: ["1944", "1945", "1943"], correct: "1944" },
+                    { q: "Comment de Gaulle nomme-t-il le gouvernement provisoire créé en 1944 ?", options: ["Le GPRF", "Le Régime républicain", "Le CNR"], correct: "Le GPRF" }
+                ]
+            }
+        }},
+        physique: { title: "🧪 Physique-Chimie", color: "#16a085", themes: {
+            matiere: { 
+                title: "Organisation de la matière (Atomes & Ions)", 
+                course: [
+                    { term: "Atome", def: "Constitué d'un noyau central (protons, neutrons) et d'un nuage d'électrons." }
+                ], 
+                questions: [
+                    { q: "Quelle est la charge électrique globale d'un atome sain ?", options: ["Neutre", "Positive", "Négative"], correct: "Neutre" },
+                    { q: "Quelles particules chargées négativement gravitent autour du noyau ?", options: ["Électrons", "Protons", "Neutrons"], correct: "Électrons" },
+                    { q: "Comment s'appelle un atome qui a gagné ou perdu un ou plusieurs électrons ?", options: ["Un ion", "Une molécule", "Un isotope"], correct: "Un ion" },
+                    { q: "Quelle est la charge électrique du noyau d'un atome ?", options: ["Positive", "Négative", "Neutre"], correct: "Positive" },
+                    { q: "Comment appelle-t-on spécifiquement un ion de charge positive ?", options: ["Un cation", "Un anion", "Un positon"], correct: "Un cation" },
+                    { q: "Comment appelle-t-on spécifiquement un ion de charge négative ?", options: ["Un anion", "Un cation", "Un électron libre"], correct: "Un anion" },
+                    { q: "Quelles particules composent le noyau de l'atome (les nucléons) ?", options: ["Protons et Neutrons", "Protons et Électrons", "Neutrons et Électrons"], correct: "Protons et Neutrons" },
+                    { q: "Quel test permet de détecter la présence d'ions chlorure dans une solution ?", options: ["Le nitrate d'argent", "La soude", "Le test à la flamme"], correct: "Le nitrate d'argent" },
+                    { q: "Quel précipité de couleur obtient-on en mélangeant des ions Cuivre II avec de la soude ?", options: ["Bleu", "Vert", "Blanc"], correct: "Bleu" },
+                    { q: "Si un atome de chlore gagne un électron, quelle est la formule de l'ion formé ?", options: ["Cl-", "Cl+", "Cl2"], correct: "Cl-" }
+                ] 
+            },
+            mecanique: {
+                title: "Mouvements et Gravitation",
+                course: [
+                    { term: "Poids (P)", def: "Force d'attraction gravitationnelle exercée par un astre, s'exprime en Newtons (N)." }
+                ],
+                questions: [
+                    { q: "Quelle relation mathématique relie le Poids (P), la Masse (m) et la Pesanteur (g) ?", options: ["P = m * g", "P = m / g", "P = g / m"], correct: "P = m * g" },
+                    { q: "Quelle grandeur physique reste identique pour un objet sur Terre ou sur la Lune ?", options: ["La masse", "Le poids", "La force gravitationnelle"], correct: "La masse" },
+                    { q: "Quelle est l'unité officielle de mesure du Poids (P) ?", options: ["Le Newton (N)", "Le Kilogramme (kg)", "Le Joule (J)"], correct: "Le Newton (N)" },
+                    { q: "Quelle est l'unité officielle de la masse (m) dans le système international ?", options: ["Le Kilogramme (kg)", "Le Gramme (g)", "Le Newton (N)"], correct: "Le Kilogramme (kg)" },
+                    { q: "Quel appareil de mesure utilise-t-on pour mesurer la valeur d'une force ou d'un Poids ?", options: ["Un dynamomètre", "Une balance", "Un voltmètre"], correct: "Un dynamomètre" },
+                    { q: "Comment qualifie-t-on le mouvement d'un objet dont la vitesse augmente au cours du temps ?", options: ["Accéléré", "Ralenti", "Uniforme"], correct: "Accéléré" },
+                    { q: "Comment qualifie-t-on le mouvement d'un objet dont la vitesse reste constante ?", options: ["Uniforme", "Accéléré", "Rectiligne"], correct: "Uniforme" },
+                    { q: "Quelle est la trajectoire d'un objet effectuant un mouvement circulaire ?", options: ["Un cercle", "Une droite", "Une ligne brisée"], correct: "Un cercle" },
+                    { q: "Quelle force retient les planètes en orbite stable autour du Soleil ?", options: ["La gravitation universelle", "La force magnétique", "La friction de l'air"], correct: "La gravitation universelle" },
+                    { q: "Sur Terre, l'intensité de la pesanteur g est d'environ :", options: ["9,8 N/kg", "1,6 N/kg", "100 N/kg"], correct: "9,8 N/kg" }
+                ]
+            },
+            acidite: {
+                title: "Acides, Bases et échelle de pH",
+                course: [
+                    { term: "pH", def: "Potentiel Hydrogène, mesure de l'acidité d'une solution entre 0 et 14." }
+                ],
+                questions: [
+                    { q: "Quelle est la valeur exacte du pH d'une solution dite neutre ?", options: ["7", "0", "14"], correct: "7" },
+                    { q: "Une solution dont le pH est égal à 3 est qualifiée de :", options: ["Acide", "Basique", "Neutre"], correct: "Acide" },
+                    { q: "Une solution dont le pH est égal à 11 est qualifiée de :", options: ["Basique", "Acide", "Neutre"], correct: "Basique" },
+                    { q: "Quel ion est responsable du caractère acide d'une solution ?", options: ["L'ion hydrogène H+", "L'ion hydroxyde HO-", "L'ion chlorure Cl-"], correct: "L'ion hydrogène H+" },
+                    { q: "Quel ion est responsable du caractère basique d'une solution ?", options: ["L'ion hydroxyde HO-", "L'ion hydrogène H+", "L'ion sodium Na+"], correct: "L'ion hydroxyde HO-" },
+                    { q: "Que se passe-t-on lorsqu'on ajoute de l'eau pure à une solution acide (dilution) ?", options: ["Son pH augmente vers 7", "Son pH diminue vers 0", "Son pH reste identique"], correct: "Son pH augmente vers 7" },
+                    { q: "Quel outil utilise-t-on au laboratoire pour mesurer précisément la valeur d'un pH ?", options: ["Le pH-mètre", "Le papier pH", "Le thermomètre"], correct: "Le pH-mètre" },
+                    { q: "Quel produit ménager très courant est un exemple classique de base forte ?", options: ["La soude (ou l'eau de Javel)", "Le jus de citron", "Le vinaigre blanc"], correct: "La soude (ou l'eau de Javel)" },
+                    { q: "Quel danger présente une solution acide ou basique très concentrée ?", options: ["Elle est corrosive", "Elle est inflammable", "Elle est radioactive"], correct: "Elle est corrosive" },
+                    { q: "Si on dilue une base, son pH va se rapprocher de quelle valeur ?", options: ["7", "14", "0"], correct: "7" }
+                ]
+            }
+        }},
+        svt: { title: "🌱 SVT", color: "#27ae60", themes: {
+            genetique: { 
+                title: "Génétique et Hérédité", 
+                course: [
+                    { term: "Information génétique", def: "Contenue dans le noyau des cellules, portée par les chromosomes composés d'ADN." }
+                ], 
+                questions: [
+                    { q: "Où se situe l'information génétique héréditaire dans une cellule ?", options: ["Dans le noyau", "Dans le cytoplasme", "Sur la membrane"], correct: "Dans le noyau" },
+                    { q: "Combien de chromosomes comporte une cellule humaine non reproductrice ?", options: ["46 (23 paires)", "23 au total", "48 (24 paires)"], correct: "46 (23 paires)" },
+                    { q: "Quels sont les chromosomes sexuels d'un individu de sexe masculin ?", options: ["XY", "XX", "YY"], correct: "XY" },
+                    { q: "Quels sont les chromosomes sexuels d'une femme ?", options: ["XX", "XY", "YY"], correct: "XX" },
+                    { q: "Quelle molécule en forme de double hélice compose les chromosomes ?", options: ["L'ADN", "Une protéine", "Le glucose"], correct: "L'ADN" },
+                    { q: "Comment appelle-t-on une portion de chromosome codant pour un caractère précis ?", options: ["Un gène", "Un allèle", "Une cellule"], correct: "Un gène" },
+                    { q: "Comment nomme-t-on les différentes versions d'un même gène ?", options: ["Les allèles", "Les phénotypes", "Les caryotypes"], correct: "Les allèles" },
+                    { q: "Comment s'appelle la technique consistant à photographier et classer les chromosomes ?", options: ["Le caryotype", "Le génotype", "La mitose"], correct: "Le caryotype" },
+                    { q: "Quelle anomalie chromosomique est caractérisée par 3 chromosomes sur la paire 21 ?", options: ["La trisomie 21", "Le syndrome de Turner", "L'anémie"], correct: "La trisomie 21" },
+                    { q: "Combien de chromosomes possèdent les cellules reproductrices humaines (gamètes) ?", options: ["23 chromosomes", "46 chromosomes", "0 chromosome"], correct: "23 chromosomes" }
+                ] 
+            },
+            immunologie: {
+                title: "Le système immunitaire (Microbiote & Défenses)",
+                course: [
+                    { term: "Leucocytes", def: "Globules blancs chargés de défendre l'organisme contre les pathogènes." }
+                ],
+                questions: [
+                    { q: "Comment appelle-t-on les micro-organismes capables de provoquer une maladie ?", options: ["Pathogènes", "Microbiotes", "Bénéfiques"], correct: "Pathogènes" },
+                    { q: "Quels sont les composants cellulaires du sang responsables de la défense immunitaire ?", options: ["Les leucocytes (globules blancs)", "Les hématies (globules rouges)", "Les plaquettes"], correct: "Les leucocytes (globules blancs)" },
+                    { q: "Quelle réaction rapide de l'organisme se manifeste par de la rougeur, chaleur et gonflement ?", options: ["La réaction inflammatoire", "La production d'anticorps", "La vaccination"], correct: "La réaction inflammatoire" },
+                    { q: "Comment appelle-t-on le mécanisme où un globule blanc englobe et digère un microbe ?", options: ["La phagocytose", "La mitose", "La synthèse d'antigènes"], correct: "La phagocytose" },
+                    { q: "Quelles molécules spécifiques sont produites par les lymphocytes B pour neutraliser les microbes ?", options: ["Les anticorps", "Les antigènes", "Les antibiotiques"], correct: "Les anticorps" },
+                    { q: "Contre quel type de micro-organismes les antibiotiques sont-ils exclusivement efficaces ?", options: ["Les bactéries", "Les virus", "Les champignons"], correct: "Les bactéries" },
+                    { q: "Quel type de traitement médical préventif permet d'acquérir une mémoire immunitaire ?", options: ["La vaccination", "L'antibiotique", "L'antiseptique"], correct: "La vaccination" },
+                    { q: "Comment appelle-t-on l'ensemble des micro-organismes hébergés sainement par notre corps ?", options: ["Le microbiote", "L'infection", "La septicémie"], correct: "Le microbiote" },
+                    { q: "Qu'est-ce que l'asepsie au laboratoire ou à l'hôpital ?", options: ["Méthode préventive visant à empêcher l'introduction de microbes", "La destruction des microbes installés", "L'injection d'un sérum"], correct: "Méthode préventive visant à empêcher l'introduction de microbes" },
+                    { q: "Qu'est-ce qu'une infection ?", options: ["La multiplication des microbes dans l'organisme", "La simple entrée des microbes", "La guérison cutanée"], correct: "La multiplication des microbes dans l'organisme" }
+                ]
+            },
+            evolution: {
+                title: "Évolution des espèces de la Terre",
+                course: [
+                    { term: "Crise biologique", def: "Extinction massive et rapide d'un grand nombre d'espèces à l'échelle planétaire." }
+                ],
+                questions: [
+                    { q: "Depuis combien de temps environ la vie est-elle apparue sur Terre ?", options: ["3,8 milliards d'années", "4,6 milliards d'années", "65 millions d'années"], correct: "3,8 milliards d'années" },
+                    { q: "Quel scientifique célèbre a formulé la théorie de l'évolution par sélection naturelle ?", options: ["Charles Darwin", "Louis Pasteur", "Gregor Mendel"], correct: "Charles Darwin" },
+                    { q: "Quels vestiges d'êtres vivants conservés dans les roches étudie-t-on pour comprendre le passé ?", options: ["Les fossiles", "Les minéraux", "Les sédiments"], correct: "Les fossiles" },
+                    { q: "Comment appelle-t-on la disparition brutale de très nombreuses espèces simultanément ?", options: ["Une crise biologique", "Une dérive génétique", "Une sélection artificielle"], correct: "Une crise biologique" },
+                    { q: "Quelle crise majeure a vu disparaître les dinosaures non-aviens il y a 66 millions d'années ?", options: ["La crise Crétacé-Paléogène", "La crise Permien-Trias", "La glaciation"], correct: "La crise Crétacé-Paléogène" },
+                    { q: "Que partagent deux espèces qui possèdent des caractères anatomiques communs exclusifs ?", options: ["Un ancêtre commun", "Le même environnement", "Le même régime alimentaire"], correct: "Un ancêtre commun" },
+                    { q: "Comment appelle-t-on la représentation graphique sous forme d'arbre des liens de parenté ?", options: ["Un arbre phylogénétique", "Un caryotype linéaire", "Une frise chronologique"], correct: "Un arbre phylogénétique" },
+                    { q: "Quel est le mécanisme conducteur de l'évolution théorisé par Darwin ?", options: ["La sélection naturelle", "La dérive géologique", "La mutation volontaire"], correct: "La sélection naturelle" },
+                    { q: "Par quoi se traduisent les modifications aléatoires de l'ADN à l'origine de nouveaux caractères ?", options: ["Des mutations", "Des sélections", "Des hybridations"], correct: "Des mutations" },
+                    { q: "À quel groupe d'êtres vivants appartient l'Homme moderne (Homo sapiens) ?", options: ["Les Primates", "Les Sauriens", "Les Invertébrés"], correct: "Les Primates" }
+                ]
+            }
+        }}
+    };
+
+    // --- VARIABLES GLOBALES ---
+    let currentSubject = '';
+    let currentTheme = '';
+    let currentMode = ''; 
+    let activeQuizData = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let hasAnswered = false;
+
+    const bodyEl = document.body;
+    const subjectScreenEl = document.getElementById('subject-screen');
+    const themeScreenEl = document.getElementById('theme-screen');
+    const modeScreenEl = document.getElementById('mode-screen');
+    const quizScreenEl = document.getElementById('quiz-screen');
+    const gapScreenEl = document.getElementById('gap-screen');
+    const revisionScreenEl = document.getElementById('revision-screen');
+    const courseScreenEl = document.getElementById('course-screen');
+    const resultScreenEl = document.getElementById('result-screen');
+
+    const flashcardObjectEl = document.getElementById('flashcard-object');
+    const cardQuestionEl = document.getElementById('card-question');
+    const cardAnswerEl = document.getElementById('card-answer');
+
+    // --- NAVIGATION ---
+    function setDarkBackground(subject) {
+        bodyEl.style.backgroundColor = subjectColors[subject] || subjectColors['default'];
+    }
+
+    function showSubjectScreen() {
+        setDarkBackground('default');
+        subjectScreenEl.classList.remove('hidden');
+        themeScreenEl.classList.add('hidden');
+        modeScreenEl.classList.add('hidden');
+        quizScreenEl.classList.add('hidden');
+        gapScreenEl.classList.add('hidden');
+        revisionScreenEl.classList.add('hidden');
+        courseScreenEl.classList.add('hidden');
+        resultScreenEl.classList.add('hidden');
+    }
+
+    function selectSubject(subjectKey) {
+        currentSubject = subjectKey;
+        setDarkBackground(subjectKey);
+        
+        if (subjectKey === 'brevet') {
+            document.getElementById('selected-theme-title').textContent = "Tout le programme officiel de 3ème";
+            currentTheme = 'all_mixed';
+            subjectScreenEl.classList.add('hidden');
+            modeScreenEl.classList.remove('hidden');
+            return;
+        }
+
+        const subjectData = brevetDatabase[subjectKey];
+        document.getElementById('selected-subject-title').textContent = subjectData.title;
+        
+        const container = document.getElementById('themes-buttons-container');
+        container.innerHTML = ''; 
+        
+        for (const [themeKey, themeData] of Object.entries(subjectData.themes)) {
+            const btn = document.createElement('button');
+            btn.className = 'menu-btn';
+            btn.style.backgroundColor = subjectData.color;
+            btn.textContent = themeData.title;
+            btn.onclick = () => selectTheme(themeKey);
+            container.appendChild(btn);
+        }
+        
+        subjectScreenEl.classList.add('hidden');
+        themeScreenEl.classList.remove('hidden');
+    }
+
+    function selectTheme(themeKey) {
+        currentTheme = themeKey;
+        const themeData = brevetDatabase[currentSubject].themes[themeKey];
+        document.getElementById('selected-theme-title').textContent = themeData.title;
+        
+        themeScreenEl.classList.add('hidden');
+        modeScreenEl.classList.remove('hidden');
+    }
+
+    function backToThemes() {
+        if (currentSubject === 'brevet') {
+            showSubjectScreen();
+        } else {
+            modeScreenEl.classList.add('hidden');
+            themeScreenEl.classList.remove('hidden');
+        }
+    }
+
+    function backToModesFromCourse() {
+        courseScreenEl.classList.add('hidden');
+        modeScreenEl.classList.remove('hidden');
+    }
+
+    // --- COMPILATION ET MÉLANGE TOTAL ---
+    function generateActiveData() {
+        if (currentSubject === 'brevet') {
+            let allQuestions = [];
+            let allCourses = [];
+            
+            for (const subKey in brevetDatabase) {
+                if (subKey === 'brevet') continue;
+                for (const thKey in brevetDatabase[subKey].themes) {
+                    const currentThemeData = brevetDatabase[subKey].themes[thKey];
+                    if (currentThemeData.questions) {
+                        allQuestions = allQuestions.concat(currentThemeData.questions);
+                    }
+                    if (currentThemeData.course) {
+                        allCourses = allCourses.concat(currentThemeData.course);
+                    }
+                }
+            }
+
+            // Mélange général Fisher-Yates
+            for (let i = allQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allQuestions[i], allQuestions[j]] = [allQuestions[j], allQuestions[i]];
+            }
+            
+            activeQuizData = allQuestions.slice(0, 10); // Génère un test de 10 questions mixées
+            return allCourses;
+        } else {
+            const themeData = brevetDatabase[currentSubject].themes[currentTheme];
+            activeQuizData = [...themeData.questions];
+            return themeData.course;
+        }
+    }
+
+    function launchModule(mode) {
+        currentMode = mode;
+        const fallbackCourses = generateActiveData();
+        currentQuestionIndex = 0;
+        score = 0;
+        
+        modeScreenEl.classList.add('hidden');
+        
+        if (mode === 'course') {
+            document.getElementById('course-title').textContent = (currentSubject === 'brevet') ? "📖 Synthèse Complète Multi-Matières" : "📖 Fiche : " + brevetDatabase[currentSubject].themes[currentTheme].title;
+            const area = document.getElementById('course-content-area');
+            area.innerHTML = '';
+            
+            const itemsToShow = (currentSubject === 'brevet') ? fallbackCourses.slice(0, 15) : fallbackCourses;
+
+            itemsToShow.forEach(item => {
+                const block = document.createElement('div');
+                block.className = 'course-block';
+                block.innerHTML = `<div class="course-term">${item.term}</div><div class="course-definition">${item.def}</div>`;
+                area.appendChild(block);
+            });
+            courseScreenEl.classList.remove('hidden');
+        } 
+        else if (mode === 'quiz') {
+            document.getElementById('quiz-title').textContent = (currentSubject === 'brevet') ? "🏆 Évaluation Brevet Blanc Général" : brevetDatabase[currentSubject].themes[currentTheme].title;
+            document.getElementById('total-questions-num').textContent = activeQuizData.length;
+            document.getElementById('live-score').textContent = score;
+            quizScreenEl.classList.remove('hidden');
+            showQuestion();
+        } 
+        else if (mode === 'gap') {
+            document.getElementById('gap-title').textContent = (currentSubject === 'brevet') ? "✏️ Texte à trous global" : "✏️ Compléter : " + brevetDatabase[currentSubject].themes[currentTheme].title;
+            document.getElementById('gap-total-num').textContent = activeQuizData.length;
+            document.getElementById('live-score-gap').textContent = score;
+            gapScreenEl.classList.remove('hidden');
+            showGapQuestion();
+        } 
+        else {
+            document.getElementById('revision-title').textContent = (currentSubject === 'brevet') ? "🃏 Flashcards Globales" : brevetDatabase[currentSubject].themes[currentTheme].title;
+            document.querySelector('#revision-screen .quiz-stats .stat-badge').innerHTML = `Carte : <span id="card-index-num">1</span> / ${activeQuizData.length}`;
+            revisionScreenEl.classList.remove('hidden');
+            showCard();
+        }
+    }
+
+    // --- LOGIQUE DU QCM AVEC MÉLANGE ALÉATOIRE DES SOLUTIONS ---
+    function showQuestion() {
+        hasAnswered = false;
+        document.getElementById('current-question-num').textContent = currentQuestionIndex + 1;
+        let currentQuestion = activeQuizData[currentQuestionIndex];
+        document.getElementById('question-text').textContent = currentQuestion.q;
+        
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+        document.getElementById('skip-button').classList.remove('hidden');
+        document.getElementById('next-button').classList.add('hidden');
+        
+        // Copie locale et mélange strict des boutons de choix (Fisher-Yates)
+        let randomizedOptions = [...currentQuestion.options];
+        for (let i = randomizedOptions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [randomizedOptions[i], randomizedOptions[j]] = [randomizedOptions[j], randomizedOptions[i]];
+        }
+        
+        randomizedOptions.forEach(option => {
+            const button = document.createElement('button');
+            button.className = 'option-btn';
+            button.textContent = option;
+            button.onclick = () => checkAnswer(button, option, currentQuestion.correct);
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function checkAnswer(selectedButton, selectedOption, correctOption) {
+        if (hasAnswered) return;
+        hasAnswered = true;
+        const buttons = document.querySelectorAll('.options-container .option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+        
+        if (selectedOption.trim().toLowerCase() === correctOption.trim().toLowerCase()) {
+            selectedButton.classList.add('correct');
+            score++;
+            document.getElementById('live-score').textContent = score;
+        } else {
+            selectedButton.classList.add('incorrect');
+            buttons.forEach(btn => { 
+                if (btn.textContent.trim().toLowerCase() === correctOption.trim().toLowerCase()) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+        document.getElementById('skip-button').classList.add('hidden');
+        document.getElementById('next-button').classList.remove('hidden');
+    }
+
+    function skipQuestion() {
+        if (hasAnswered) return;
+        hasAnswered = true;
+        const currentQuestion = activeQuizData[currentQuestionIndex];
+        document.querySelectorAll('.options-container .option-btn').forEach(btn => {
+            btn.disabled = true;
+            if (btn.textContent.trim().toLowerCase() === currentQuestion.correct.trim().toLowerCase()) btn.classList.add('correct');
+        });
+        document.getElementById('skip-button').classList.add('hidden');
+        document.getElementById('next-button').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < activeQuizData.length) showQuestion();
+        else showResults();
+    }
+
+    // --- MODE TEXTE À TROUS ---
+    function showGapQuestion() {
+        hasAnswered = false;
+        document.getElementById('gap-question-num').textContent = currentQuestionIndex + 1;
+        let currentQuestion = activeQuizData[currentQuestionIndex];
+        
+        document.getElementById('gap-question-text').textContent = currentQuestion.q;
+        const inputEl = document.getElementById('gap-user-input');
+        inputEl.value = '';
+        inputEl.disabled = false;
+        inputEl.style.borderColor = "#bdc3c7";
+        
+        document.getElementById('gap-feedback-msg').textContent = '';
+        document.getElementById('gap-validate-btn').classList.remove('hidden');
+        document.getElementById('gap-next-btn').classList.add('hidden');
+    }
+
+    function validateGapAnswer() {
+        if (hasAnswered) return;
+        hasAnswered = true;
+        
+        const inputEl = document.getElementById('gap-user-input');
+        inputEl.disabled = true;
+        
+        const userAns = inputEl.value.trim().toLowerCase();
+        const correctAns = activeQuizData[currentQuestionIndex].correct.trim().toLowerCase();
+        const feedbackEl = document.getElementById('gap-feedback-msg');
+        
+        if (userAns === correctAns) {
+            feedbackEl.textContent = "Excellent ! Bonne réponse. ✨";
+            feedbackEl.style.color = "var(--success-color)";
+            inputEl.style.borderColor = "var(--success-color)";
+            score++;
+            document.getElementById('live-score-gap').textContent = score;
+        } else {
+            feedbackEl.textContent = `Dommage ! La réponse attendue était : ${activeQuizData[currentQuestionIndex].correct}`;
+            feedbackEl.style.color = "var(--error-color)";
+            inputEl.style.borderColor = "var(--error-color)";
+        }
+        
+        document.getElementById('gap-validate-btn').classList.add('hidden');
+        document.getElementById('gap-next-btn').classList.remove('hidden');
+    }
+
+    function nextGapQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < activeQuizData.length) showGapQuestion();
+        else showResults();
+    }
+
+    // --- MODE FLASHCARDS ---
+    function showCard() {
+        flashcardObjectEl.classList.remove('flipped');
+        setTimeout(() => {
+            document.getElementById('card-index-num').textContent = currentQuestionIndex + 1;
+            let currentCard = activeQuizData[currentQuestionIndex];
+            cardQuestionEl.textContent = currentCard.q;
+            cardAnswerEl.textContent = currentCard.correct;
+        }, 150);
+    }
+
+    function toggleCardFlip() {
+        flashcardObjectEl.classList.toggle('flipped');
+    }
+
+    function nextCard() {
+        currentQuestionIndex = (currentQuestionIndex + 1) % activeQuizData.length;
+        showCard();
+    }
+
+    function prevCard() {
+        currentQuestionIndex = (currentQuestionIndex - 1 + activeQuizData.length) % activeQuizData.length;
+        showCard();
+    }
+
+    // --- FIN DE SÉANCE ET BILAN ---
+    function showResults() {
+        quizScreenEl.classList.add('hidden');
+        gapScreenEl.classList.add('hidden');
+        resultScreenEl.classList.remove('hidden');
+        
+        let totalQ = activeQuizData.length;
+        document.getElementById('score').textContent = `${score} / ${totalQ}`;
+        
+        let ratio = score / totalQ;
+        const msgEl = document.getElementById('feedback-message');
+        
+        if (ratio === 1) msgEl.textContent = "Félicitations ! Un sans-faute parfait sur cette évaluation de niveau 3ème. Tu es prêt pour décrocher la mention Très Bien au Brevet ! 🏆🔥";
+        else if (ratio >= 0.7) msgEl.textContent = "Excellent résultat ! Les notions de cours sont très bien assimilées. Continue comme ça pour l'examen officiel. ⚡";
+        else if (ratio >= 0.5) msgEl.textContent = "Tu as obtenu la moyenne, le socle de connaissances est présent. Relis les quelques fiches de cours pour effacer les dernières hésitations ! 📈";
+        else msgEl.textContent = "C'est un bon entraînement. Pas de panique : relis calmement la fiche de révision associée à ce thème et retente ta chance pour améliorer ton score. 💪";
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Nebula Studio - Quantum Edition</title>
+    <style>
+        :root {
+            /* Palette Espace Cyber & Cristal Transparent */
+            --glass-pure: rgba(255, 255, 255, 0.02);
+            --glass-highlight: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            
+            --text-pure: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            --neon-cyan: #00f2fe;
+            --neon-magenta: #ff007f;
+            --neon-purple: #9b51e0;
+            
+            --success-glow: rgba(0, 230, 118, 0.25);
+            --error-glow: rgba(255, 23, 68, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* FOND MULTI-NÉBULEUSES ANIMÉ */
+        body {
+            background: radial-gradient(circle at 50% 50%, #020010 0%, #050515 100%);
+            color: var(--text-pure);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            inset: -50%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 242, 254, 0.35) 0%, transparent 40%),
+                radial-gradient(circle at 75% 25%, rgba(255, 0, 127, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 35% 75%, rgba(155, 81, 224, 0.35) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 140, 0.15) 0%, transparent 35%);
+            filter: blur(140px);
+            z-index: 1;
+            animation: nebulaStream 25s linear infinite alternate;
+        }
+
+        /* EFFET GRILLE CYBER / FUTURISTE */
+        .cyber-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center;
+            z-index: 2;
+            transform: perspective(500px) rotateX(45deg) scale(2);
+            opacity: 0.4;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 40px; }
+        }
+
+        @keyframes nebulaStream {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.2) rotate(8deg); }
+        }
+
+        .stars {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.3) 2px, transparent 45%),
+                radial-gradient(#00f2fe, rgba(0,242,254,.2) 1.5px, transparent 30%);
+            background-size: 200px 200px, 280px 280px;
+            opacity: 0.6;
+            z-index: 3;
+        }
+
+        /* INTERFACE LIQUID GLASS */
+        .liquid-glass {
+            background: var(--glass-pure);
+            backdrop-filter: blur(60px) saturate(240%);
+            -webkit-backdrop-filter: blur(60px) saturate(240%);
+            border: 1px solid var(--glass-border);
+            border-radius: 36px;
+            box-shadow: 
+                0 30px 70px rgba(0, 0, 0, 0.6),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5),
+                inset 0 20px 40px rgba(255, 255, 255, 0.02);
+        }
+
+        .dashboard {
+            width: 94%;
+            max-width: 950px;
+            height: 640px;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* BARRE LATÉRALE - SKELETON */
+        .sidebar {
+            border-right: 1px solid var(--glass-border);
+            padding: 35px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .brand {
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff 0%, var(--neon-cyan) 50%, var(--neon-magenta) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            display: none;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+        }
+
+        .nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-link {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-align: left;
+            opacity: 0.3;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link.unlocked {
+            opacity: 0.7;
+            pointer-events: auto;
+        }
+
+        .nav-link.active {
+            opacity: 1;
+            color: #fff;
+            background: var(--glass-highlight);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+            text-shadow: 0 0 8px rgba(255,255,255,0.3);
+        }
+
+        /* PANNEAU DE CONTENU PRINCIPAL */
+        .main-content {
+            padding: 45px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .view-panel {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+            animation: panelSlideIn 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .view-panel.active {
+            display: flex;
+        }
+
+        @keyframes panelSlideIn {
+            from { opacity: 0; transform: translateX(12px) scale(0.99); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        /* BLOC ENREGISTREMENT ET INPUT */
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .glass-input {
+            width: 100%;
+            max-width: 340px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            padding: 16px 22px;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+        }
+
+        .char-counter {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: -12px;
+        }
+
+        /* GRIDS COMPOSANTS CARDS */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .subject-grid {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* CARTES CRISTAL COGNITIVES */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--glass-border);
+            padding: 22px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            text-align: left;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--neon-cyan);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 242, 254, 0.18);
+        }
+
+        /* THEMATIQUE GRADIENT SPÉCIFIQUE DIFFICULTÉS */
+        .glass-card.diff-easy:hover { border-color: #00e676; box-shadow: 0 12px 25px rgba(0,230,118,0.18); }
+        .glass-card.diff-medium:hover { border-color: #ffb300; box-shadow: 0 12px 25px rgba(255,179,0,0.18); }
+        .glass-card.diff-hard:hover { border-color: #ff5252; box-shadow: 0 12px 25px rgba(255,82,82,0.18); }
+        .glass-card.diff-extreme:hover { border-color: var(--neon-magenta); box-shadow: 0 12px 25px rgba(255,0,127,0.22); }
+
+        .glass-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .glass-card p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* ACTION FOOTER COUCHE EN BAS */
+        .footer-flow {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+        }
+
+        .action-link {
+            background: var(--glass-highlight);
+            border: 1px solid var(--glass-border);
+            color: var(--text-pure);
+            padding: 13px 26px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-link:hover {
+            background: rgba(255, 255, 255, 0.22);
+            border-color: #fff;
+            box-shadow: 0 0 12px rgba(255,255,255,0.15);
+        }
+
+        /* COMPOSANT FLASHCARDS 3D ENGINE */
+        .card-box {
+            perspective: 1200px;
+            width: 100%;
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+        }
+
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.15);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .card-side.back {
+            transform: rotateY(180deg);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--neon-cyan);
+            border-color: rgba(0, 242, 254, 0.3);
+        }
+
+        /* STRUCTURE CHOIX MULTIPLES (QCM) */
+        .quiz-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-item {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            text-align: left;
+            color: #fff;
+            font-size: 0.98rem;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-item:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .quiz-item.right {
+            background: var(--success-glow) !important;
+            border-color: #00e676 !important;
+            text-shadow: 0 0 8px rgba(0,230,118,0.4);
+        }
+
+        .quiz-item.false {
+            background: var(--error-glow) !important;
+            border-color: #ff1744 !important;
+            text-shadow: 0 0 8px rgba(255,23,68,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+    <div class="cyber-grid"></div>
+
+    <div class="dashboard liquid-glass">
+        
+        <nav class="sidebar">
+            <div>
+                <div class="brand">NEBULA CONTROL</div>
+                <div id="sidebar-user" class="user-badge"></div>
+                <div class="nav-group">
+                    <button id="nav-btn-name" class="nav-link unlocked active">👤 Identification</button>
+                    <button id="nav-btn-modes" class="nav-link">🔄 Mode de Jeu</button>
+                    <button id="nav-btn-difficulty" class="nav-link">⚡ Niveau Critique</button>
+                    <button id="nav-btn-themes" class="nav-link">🪐 Sujet d'Étude</button>
+                </div>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; letter-spacing: 1px;">QUANTUM CORE v2.6</div>
+        </nav>
+
+        <main class="main-content">
+
+            <div id="screen-name" class="view-panel active">
+                <h2>Initialisation Pilote</h2>
+                <p class="desc">Veuillez entrer votre identifiant d'accès (limite stricte de 20 caractères max).</p>
+                <div class="input-wrapper">
+                    <input type="text" id="username-field" class="glass-input" placeholder="Saisir l'identifiant..." maxlength="20" autocomplete="off" oninput="updateCharCounter()">
+                    <div id="char-counter" class="char-counter">0 / 20 caractères</div>
+                    <button class="action-link" style="background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); border: none; padding: 15px 35px;" onclick="submitName()">Autoriser les Accès</button>
+                </div>
+            </div>
+
+            <div id="screen-modes" class="view-panel">
+                <h2>Sélection du Mode</h2>
+                <p class="desc">Déterminez l'architecture cognitive pour le traitement des données.</p>
+                <div class="grid-cards">
+                    <div class="glass-card" onclick="submitMode('flashcards')">
+                        <h3>Cartes Flashcards</h3>
+                        <p>Analyse libre matricielle via exploration libre Recto/Verso synchrone.</p>
+                    </div>
+                    <div class="glass-card" onclick="submitMode('quiz')">
+                        <h3>Évaluation QCM</h3>
+                        <p>Validation par QCM adaptatifs sous protocole de notation immédiat.</p>
+                    </div>
+                </div>
+                <div class="footer-flow">
+                    <button class="action-link" onclick="switchPane('name')">← Identifiant</button>
+                </div>
+            </div>
+
+            <div id="screen-difficulty" class="view-panel">
+                <h2>Seuil de Difficulté</h2>
+                <p class="desc">Définissez l'intensité de complexité et le rythme de l'évaluation.</p>
+                <div class="grid-cards">
+                    <div class="glass-card diff-easy" onclick="submitDifficulty('Facile')">
+                        <h3 style="color:#00e676;">Niveau : Facile</h3>
+                        <p>Données standardisées, idéal pour consolider les bases sans pression.</p>
+                    </div>
+                    <div class="glass-card diff-medium" onclick="submitDifficulty('Moyen')">
+                        <h3 style="color:#ffb300;">Niveau : Moyen</h3>
+                        <p>Questions transversales. Nécessite une bonne vue d'ensemble du Brevet.</p>
+                    </div>
+                    <div class="glass-card diff-hard" onclick="submitDifficulty('Dur')">
+                        <h3 style="color:#ff5252;">Niveau : Dur</h3>
+                        <p>Variations syntaxiques complexes et pièges grammaticaux avancés.</p>
+                    </div>
+                    <div class="glass-card diff-extreme" onclick="submitDifficulty('Extrême')">
+                        <h3 style="color:var(--neon-magenta); text-shadow: 0 0 8px rgba(255,0,127,0.4);">Niveau : EXTRÊME</h3>
+                        <p>Cas limites de la langue française. Réservé aux experts du système.</p>
+                    </div>
+                </div>
+                <div class="footer-flow">
+                    <button class="action-link" onclick="switchPane('modes')">← Modes</button>
+                </div>
+            </div>
+
+            <div id="screen-themes" class="view-panel">
+                <h2>Sujets de Révision</h2>
+                <p class="desc">Choisissez le secteur linguistique à charger dans le simulateur d'examen.</p>
+                <div class="grid-cards subject-grid">
+                    <div class="glass-card" onclick="startSession('Modes')">
+                        <h3>Les Modes Verbaux</h3>
+                        <p>Indicatif, Subjonctif, Conditionnel, Impératif, Infinitif...</p>
+                    </div>
+                    <div class="glass-card" onclick="startSession('Figures')">
+                        <h3>Figures de Style</h3>
+                        <p>Métaphores, oxymores, litotes, métonymies...</p>
+                    </div>
+                    <div class="glass-card" onclick="startSession('Classes')">
+                        <h3>Classes Grammaticales</h3>
+                        <p>Noms, déterminants, adverbes, pronoms, conjonctions...</p>
+                    </div>
+                    <div class="glass-card" onclick="startSession('Fonctions')">
+                        <h3>Fonctions Syntaxiques</h3>
+                        <p>Sujet, COD, COI, compléments circonstanciels...</p>
+                    </div>
+                    <div class="glass-card" onclick="startSession('Temps')">
+                        <h3>Valeurs des Temps</h3>
+                        <p>Présent de vérité générale, imparfait de description...</p>
+                    </div>
+                    <div class="glass-card" onclick="startSession('Logique')">
+                        <h3>Analyse Logique</h3>
+                        <p>Propositions indépendantes, principales, subordonnées...</p>
+                    </div>
+                </div>
+                <div class="footer-flow">
+                    <button class="action-link" onclick="switchPane('difficulty')">← Difficulté</button>
+                </div>
+            </div>
+
+            <div id="screen-game-flashcards" class="view-panel">
+                <h2 id="fc-title">Flashcards</h2>
+                <p class="desc" id="fc-counter">0 / 0</p>
+                <div class="card-box">
+                    <div id="html-card" class="card-inner" onclick="this.classList.toggle('flipped')">
+                        <div class="card-side front" id="fc-front-text">...</div>
+                        <div class="card-side back" id="fc-back-text">...</div>
+                    </div>
+                </div>
+                <div class="footer-flow">
+                    <button class="action-link" onclick="prevCard()">Précédent</button>
+                    <button class="action-link" onclick="exitToDashboard()">Tableau d'étude</button>
+                    <button class="action-link" onclick="nextCard()">Suivant</button>
+                </div>
+            </div>
+
+            <div id="screen-game-quiz" class="view-panel">
+                <h2 id="quiz-title">Quiz Matrix</h2>
+                <p class="desc" id="quiz-counter">Question 1</p>
+                <div style="margin-bottom: 22px; font-size: 1.15rem; font-weight: 500; line-height: 1.4;" id="quiz-question-text">...</div>
+                <div class="quiz-stack" id="quiz-options-box"></div>
+                <div class="footer-flow">
+                    <button class="action-link" onclick="exitToDashboard()">Abandonner</button>
+                    <button class="action-link" id="quiz-next-btn" style="display:none; background:var(--neon-cyan); color:#000; border:none;" onclick="nextQuiz()">Suivant →</button>
+                </div>
+            </div>
+
+            <div id="screen-results" class="view-panel" style="text-align: center; justify-content: center;">
+                <h2 id="results-headline">Analyse Complétée</h2>
+                <p id="results-difficulty-log" style="color:var(--neon-cyan); font-weight:700; font-size:0.9rem; margin-top:5px; text-transform:uppercase;"></p>
+                <div id="score-output" style="font-size: 4.5rem; font-weight: 900; margin: 15px 0; color: var(--neon-magenta); text-shadow:0 0 25px rgba(255,0,127,0.3)">0/0</div>
+                <button class="action-link" style="margin: 0 auto; display: block;" onclick="exitToDashboard()">Retourner au Hub</button>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // BASE DE DONNÉES STRUCTURÉE (10 QUESTIONS PAR THEME X MULTI-NIVEAUX REDÉPLOYÉS)
+        const database = {
+            Modes: {
+                Facile: [
+                    { q: "Identifiez le mode : 'Je <b>pars</b> en vacances.'", a: "Indicatif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : '<b>Pars</b> immédiatement !'", a: "Impératif", alt: ["Indicatif", "Impératif", "Infinitif", "Participe"] },
+                    { q: "Identifiez le mode : 'Il aime <b>partir</b> seul.'", a: "Infinitif", alt: ["Infinitif", "Gérondif", "Participe", "Indicatif"] },
+                    { q: "Identifiez le mode du verbe en gras : 'Soyez <b>gentils</b> avec elle.'", a: "Impératif", alt: ["Indicatif", "Subjonctif", "Impératif", "Conditionnel"] },
+                    { q: "Identifiez le mode : 'Comprenez-<b>moi</b>, ce n'est pas possible.'", a: "Impératif", alt: ["Impératif", "Subjonctif", "Indicatif", "Infinitif"] },
+                    { q: "Identifiez le mode : 'Le soleil <b>brille</b> dans le ciel.'", a: "Indicatif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Écoute <b>la</b> leçon.'", a: "Impératif", alt: ["Indicatif", "Subjonctif", "Impératif", "Participe"] },
+                    { q: "Identifiez le mode : 'Il veut <b>manger</b>.'", a: "Infinitif", alt: ["Infinitif", "Participe", "Gérondif", "Subjonctif"] },
+                    { q: "Identifiez le mode : 'Nous <b>chantons</b> en chorale.'", a: "Indicatif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : '<b>Regarde</b> les étoiles.'", a: "Impératif", alt: ["Impératif", "Indicatif", "Infinitif", "Participe"] }
+                ],
+                Moyen: [
+                    { q: "Identifiez le mode : 'Il faut qu'il <b>parte</b>.'", a: "Subjonctif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Il <b>partirait</b> avec toi si tu le voulais.'", a: "Conditionnel", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'En <b>partant</b>, il ferma la porte.'", a: "Gérondif", alt: ["Participe", "Gérondif", "Infinitif", "Subjonctif"] },
+                    { q: "Identifiez le mode : 'Je ne comprends pas qu'il <b>préfère</b> travailler.'", a: "Subjonctif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Pourriez-<b>vous</b> me passer le sel ?'", a: "Conditionnel", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Il regrette que tu ne <b>puisses</b> pas l'aider.'", a: "Subjonctif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Je souhaite que vous <b>veniez</b>.'", a: "Subjonctif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Si j'avais le temps, je <b>lirais</b>.'", a: "Conditionnel", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Bien qu'il <b>soit</b> tard, il travaille.'", a: "Subjonctif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Nous <b>partirions</b> demain si possible.'", a: "Conditionnel", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] }
+                ],
+                Dur: [
+                    { q: "Identifiez le mode : 'Il <b>serait parti</b> avec toi si tu l’avais voulu.'", a: "Conditionnel", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Infinitif"] },
+                    { q: "Identifiez le mode : 'En <b>courant</b>, il s'est foulé la cheville.'", a: "Gérondif", alt: ["Participe", "Gérondif", "Infinitif", "Indicatif"] },
+                    { q: "Identifiez le mode : 'Il faisait du ski en <b>zigzaguant</b> sur la montagne.'", a: "Gérondif", alt: ["Participe", "Gérondif", "Infinitif", "Indicatif"] },
+                    { q: "Identifiez le mode : 'Avoir <b>passé</b> son diplôme est une véritable fierté.'", a: "Infinitif", alt: ["Infinitif", "Participe", "Gérondif", "Indicatif"] },
+                    { q: "Identifiez le mode : 'Cela <b>aurait été</b> plus simple.'", a: "Conditionnel", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Après son succès, <b>rester</b> le même n'a pas été facile.'", a: "Infinitif", alt: ["Infinitif", "Participe", "Gérondif", "Indicatif"] },
+                    { q: "Identifiez le mode : 'Vous <b>aviez fini</b> sans vous en rendre compte.'", a: "Indicatif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Ils <b>auront compris</b> avant toi.'", a: "Indicatif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Ils <b>auraient compris</b> sans toi.'", a: "Conditionnel", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Il a été puni pour <b>avoir voulu</b> désobéir.'", a: "Infinitif", alt: ["Infinitif", "Participe", "Gérondif", "Subjonctif"] }
+                ],
+                Extrême: [
+                    { q: "Identifiez le mode : '<b>Fût-il</b> le roi, je ne lui obéirais pas.'", a: "Subjonctif", alt: ["Indicatif", "Subjonctif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Les troupes <b>ayant battu</b> en retraite, le calme revint.'", a: "Participe", alt: ["Participe", "Gérondif", "Infinitif", "Subjonctif"] },
+                    { q: "Identifiez le mode : 'Qu'il <b>pleuve</b> ou qu'il vente, j'irai.'", a: "Subjonctif", alt: ["Subjonctif", "Indicatif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode du premier verbe : '<b>Sachant</b> ses limites, il fit attention.'", a: "Participe", alt: ["Participe", "Gérondif", "Infinitif", "Indicatif"] },
+                    { q: "Identifiez le mode : 'Puissiez-<b>vous</b> réussir dans vos projets !'", a: "Subjonctif", alt: ["Subjonctif", "Conditionnel", "Indicatif", "Impératif"] },
+                    { q: "Identifiez le mode : 'Il n'est pas certain qu'elle <b>connaisse</b> la vérité.'", a: "Subjonctif", alt: ["Subjonctif", "Indicatif", "Conditionnel", "Impératif"] },
+                    { q: "Identifiez le mode : 'Tout <b>en sachant</b> le danger, il y alla.'", a: "Gérondif", alt: ["Gérondif", "Participe", "Infinitif", "Subjonctif"] },
+                    { q: "Identifiez le mode : 'L'homme <b>assis</b> au fond de la salle dort.'", a: "Participe", alt: ["Participe", "Infinitif", "Gérondif", "Indicatif"] },
+                    { q: "Identifiez le mode : 'Que la lumière <b>soit</b> !'", a: "Subjonctif", alt: ["Subjonctif", "Impératif", "Indicatif", "Conditionnel"] },
+                    { q: "Identifiez le mode : 'Il se dit qu'elle <b>aurait pu</b> réussir.'", a: "Conditionnel", alt: ["Conditionnel", "Subjonctif", "Indicatif", "Infinitif"] }
+                ]
+            },
+            Figures: {
+                Facile: [
+                    { q: "Quelle figure : 'Le ressac de la mer pleure sur le sable.'", a: "Personnification", alt: ["Métaphore", "Personnification", "Hyperbole", "Comparaison"] },
+                    { q: "Quelle figure : 'Il est fort comme un lion.'", a: "Comparaison", alt: ["Comparaison", "Métaphore", "Hyperbole", "Allégorie"] },
+                    { q: "Quelle figure : 'Je l'ai dit un million de fois !'", a: "Hyperbole", alt: ["Hyperbole", "Litote", "Métonymie", "Comparaison"] },
+                    { q: "Quelle figure : 'La ville lumière (pour désigner Paris).'", a: "Périphrase", alt: ["Périphrase", "Métaphore", "Oxymore", "Antithèse"] },
+                    { q: "Quelle figure : 'Le vent hurle à travers les arbres.'", a: "Personnification", alt: ["Personnification", "Comparaison", "Oxymore", "Litote"] },
+                    { q: "Quelle figure : 'Il a des yeux de saphir.'", a: "Métaphore", alt: ["Métaphore", "Comparaison", "Périphrase", "Antithèse"] },
+                    { q: "Quelle figure : 'Le roi des animaux (pour le lion).'", a: "Périphrase", alt: ["Périphrase", "Hyperbole", "Oxymore", "Métaphore"] },
+                    { q: "Quelle figure : 'Une pluie de critiques s'abattit sur lui.'", a: "Métaphore", alt: ["Métaphore", "Comparaison", "Personnification", "Antithèse"] },
+                    { q: "Quelle figure : 'Mourir de rire.'", a: "Hyperbole", alt: ["Hyperbole", "Litote", "Périphrase", "Oxymore"] },
+                    { q: "Quelle figure : 'Les vagues dansent joyeusement.'", a: "Personnification", alt: ["Personnification", "Comparaison", "Antithèse", "Métaphore"] }
+                ],
+                Moyen: [
+                    { q: "Quelle figure : 'Le septième art pour le cinéma.'", a: "Périphrase", alt: ["Oxymore", "Antithèse", "Métaphore", "Périphrase"] },
+                    { q: "Quelle figure : 'Cette obscure clarté qui tombe des étoiles.'", a: "Oxymore", alt: ["Oxymore", "Antithèse", "Métaphore", "Litote"] },
+                    { q: "Quelle figure : 'Vous êtes aujourd'hui ce qu'autrefois je fus.'", a: "Antithèse", alt: ["Antithèse", "Oxymore", "Périphrase", "Personnification"] },
+                    { q: "Quelle figure : 'Un silence assourdissant remplit la pièce.'", a: "Oxymore", alt: ["Oxymore", "Antithèse", "Hyperbole", "Litote"] },
+                    { q: "Quelle figure : 'Boire un verre.'", a: "Métonymie", alt: ["Métonymie", "Métaphore", "Périphrase", "Oxymore"] },
+                    { q: "Quelle figure : 'Paris a froid, Paris a faim.'", a: "Personnification", alt: ["Personnification", "Métonymie", "Hyperbole", "Antithèse"] },
+                    { q: "Quelle figure : 'Une sainte colère l'envahit.'", a: "Oxymore", alt: ["Oxymore", "Antithèse", "Litote", "Métaphore"] },
+                    { q: "Quelle figure : 'C'est une vérité de La Palice.'", a: "Périphrase", alt: ["Périphrase", "Oxymore", "Antithèse", "Métaphore"] },
+                    { q: "Quelle figure : 'Le feu de ton regard.'", a: "Métaphore", alt: ["Métaphore", "Comparaison", "Métonymie", "Oxymore"] },
+                    { q: "Quelle figure : 'Croiser le fer.'", a: "Métonymie", alt: ["Métonymie", "Métaphore", "Périphrase", "Antithèse"] }
+                ],
+                Dur: [
+                    { q: "Quelle figure : 'Ce n'est pas mauvais (pour signifier que c'est excellent).'", a: "Litote", alt: ["Litote", "Euphémisme", "Antithèse", "Oxymore"] },
+                    { q: "Quelle figure : 'Il nous a quittés (pour dire qu'il est mort).'", a: "Euphémisme", alt: ["Euphémisme", "Litote", "Métonymie", "Périphrase"] },
+                    { q: "Quelle figure : 'Rodrigue, as-tu du cœur ?'", a: "Métonymie", alt: ["Métonymie", "Métaphore", "Oxymore", "Litote"] },
+                    { q: "Quelle figure : 'Va, je ne te hais point.'", a: "Litote", alt: ["Litote", "Euphémisme", "Hyperbole", "Antithèse"] },
+                    { q: "Quelle figure : 'Un cadavre vivant.'", a: "Oxymore", alt: ["Oxymore", "Antithèse", "Périphrase", "Litote"] },
+                    { q: "Quelle figure : 'La Faucheuse est passée.' (pour la Mort)", a: "Allégorie", alt: ["Allégorie", "Personnification", "Métonymie", "Litote"] },
+                    { q: "Quelle figure : 'C'est un génie ! (dit à quelqu'un qui vient de faire une bêtise)'", a: "Antiphrase", alt: ["Antiphrase", "Hyperbole", "Oxymore", "Litote"] },
+                    { q: "Quelle figure : 'Un long squelette blanc de neige.'", a: "Métaphore", alt: ["Métaphore", "Comparaison", "Allégorie", "Litote"] },
+                    { q: "Quelle figure : 'Une longue maladie.' (pour désigner le cancer)", a: "Euphémisme", alt: ["Euphémisme", "Litote", "Périphrase", "Antiphrase"] },
+                    { q: "Quelle figure : 'Acheter un lopin de terre.'", a: "Métonymie", alt: ["Métonymie", "Métaphore", "Litote", "Périphrase"] }
+                ],
+                Extrême: [
+                    { q: "Quelle figure : 'Je vis, je meurs ; je me brûle et me noie.' (Labé)", a: "Antithèse", alt: ["Antithèse", "Oxymore", "Chiasme", "Hyperbole"] },
+                    { q: "Quelle figure : 'Un affreux soleil noir.'", a: "Oxymore", alt: ["Oxymore", "Antithèse", "Allégorie", "Litote"] },
+                    { q: "Quelle figure : 'Les bras de la Justice sont longs.'", a: "Allégorie", alt: ["Allégorie", "Personnification", "Métonymie", "Périphrase"] },
+                    { q: "Quelle figure : 'Il a bu toute la bouteille de la fureur divine.'", a: "Métaphore", alt: ["Métaphore", "Métonymie", "Allégorie", "Oxymore"] },
+                    { q: "Quelle figure : 'L'or noir (pour le pétrole).'", a: "Périphrase", alt: ["Périphrase", "Oxymore", "Métaphore", "Métonymie"] },
+                    { q: "Quelle figure : 'Je ne dis pas non.'", a: "Litote", alt: ["Litote", "Euphémisme", "Antiphrase", "Oxymore"] },
+                    { q: "Quelle figure : 'Marcher sur deux pieds n'est pas tout.'", a: "Métonymie", alt: ["Métonymie", "Synecdoque", "Métaphore", "Périphrase"] },
+                    { q: "Quelle figure : 'La capitale du crime s'est réveillée.'", a: "Périphrase", alt: ["Périphrase", "Métaphore", "Personnification", "Oxymore"] },
+                    { q: "Quelle figure : 'Le Temps mange la vie.' (Baudelaire)", a: "Allégorie", alt: ["Allégorie", "Personnification", "Métaphore", "Antithèse"] },
+                    { q: "Quelle figure : 'Sous une main de fer un gant de velours.'", a: "Antithèse", alt: ["Antithèse", "Oxymore", "Chiasme", "Métaphore"] }
+                ]
+            },
+            Classes: {
+                Facile: [
+                    { q: "Classe de <b>rapidement</b> : 'Il marche rapidement.'", a: "Adverbe", alt: ["Adjectif", "Adverbe", "Nom", "Verbe"] },
+                    { q: "Classe de <b>grand</b> : 'C'est un grand arbre.'", a: "Adjectif", alt: ["Adjectif", "Adverbe", "Nom", "Déterminant"] },
+                    { q: "Classe de <b>maison</b> : 'La maison est belle.'", a: "Nom", alt: ["Nom", "Verbe", "Adjectif", "Pronom"] },
+                    { q: "Classe de <b>ils</b> : 'Ils mangent une pomme.'", a: "Pronom personnel", alt: ["Pronom personnel", "Déterminant", "Nom", "Adjectif"] },
+                    { q: "Classe de <b>un</b> : 'Je vois un chat.'", a: "Déterminant", alt: ["Déterminant", "Pronom", "Nom", "Adverbe"] },
+                    { q: "Classe de <b>courir</b> : 'Il adore courir.'", a: "Verbe", alt: ["Verbe", "Nom", "Adjectif", "Adverbe"] },
+                    { q: "Classe de <b>ici</b> : 'Viens ici.'", a: "Adverbe", alt: ["Adverbe", "Préposition", "Pronom", "Nom"] },
+                    { q: "Classe de <b>liberté</b> : 'Vive la liberté !'", a: "Nom", alt: ["Nom", "Adjectif", "Verbe", "Adverbe"] },
+                    { q: "Classe de <b>gentil</b> : 'Ce garçon est gentil.'", a: "Adjectif", alt: ["Adjectif", "Adverbe", "Nom", "Pronom"] },
+                    { q: "Classe de <b>dans</b> : 'Il cache un trésor dans le jardin.'", a: "Préposition", alt: ["Préposition", "Adverbe", "Conjonction", "Pronom"] }
+                ],
+                Moyen: [
+                    { q: "Classe de <b>que</b> : 'Le livre que je lis est passionnant.'", a: "Pronom relatif", alt: ["Conjonction de subordination", "Pronom relatif", "Adverbe", "Pronom démonstratif"] },
+                    { q: "Classe de <b>mais</b> : 'Il a révisé, mais il a peur.'", a: "Conjonction de coordination", alt: ["Conjonction de coordination", "Conjonction de subordination", "Adverbe", "Préposition"] },
+                    { q: "Classe de <b>le mien</b> : 'Prends ton sac, j'ai le mien.'", a: "Pronom possédant / possessif", alt: ["Pronom possessif", "Déterminant possessif", "Pronom personnel", "Adjectif"] },
+                    { q: "Classe de <b>parce que</b> : 'Il pleure parce qu'il est tombé.'", a: "Conjonction de subordination", alt: ["Conjonction de subordination", "Conjonction de coordination", "Adverbe", "Préposition"] },
+                    { q: "Classe de <b>plusieurs</b> : 'Plusieurs sont arrivés tard.'", a: "Pronom indéfini", alt: ["Pronom indéfini", "Déterminant indéfini", "Adjectif", "Adverbe"] },
+                    { q: "Classe de <b>ceux-ci</b> : 'Regarde ces livres, prends ceux-ci.'", a: "Pronom démonstratif", alt: ["Pronom démonstratif", "Déterminant démonstratif", "Pronom relatif", "Adjectif"] },
+                    { q: "Classe de <b>chaque</b> : 'Chaque élève doit réussir.'", a: "Déterminant indéfini", alt: ["Déterminant indéfini", "Pronom indéfini", "Adjectif", "Adverbe"] },
+                    { q: "Classe de <b>lorsque</b> : 'Lorsqu'il viendra, préviens-moi.'", a: "Conjonction de subordination", alt: ["Conjonction de subordination", "Conjonction de coordination", "Préposition", "Adverbe"] },
+                    { q: "Classe de <b>qui</b> : 'L'homme qui parle est mon père.'", a: "Pronom relatif", alt: ["Pronom relatif", "Pronom interrogatif", "Conjonction", "Pronom personnel"] },
+                    { q: "Classe de <b>ne... pas</b> : 'Il ne mange pas.'", a: "Adverbe de négation", alt: ["Adverbe de négation", "Conjonction", "Préposition", "Pronoms"] }
+                ],
+                Dur: [
+                    { q: "Classe de <b>dont</b> : 'C'est l'ami dont je t'ai parlé.'", a: "Pronom relatif", alt: ["Pronom relatif", "Conjonction de subordination", "Adverbe", "Préposition"] },
+                    { q: "Classe de <b>afin que</b> : 'Travaille afin que tu réussisses.'", a: "Conjonction de subordination", alt: ["Conjonction de subordination", "Conjonction de coordination", "Préposition", "Adverbe"] },
+                    { q: "Classe de <b>quiconque</b> : 'Quiconque triche sera puni.'", a: "Pronom indéfini", alt: ["Pronom indéfini", "Pronom relatif", "Déterminant indéfini", "Adjectif"] },
+                    { q: "Classe de <b>aucun</b> dans 'Aucun ne sait la vérité.'", a: "Pronom indéfini", alt: ["Pronom indéfini", "Déterminant indéfini", "Adjectif", "Adverbe"] },
+                    { q: "Classe de <b>hormis</b> : 'Tout est prêt, hormis le dessert.'", a: "Préposition", alt: ["Préposition", "Adverbe", "Conjonction", "Pronom"] },
+                    { q: "Classe de <b>lequel</b> : 'Le chemin par lequel nous sommes passés.'", a: "Pronom relatif", alt: ["Pronom relatif", "Pronom interrogatif", "Adjectif", "Déterminant"] },
+                    { q: "Classe de <b>quelques</b> : 'J'ai quelques doutes.'", a: "Déterminant indéfini", alt: ["Déterminant indéfini", "Pronom indéfini", "Adverbe", "Adjectif"] },
+                    { q: "Classe de <b>durant</b> : 'Durant la nuit, il a tonné.'", a: "Préposition", alt: ["Préposition", "Adverbe", "Conjonction", "Nom"] },
+                    { q: "Classe de <b>que</b> dans 'Que de chemin parcouru !'", a: "Adverbe exclamatif", alt: ["Adverbe exclamatif", "Pronom relatif", "Conjonction", "Pronom interrogatif"] },
+                    { q: "Classe de <b>quique ce soit</b> : 'N'en parle à quiconque.'", a: "Pronom indéfini", alt: ["Pronom indéfini", "Nom", "Adjectif", "Pronom personnel"] }
+                ],
+                Extrême: [
+                    { q: "Classe de <b>voire</b> : 'Une tâche difficile, voire impossible.'", a: "Adverbe", alt: ["Adverbe", "Conjonction de coordination", "Conjonction de subordination", "Préposition"] },
+                    { q: "Classe de <b>que</b> dans 'Je ne veux que la paix.'", a: "Adverbe restrictif", alt: ["Adverbe restrictif", "Conjonction de subordination", "Pronom relatif", "Pronom interrogatif"] },
+                    { q: "Classe de <b>pourvu que</b> : 'Pourvu qu'il vienne !'", a: "Conjonction de subordination", alt: ["Conjonction de subordination", "Conjonction de coordination", "Locution prépositive", "Adverbe"] },
+                    { q: "Classe de <b>tout</b> dans 'Elles sont tout émues.'", a: "Adverbe", alt: ["Adverbe", "Adjectif", "Nom", "Pronom indéfini"] },
+                    { q: "Classe de <b>quelque</b> dans 'Quelque puissants qu'ils soient.'", a: "Adverbe", alt: ["Adverbe", "Déterminant indéfini", "Adjectif", "Pronom"] },
+                    { q: "Classe de <b>ou bien</b> : 'Mange ou bien dors.'", a: "Conjonction de coordination", alt: ["Conjonction de coordination", "Conjonction de subordination", "Adverbe", "Préposition"] },
+                    { q: "Classe de <b>quant à</b> : 'Quant à moi, je reste.'", a: "Préposition (locution)", alt: ["Préposition (locution)", "Adverbe", "Conjonction", "Pronom"] },
+                    { q: "Classe de <b>sauf</b> dans 'Ils sont tous venus, sauf lui.'", a: "Préposition", alt: ["Préposition", "Adjectif", "Adverbe", "Conjonction"] },
+                    { q: "Classe de <b>soit... soit</b> : 'Soit par peur, soit par fierté.'", a: "Conjonction de coordination", alt: ["Conjonction de coordination", "Verbe", "Adverbe", "Subjonctif"] },
+                    { q: "Classe de <b>hormis</b> : 'Tous hormis les enfants.'", a: "Préposition", alt: ["Préposition", "Adverbe", "Conjonction", "Adjectif"] }
+                ]
+            },
+            Fonctions: {
+                Facile: [
+                    { q: "Fonction de 'la pomme' : 'L'enfant mange <b>la pomme</b>.'", a: "COD", alt: ["Sujet", "COD", "COI", "Attribut du sujet"] },
+                    { q: "Fonction de 'Paul' : '<b>Paul</b> court dans le parc.'", a: "Sujet", alt: ["Sujet", "COD", "COI", "Modificateur"] },
+                    { q: "Fonction de 'à sa mère' : 'Il parle <b>à sa mère</b>.'", a: "COI", alt: ["COD", "COI", "Sujet", "Complément du nom"] },
+                    { q: "Fonction de 'rouge' : 'Une fleur <b>rouge</b>.'", a: "Épithète", alt: ["Épithète", "Attribut du sujet", "COD", "Complément circonstanciel"] },
+                    { q: "Fonction de 'dans la cuisine' : 'Il cuisine <b>dans la cuisine</b>.'", a: "CC de lieu", alt: ["CC de lieu", "CC de temps", "COD", "COI"] },
+                    { q: "Fonction de 'hier' : '<b>Hier</b>, il a plu.'", a: "CC de temps", alt: ["CC de temps", "CC de lieu", "Sujet", "Épithète"] },
+                    { q: "Fonction de 'un livre' : 'Marie achète <b>un livre</b>.'", a: "COD", alt: ["COD", "COI", "Attribut du sujet", "Sujet"] },
+                    { q: "Fonction de 'avec soin' : 'Il écrit <b>avec soin</b>.'", a: "CC de manière", alt: ["CC de manière", "CC de cause", "COD", "Épithète"] },
+                    { q: "Fonction de 'du professeur' : 'Le livre <b>du professeur</b>.'", a: "Complément du nom", alt: ["Complément du nom", "COI", "COD", "Attribut du sujet"] },
+                    { q: "Fonction de 'gros' : 'Le <b>gros</b> chat dort.'", a: "Épithète", alt: ["Épithète", "Attribut du sujet", "Sujet", "Apposition"] }
+                ],
+                Moyen: [
+                    { q: "Fonction de 'triste' : 'Cet élève paraît <b>triste</b>.'", a: "Attribut du sujet", alt: ["Épithète", "Attribut du sujet", "COD", "Complément de l'adjectif"] },
+                    { q: "Fonction de 'par le vent' : 'L'arbre est abattu <b>par le vent</b>.'", a: "Complément d'agent", alt: ["Complément d'agent", "CC de cause", "CC de moyen", "COI"] },
+                    { q: "Fonction de 'un grand médecin' : 'Molière critique son rival, <b>un grand médecin</b>.'", a: "Apposition", alt: ["Apposition", "Épithète", "Attribut du sujet", "COD"] },
+                    { q: "Fonction de 'de sa victoire' : 'Il est fier <b>de sa victoire</b>.'", a: "Complément de l'adjectif", alt: ["Complément de l'adjectif", "Complément du nom", "COI", "CC de cause"] },
+                    { q: "Fonction de 'intelligente' : 'Je trouve cette fille <b>intelligente</b>.'", a: "Attribut du COD", alt: ["Attribut du COD", "Attribut du sujet", "Épithète", "Apposition"] },
+                    { q: "Fonction de 'pour réussir' : 'Il révise <b>pour réussir</b>.'", a: "CC de but", alt: ["CC de but", "CC de cause", "CC de conséquence", "COI"] },
+                    { q: "Fonction de 'à cause de la pluie' : 'Il reste chez lui <b>à cause de la pluie</b>.'", a: "CC de cause", alt: ["CC de cause", "CC de but", "CC de conséquence", "COD"] },
+                    { q: "Fonction de 'le capitaine' : 'Il a été nommé <b>le capitaine</b>.'", a: "Attribut du sujet", alt: ["Attribut du sujet", "COD", "Apposition", "Épithète"] },
+                    { q: "Fonction de 'de son frère' : 'La voiture <b>de son frère</b>.'", a: "Complément du nom", alt: ["Complément du nom", "COI", "Complément de l'adjectif", "COD"] },
+                    { q: "Fonction de 'toute la nuit' : 'La tempête a fait rage <b>toute la nuit</b>.'", a: "CC de temps", alt: ["CC de temps", "CC de manière", "COD", "CC de lieu"] }
+                ],
+                Dur: [
+                    { q: "Fonction de 'que j'ai vu' : 'L'homme <b>que j'ai vu</b> est grand.'", a: "Épithète (proposition subordonnée)", alt: ["Épithète", "Complément du nom", "Attribut du sujet", "Apposition"] },
+                    { q: "Fonction de 'de son secret' : 'Il s'aperçoit <b>de son secret</b>.'", a: "COI", alt: ["COI", "Complément du nom", "Complément de l'adjectif", "CC de cause"] },
+                    { q: "Fonction de 'fatigué' : '<b>Fatigué</b>, l'enfant s'endormit.'", a: "Apposition (ou épithète détachée)", alt: ["Apposition", "Épithète", "Attribut du sujet", "Sujet"] },
+                    { q: "Fonction de 'au football' : 'Il joue <b>au football</b>.'", a: "COI", alt: ["COI", "CC de lieu", "COD", "CC de moyen"] },
+                    { q: "Fonction de 'à dix-huit ans' : '<b>À dix-huit ans</b>, il partit.'", a: "CC de temps", alt: ["CC de temps", "CC de cause", "CC de condition", "Sujet"] },
+                    { q: "Fonction de 'trois mètres' : 'Ce puits mesure <b>trois mètres</b>.'", a: "Complément de mesure (CC)", alt: ["Complément de mesure (CC)", "COD", "Attribut du sujet", "COI"] },
+                    { q: "Fonction de 'tous ses biens' : 'Il a été dépouillé de <b>tous ses biens</b>.'", a: "COI", alt: ["COI", "Complément d'agent", "COD", "Complément du nom"] },
+                    { q: "Fonction de 'de peur' : 'Il tremble <b>de peur</b>.'", a: "CC de cause", alt: ["CC de cause", "CC de manière", "COI", "Complément de l'adjectif"] },
+                    { q: "Fonction de 'directeur' : 'On l'a élu <b>directeur</b>.'", a: "Attribut du COD", alt: ["Attribut du COD", "Attribut du sujet", "COD", "Apposition"] },
+                    { q: "Fonction de 'cent euros' : 'Ce livre coûte <b>cent euros</b>.'", a: "Complément de prix (CC)", alt: ["Complément de prix (CC)", "COD", "Attribut du sujet", "COI"] }
+                ],
+                Extrême: [
+                    { q: "Fonction de 'à l'entendre' : '<b>À l'entendre</b>, il saurait tout.'", a: "CC de condition", alt: ["CC de condition", "CC de cause", "COI", "CC de manière"] },
+                    { q: "Fonction de 'que tu partes' : 'Il est temps <b>que tu partes</b>.'", a: "Complément du nom / de l'adjectif", alt: ["Complément du nom / de l'adjectif", "COD", "Sujet inversé", "Attribut"] },
+                    { q: "Fonction de 'la vérité' : 'Il fait dire <b>la vérité</b>.'", a: "COD de l'infinitif", alt: ["COD de l'infinitif", "COD du verbe principal", "Attribut du sujet", "Sujet"] },
+                    { q: "Fonction de 'la nuit tombante' : '<b>La nuit tombante</b>, ils rentrèrent.'", a: "Sujet de la proposition absolue", alt: ["Sujet de la proposition absolue", "CC de temps", "Sujet du verbe principal", "Apposition"] },
+                    { q: "Fonction de 'de violons' : 'Un concert <b>de violons</b>.'", a: "Complément du nom", alt: ["Complément du nom", "COI", "Épithète", "Complément d'agent"] },
+                    { q: "Fonction de 'lui' dans 'Je <b>lui</b> ferai comprendre.'", a: "Sujet de l'infinitif (ou COI)", alt: ["Sujet de l'infinitif (ou COI)", "COD", "Attribut", "CC"] },
+                    { q: "Fonction de 'pour un sage' : 'Il passe <b>pour un sage</b>.'", a: "Attribut du sujet", alt: ["Attribut du sujet", "CC de but", "COI", "CC de manière"] },
+                    { q: "Fonction de 'la tête haute' : 'Il marchait <b>la tête haute</b>.'", a: "CC de manière (absolu)", alt: ["CC de manière (absolu)", "COD", "Apposition", "Sujet"] },
+                    { q: "Fonction de 'que tu viennes' : 'Il importe <b>que tu viennes</b>.'", a: "Sujet réel (séquence impersonnelle)", alt: ["Sujet réel (séquence impersonnelle)", "COD", "Complément de l'adjectif", "Attribut"] },
+                    { q: "Fonction de 'de l'eau' : 'Il boit <b>de l'eau</b>.'", a: "COD", alt: ["COD", "COI", "Complément du nom", "CC de moyen"] }
+                ]
+            },
+            Temps: {
+                Facile: [
+                    { q: "Valeur du présent : 'La Terre <b>tourne</b> autour du Soleil.'", a: "Vérité générale", alt: ["Présent d'énonciation", "Vérité générale", "Présent d'habitude", "Présent de narration"] },
+                    { q: "Valeur du présent : 'En ce moment même, je vous <b>parle</b>.'", a: "Présent d'énonciation / actualité", alt: ["Présent d'énonciation / actualité", "Vérité générale", "Présent d'habitude", "Présent de narration"] },
+                    { q: "Valeur de l'imparfait : 'La maison <b>était</b> grande et sombre.'", a: "Description", alt: ["Action secondaire", "Description", "Habitude", "Condition"] },
+                    { q: "Valeur du présent : 'Chaque matin, il <b>prend</b> le train de 8h.'", a: "Présent d'habitude", alt: ["Présent d'habitude", "Présent d'énonciation", "Vérité générale", "Présent de narration"] },
+                    { q: "Valeur du passé simple : 'Soudain, il <b>poussa</b> un grand cri.'", a: "Action soudaine et délimitée", alt: ["Action soudaine et délimitée", "Description", "Action répétitive", "Arrière-plan"] },
+                    { q: "Valeur du futur : 'Demain, il <b>fera</b> beau.'", a: "Action future", alt: ["Action future", "Ordre", "Hypothèse", "Présent"] },
+                    { q: "Valeur du présent : 'Deux et deux <b>font</b> quatre.'", a: "Vérité générale", alt: ["Vérité générale", "Présent d'énonciation", "Présent d'habitude", "Narration"] },
+                    { q: "Valeur de l'imparfait : 'Tous les soirs, il <b>lisait</b> un conte.'", a: "Habitude / répétition", alt: ["Habitude / répétition", "Description", "Action unique", "Ordre"] },
+                    { q: "Valeur du passé simple : 'Il <b>naquit</b> en 1912.'", a: "Action unique et ponctuelle", alt: ["Action unique et ponctuelle", "Habitude", "Description", "Arrière-plan"] },
+                    { q: "Valeur du présent : 'Je <b>pars</b> à l'instant.'", a: "Présent d'énonciation", alt: ["Présent d'énonciation", "Vérité générale", "Présent d'habitude", "Passé proche"] }
+                ],
+                Moyen: [
+                    { q: "Valeur du présent : 'Un agneau buvait... Un loup <b>survient</b>.'", a: "Présent de narration", alt: ["Présent de narration", "Présent d'énonciation", "Vérité générale", "Présent d'habitude"] },
+                    { q: "Valeur de l'imparfait : 'Pendant qu'il <b>dormait</b>, le voleur entra.'", a: "Arrière-plan (action secondaire durative)", alt: ["Arrière-plan (action secondaire durative)", "Description", "Habitude", "Action principale"] },
+                    { q: "Valeur du passé composé : 'J'<b>ai terminé</b> mon travail (et j'ai fini maintenant).'", a: "Action passée accomplie à impact présent", alt: ["Action passée accomplie à impact présent", "Action future", "Habitude", "Description"] },
+                    { q: "Valeur du futur : 'Tu <b>déposeras</b> tes affaires ici.'", a: "Ordre / impératif atténué", alt: ["Ordre / impératif atténué", "Action future", "Hypothèse", "Condition"] },
+                    { q: "Valeur du présent : 'J'<b>arrive</b> de Lyon à l'instant.'", a: "Passé récent", alt: ["Passé récent", "Présent d'énonciation", "Futur proche", "Vérité générale"] },
+                    { q: "Valeur de l'imparfait : 'Si j'<b>avais</b> de l'argent, j'achèterais ce livre.'", a: "Hypothèse / condition", alt: ["Hypothèse / condition", "Description", "Habitude", "Souhait"] },
+                    { q: "Valeur du plus-que-parfait : 'Il a mangé le gâteau que j'<b>avais préparé</b>.'", a: "Antériorité dans le passé", alt: ["Antériorité dans le passé", "Action future", "Simultanéité", "Description"] },
+                    { q: "Valeur du présent : 'Je <b>pars</b> demain matin.'", a: "Futur proche", alt: ["Futur proche", "Présent d'énonciation", "Passé récent", "Habitude"] },
+                    { q: "Valeur du passé simple : 'Ils <b>discutèrent</b> pendant trois heures (puis partirent).'", a: "Action délimitée dans le passé", alt: ["Action délimitée dans le passé", "Description", "Action ininterrompue", "Habitude"] },
+                    { q: "Valeur du futur antérieur : 'Quand j'<b>aurai fini</b>, je t'appellerai.'", a: "Antériorité par rapport au futur", alt: ["Antériorité par rapport au futur", "Action future", "Hypothèse", "Passé"] }
+                ],
+                Dur: [
+                    { q: "Valeur du conditionnel : 'Selon nos informations, le suspect <b>aurait fui</b>.'", a: "Information incertaine / doute", alt: ["Information incertaine / doute", "Ordre", "Action future dans le passé", "Hypothèse"] },
+                    { q: "Valeur de l'imparfait : 'Un instant plus tard, la bombe <b>explosait</b>.'", a: "Imparfait de narration / rupture", alt: ["Imparfait de narration / rupture", "Description", "Habitude", "Hypothèse"] },
+                    { q: "Valeur du futur : 'Où <b>sera-t-il</b> passé ?'", a: "Hypothèse / conjecture au présent", alt: ["Hypothèse / conjecture au présent", "Action future", "Ordre", "Doute au futur"] },
+                    { q: "Valeur du présent : 'Le coupable <b>est</b> arrêté hier par la police.'", a: "Présent de narration historique", alt: ["Présent de narration historique", "Présent d'énonciation", "Passé proche", "Vérité générale"] },
+                    { q: "Valeur du conditionnel : 'Il a dit qu'il <b>viendrait</b> le lendemain.'", a: "Futur dans le passé", alt: ["Futur dans le passé", "Hypothèse", "Souhait", "Doute"] },
+                    { q: "Valeur de l'imparfait : 'Sans ce témoin, il <b>était</b> condamné.'", a: "Action imminente non réalisée (irréel du passé)", alt: ["Action imminente non réalisée (irréel du passé)", "Description", "Habitude", "Ordre"] },
+                    { q: "Valeur du passé simple : 'Il <b>prit</b> son chapeau, ouvrit la porte et sortit.'", a: "Actions successives", alt: ["Actions successives", "Description", "Habitude", "Action d'arrière-plan"] },
+                    { q: "Valeur du futur antérieur : 'Il <b>aura oublié</b> notre rendez-vous (probablement).'", a: "Hypothèse sur un fait passé", alt: ["Hypothèse sur un fait passé", "Action future accomplie", "Ordre", "Doute futur"] },
+                    { q: "Valeur de l'imparfait : 'Ah ! Si j'<b>étais</b> riche !'", a: "Souhait / regret exclamatif", alt: ["Souhait / regret exclamatif", "Hypothèse", "Description", "Habitude"] },
+                    { q: "Valeur du présent : 'L'Amour <b>est</b> un oiseau rebelle.'", a: "Vérité générale (maxime / poétique)", alt: ["Vérité générale (maxime / poétique)", "Présent d'actualité", "Narration", "Habitude"] }
+                ],
+                Extrême: [
+                    { q: "Valeur du subjonctif imparfait : 'Il aurait fallu qu'il <b>parlât</b>.'", a: "Obligation / nécessité dans le passé", alt: ["Obligation / nécessité dans le passé", "Hypothèse", "Souhait", "Doute"] },
+                    { q: "Valeur du passé antérieur : 'Dès qu'il <b>eut fini</b>, il se coucha.'", a: "Antériorité immédiate au passé simple", alt: ["Antériorité immédiate au passé simple", "Habitude", "Action future", "Description"] },
+                    { q: "Valeur du présent de l'indicatif : 'Je vous <b>prie</b> de sortir.'", a: "Présent performatif (l'action s'accomplit par la parole)", alt: ["Présent performatif (l'action s'accomplit par la parole)", "Présent d'actualité", "Habitude", "Ordre"] },
+                    { q: "Valeur de l'imparfait : 'Qu'y <b>avait-il</b> pour votre service ?'", a: "Imparfait d'atténuation / politesse", alt: ["Imparfait d'atténuation / politesse", "Description", "Habitude", "Doute"] },
+                    { q: "Valeur du conditionnel passé : 'J'<b>aurais voulu</b> être un artiste.'", a: "Regret / reproche atténué", alt: ["Regret / reproche atténué", "Hypothèse", "Futur dans le passé", "Certitude"] },
+                    { q: "Valeur du subjonctif présent : 'Qu'il <b>vive</b> !'", a: "Souhait / ordre indirect", alt: ["Souhait / ordre indirect", "Hypothèse", "Doute", "Nécessité"] },
+                    { q: "Valeur du futur : 'Vous <b>saurez</b> que je suis le maître.'", a: "Futur de déclaration autoritaire", alt: ["Futur de déclaration autoritaire", "Action future simple", "Hypothèse", "Politesse"] },
+                    { q: "Valeur du passé composé : 'Attends-moi, j'<b>ai fini</b> dans une minute.'", a: "Futur immédiat (accompli futur)", alt: ["Futur immédiat (accompli futur)", "Passé lointain", "Habitude", "Présent actualité"] },
+                    { q: "Valeur de l'imparfait : 'Il <b>partait</b> le lendemain pour l'Afrique.'", a: "Futur dans le passé (imparfait prospectif)", alt: ["Futur dans le passé (imparfait prospectif)", "Description", "Habitude", "Hypothèse"] },
+                    { q: "Valeur du passé simple : 'La Fayette <b>fut</b> un héros.'", a: "Fait historique totalement révolu", alt: ["Fait historique totalement révolu", "Description", "Action successive", "Habitude"] }
+                ]
+            },
+            Logique: {
+                Facile: [
+                    { q: "Type de proposition : '<b>Comme il pleuvait</b>, nous sommes restés.'", a: "Subordonnée conjonctive CC de cause", alt: ["Subordonnée relative", "Subordonnée conjonctive CC de cause", "Subordonnée complétive", "Proposition indépendante"] },
+                    { q: "Type de proposition : 'Je veux <b>que tu réussisses</b>.'", a: "Subordonnée complétive", alt: ["Subordonnée relative", "Subordonnée complétive", "Subordonnée interrogative indirecte", "Principale"] },
+                    { q: "Type de proposition : 'L'homme <b>qui passe</b> est mon oncle.'", a: "Subordonnée relative", alt: ["Subordonnée relative", "Subordonnée complétive", "Subordonnée conjonctive", "Indépendante"] },
+                    { q: "Type de proposition : 'Le chien aboie <b>et le chat s'enfuit</b>.'", a: "Proposition indépendante coordonnée", alt: ["Proposition indépendante coordonnée", "Proposition principale", "Subordonnée relative", "Subordonnée complétive"] },
+                    { q: "Type de proposition : 'Il dort, <b>il rêve</b>.'", a: "Proposition indépendante juxtaposée", alt: ["Proposition indépendante juxtaposée", "Proposition indépendante coordonnée", "Proposition principale", "Subordonnée"] },
+                    { q: "Type de proposition : '<b>Quand le téléphone sonna</b>, il sursauta.'", a: "Subordonnée conjonctive CC de temps", alt: ["Subordonnée conjonctive CC de temps", "Subordonnée relative", "Subordonnée complétive", "Principale"] },
+                    { q: "Type de proposition : 'Je pense <b>que tu as raison</b>.'", a: "Subordonnée complétive", alt: ["Subordonnée complétive", "Subordonnée relative", "Subordonnée conjonctive", "Principale"] },
+                    { q: "Type de proposition : 'La voiture <b>que j'ai achetée</b> est rouge.'", a: "Subordonnée relative", alt: ["Subordonnée relative", "Subordonnée complétive", "Subordonnée conjonctive CC", "Indépendante"] },
+                    { q: "Type de proposition : 'Il étudie <b>pour que ses parents soient fiers</b>.'", a: "Subordonnée conjonctive CC de but", alt: ["Subordonnée conjonctive CC de but", "Subordonnée complétive", "Subordonnée relative", "Principale"] },
+                    { q: "Type de proposition : 'Il fait froid <b>donc je mets un manteau</b>.'", a: "Proposition indépendante coordonnée", alt: ["Proposition indépendante coordonnée", "Subordonnée conjonctive de conséquence", "Principale", "Juxtaposée"] }
+                ],
+                Moyen: [
+                    { q: "Type de proposition : 'Je me demande <b>si elle viendra</b>.'", a: "Subordonnée interrogative indirecte", alt: ["Subordonnée conjonctive conditionnelle", "Subordonnée interrogative indirecte", "Subordonnée complétive", "Subordonnée relative"] },
+                    { q: "Type de proposition : 'Il a tellement crié <b>qu'il a perdu sa voix</b>.'", a: "Subordonnée conjonctive CC de conséquence", alt: ["Subordonnée conjonctive CC de conséquence", "Subordonnée conjonctive CC de but", "Subordonnée complétive", "Subordonnée relative"] },
+                    { q: "Type de proposition : '<b>Bien qu'il soit fatigué</b>, il continue.'", a: "Subordonnée conjonctive CC de concession", alt: ["Subordonnée conjonctive CC de concession", "Subordonnée conjonctive CC de cause", "Subordonnée complétive", "Subordonnée relative"] },
+                    { q: "Type de proposition : 'Si tu viens, <b>tu verras mon frère</b>.'", a: "Proposition principale", alt: ["Proposition principale", "Subordonnée conjonctive conditionnelle", "Indépendante", "Subordonnée relative"] },
+                    { q: "Type de proposition : 'L'endroit <b>où je vis</b> est calme.'", a: "Subordonnée relative", alt: ["Subordonnée relative", "Subordonnée conjonctive CC de lieu", "Subordonnée complétive", "Principale"] },
+                    { q: "Type de proposition : 'Il agit <b>comme s'il était le roi</b>.'", a: "Subordonnée conjonctive CC de comparaison", alt: ["Subordonnée conjonctive CC de comparaison", "Subordonnée complétive", "Subordonnée relative", "Principale"] },
+                    { q: "Type de proposition : 'Je cherche un livre <b>qui m'intéresse</b>.'", a: "Subordonnée relative", alt: ["Subordonnée relative", "Subordonnée complétive", "Subordonnée conjonctive", "Principale"] },
+                    { q: "Type de proposition : 'Il ne sait pas <b>ce qu'il veut faire</b>.'", a: "Subordonnée interrogative indirecte", alt: ["Subordonnée interrogative indirecte", "Subordonnée relative", "Subordonnée complétive", "Principale"] },
+                    { q: "Type de proposition : '<b>Pendant que tu dors</b>, je travaille.'", a: "Subordonnée conjonctive CC de temps", alt: ["Subordonnée conjonctive CC de temps", "Subordonnée relative", "Subordonnée complétive", "Principale"] },
+                    { q: "Type de proposition : 'Il affirme <b>qu'il a fini</b>.'", a: "Subordonnée complétive", alt: ["Subordonnée complétive", "Subordonnée relative", "Subordonnée interrogative indirecte", "Principale"] }
+                ],
+                Dur: [
+                    { q: "Type de proposition : 'La nouvelle <b>qu'il soit parti</b> nous attriste.'", a: "Subordonnée complétive complétive du nom", alt: ["Subordonnée complétive complétive du nom", "Subordonnée relative", "Subordonnée conjonctive CC de cause", "Principale"] },
+                    { q: "Type de proposition : 'Le train est parti <b>sans que je l'entende</b>.'", a: "Subordonnée conjonctive CC de condition/manière", alt: ["Subordonnée conjonctive CC de condition/manière", "Subordonnée complétive", "Subordonnée relative", "Proposition infinitive"] },
+                    { q: "Type de proposition : '<b>Le chat parti</b>, les souris dansent.'", a: "Proposition subordonnée participiale (absolue)", alt: ["Proposition subordonnée participiale (absolue)", "Proposition indépendante juxtaposée", "Proposition infinitive", "Subordonnée conjonctive"] },
+                    { q: "Type de proposition : 'J'entends <b>les oiseaux chanter dans le jardin</b>.'", a: "Proposition subordonnée infinitive", alt: ["Proposition subordonnée infinitive", "Subordonnée complétive", "Subordonnée relative", "Proposition principale"] },
+                    { q: "Type de proposition : 'Il est trop timide <b>pour qu'on lui parle</b>.'", a: "Subordonnée conjonctive CC de conséquence / but", alt: ["Subordonnée conjonctive CC de conséquence / but", "Subordonnée complétive", "Subordonnée relative", "Principale"] },
+                    { q: "Type de proposition : '<b>Qui veut voyager loin</b> ménage sa monture.'", a: "Subordonnée relative substantive (sans antécédent)", alt: ["Subordonnée relative substantive (sans antécédent)", "Subordonnée complétive", "Proposition principale", "Subordonnée interrogative"] },
+                    { q: "Type de proposition : 'Je m'attends <b>à ce qu'il vienne</b>.'", a: "Subordonnée complétive (conjonctive)", alt: ["Subordonnée complétive (conjonctive)", "Subordonnée relative", "Subordonnée interrogative indirecte", "Principale"] },
+                    { q: "Type de proposition : 'Le jour <b>où il est né</b> faisait un froid de loup.'", a: "Subordonnée relative", alt: ["Subordonnée relative", "Subordonnée conjonctive CC de temps", "Subordonnée complétive", "Principale"] },
+                    { q: "Type de proposition : 'Il est plus intelligent <b>que je ne le croyais</b>.'", a: "Subordonnée conjonctive CC de comparaison", alt: ["Subordonnée conjonctive CC de comparaison", "Subordonnée complétive", "Subordonnée relative", "Principale"] },
+                    { q: "Type de proposition : 'Loin <b>qu'il soit d'accord</b>, il proteste.'", a: "Subordonnée conjonctive CC de concession", alt: ["Subordonnée conjonctive CC de concession", "Subordonnée complétive", "Subordonnée relative", "Principale"] }
+                ],
+                Extrême: [
+                    { q: "Type de proposition : '<b>Qu'il dise un mot</b>, et tout le monde obéit.'", a: "Subordonnée conjonctive à valeur de condition", alt: ["Subordonnée conjonctive à valeur de condition", "Subordonnée complétive", "Proposition indépendante impérative", "Principale"] },
+                    { q: "Type de proposition : 'C'est à toi <b>que je parle</b>.'", a: "Proposition subordonnée relative (phrase clivée)", alt: ["Proposition subordonnée relative (phrase clivée)", "Subordonnée complétive", "Subordonnée conjonctive", "Proposition principale"] },
+                    { q: "Type de proposition : 'Il est d'autant plus coupable <b>qu'il savait la loi</b>.'", a: "Subordonnée conjonctive CC de cause restrictive", alt: ["Subordonnée conjonctive CC de cause restrictive", "Subordonnée conjonctive de conséquence", "Subordonnée complétive", "Relative"] },
+                    { q: "Type de proposition : '<b>Où que tu ailles</b>, je te suivrai.'", a: "Subordonnée conjonctive CC de concession / lieu", alt: ["Subordonnée conjonctive CC de concession / lieu", "Subordonnée relative", "Subordonnée complétive", "Principale"] },
+                    { q: "Type de proposition : 'Il s'en est fallu de peu <b>qu'il ne fût tué</b>.'", a: "Subordonnée complétive", alt: ["Subordonnée complétive", "Subordonnée conjonctive CC de conséquence", "Subordonnée relative", "Principale"] },
+                    { q: "Type de proposition : '<b>Que je sache</b>, il n'est pas venu.'", a: "Subordonnée conjonctive restrictive (indépendante intégrée)", alt: ["Subordonnée conjonctive restrictive (indépendante intégrée)", "Subordonnée complétive", "Principale", "Subordonnée relative"] },
+                    { q: "Type de proposition : 'Il fait de la politique, <b>ce qui m'étonne</b>.'", a: "Subordonnée relative de liaison", alt: ["Subordonnée relative de liaison", "Subordonnée complétive", "Proposition indépendante", "Principale"] },
+                    { q: "Type de proposition : 'Il est certain <b>que le monde change</b>.'", a: "Subordonnée complétive (sujet réel)", alt: ["Subordonnée complétive (sujet réel)", "Subordonnée relative", "Subordonnée conjonctive", "Principale"] },
+                    { q: "Type de proposition : '<b>Tout intelligent qu'il soit</b>, il s'est trompé.'", a: "Subordonnée conjonctive CC de concession", alt: ["Subordonnée conjonctive CC de concession", "Subordonnée de comparaison", "Subordonnée complétive", "Principale"] },
+                    { q: "Type de proposition : 'Il court <b>à perdre haleine</b>.'", a: "Groupe infinitif prépositionnel CC de conséquence", alt: ["Groupe infinitif prépositionnel CC de conséquence", "Proposition subordonnée infinitive", "Subordonnée conjonctive", "COD"] }
+                ]
+            }
+        };
+
+        let currentUsername = "";
+        let activeMode = "";
+        let activeDifficulty = "";
+        let activeTheme = "";
+        let indexPointer = 0;
+        let scoreTracker = 0;
+        let exerciseList = [];
+
+        // LIMITATION ET COMPTEUR 20 CHARACTÈRES
+        function updateCharCounter() {
+            const val = document.getElementById('username-field').value;
+            document.getElementById('char-counter').innerText = `${val.length} / 20 caractères`;
+        }
+
+        // ÉTAPE 1 : NOM
+        function submitName() {
+            const input = document.getElementById('username-field');
+            currentUsername = input.value.trim();
+            if (currentUsername === "") return alert("Veuillez saisir un identifiant valide.");
+
+            document.getElementById('sidebar-user').innerText = `${currentUsername}`;
+            document.getElementById('sidebar-user').style.display = "block";
+            
+            document.getElementById('nav-btn-modes').classList.add('unlocked');
+            switchPane('modes');
+        }
+
+        // ÉTAPE 2 : MODE
+        function submitMode(modeKey) {
+            activeMode = modeKey;
+            document.getElementById('nav-btn-difficulty').classList.add('unlocked');
+            switchPane('difficulty');
+        }
+
+        // ÉTAPE 3 : DIFFICULTÉ
+        function submitDifficulty(diffKey) {
+            activeDifficulty = diffKey;
+            document.getElementById('nav-btn-themes').classList.add('unlocked');
+            switchPane('themes');
+        }
+
+        // ÉTAPE 4 : INITIALISATION RUN FINAL
+        function startSession(themeKey) {
+            activeTheme = themeKey;
+            indexPointer = 0;
+            scoreTracker = 0;
+            
+            // Extraction de la liste selon Thème ET Difficulté sélectionnée
+            const rawQuestions = database[themeKey][activeDifficulty];
+            exerciseList = [...rawQuestions].sort(() => Math.random() - 0.5);
+
+            if (activeMode === 'flashcards') {
+                runFlashcardSetup();
+                switchPane('game-flashcards');
+            } else {
+                runQuizSetup();
+                switchPane('game-quiz');
+            }
+        }
+
+        function exitToDashboard() { switchPane('themes'); }
+
+        // MOTEUR D'AFFICHAGE DES INTERFACES
+        function switchPane(viewId) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            document.getElementById(`screen-${viewId}`).classList.add('active');
+
+            if(['name', 'modes', 'difficulty', 'themes'].includes(viewId)) {
+                document.getElementById(`nav-btn-${viewId}`).classList.add('active');
+            } else {
+                document.getElementById('nav-btn-themes').classList.add('active');
+            }
+        }
+
+        /* GESTION GRAPHICS FLASHCARDS */
+        function runFlashcardSetup() {
+            const item = exerciseList[indexPointer];
+            document.getElementById('html-card').classList.remove('flipped');
+            document.getElementById('fc-title').innerText = `${getCleanTitle(activeTheme)} (${activeDifficulty})`;
+            document.getElementById('fc-counter').innerText = `Matrice ${indexPointer + 1} / ${exerciseList.length}`;
+            document.getElementById('fc-front-text').innerHTML = item.q;
+            document.getElementById('fc-back-text').innerHTML = `Réponse certifiée : <br><b style="color:var(--neon-cyan); font-size:1.4rem;">${item.a}</b>`;
+        }
+
+        function nextCard() { indexPointer = (indexPointer + 1) % exerciseList.length; runFlashcardSetup(); }
+        function prevCard() { indexPointer = (indexPointer - 1 + exerciseList.length) % exerciseList.length; runFlashcardSetup(); }
+
+        /* GESTION GRAPHICS QUIZ */
+        function runQuizSetup() {
+            const item = exerciseList[indexPointer];
+            document.getElementById('quiz-next-btn').style.display = "none";
+            document.getElementById('quiz-title').innerText = `Quiz : ${getCleanTitle(activeTheme)}`;
+            document.getElementById('quiz-counter').innerText = `Question ${indexPointer + 1} / ${exerciseList.length} • Niveau ${activeDifficulty}`;
+            document.getElementById('quiz-question-text').innerHTML = item.q;
+
+            const box = document.getElementById('quiz-options-box');
+            box.innerHTML = "";
+
+            item.alt.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = "quiz-item";
+                b.innerText = opt;
+                b.onclick = () => checkQuizItem(b, opt, item.a);
+                box.appendChild(b);
+            });
+        }
+
+        function checkQuizItem(btn, selected, correct) {
+            if (document.querySelector('.quiz-item.right')) return;
+
+            if (selected === correct) {
+                btn.classList.add('right');
+                scoreTracker++;
+            } else {
+                btn.classList.add('false');
+                Array.from(document.querySelectorAll('.quiz-item')).forEach(i => {
+                    if (i.innerText === correct) i.classList.add('right');
+                });
+            }
+            document.getElementById('quiz-next-btn').style.display = "block";
+        }
+
+        function nextQuiz() {
+            indexPointer++;
+            if (indexPointer < exerciseList.length) {
+                runQuizSetup();
+            } else {
+                document.getElementById('results-headline').innerText = `Rapport global : ${currentUsername}`;
+                document.getElementById('results-difficulty-log').innerText = `Index de Sécurité : Niveau ${activeDifficulty}`;
+                document.getElementById('score-output').innerText = `${scoreTracker} / ${exerciseList.length}`;
+                switchPane('results');
+            }
+        }
+
+        function getCleanTitle(key) {
+            const mapper = {
+                Modes: "Les Modes", Figures: "Figures de Style", Classes: "Classes Grammaticales",
+                Fonctions: "Fonctions", Temps: "Valeurs des Temps", Logique: "Analyse Logique"
+            };
+            return mapper[key] || "Révision";
+        }
+    </script>
+</body>
+</html>

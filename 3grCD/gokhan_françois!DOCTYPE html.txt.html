@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Histoire - QCM Futuriste</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #141414, #1c1c1c, #202020);
+      color: #f5f5f5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.15;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1050px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background: rgba(30,30,30,0.92);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 32px;
+      margin-top: 25px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeIn 0.7s ease;
+      backdrop-filter: blur(12px);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 45px rgba(0,0,0,0.45);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 22px;
+      color: #ffffff;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      margin-bottom: 18px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #d4af37;
+      box-shadow: 0 0 0 3px rgba(212,175,55,0.15);
+    }
+
+    button {
+      padding: 14px 22px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #ffffff, #d9d9d9);
+      color: #111;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px;
+      transition: 0.25s ease;
+      margin: 6px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .question {
+      font-size: 1.35rem;
+      margin-bottom: 22px;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .answers button {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,0.06);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .answers button:hover {
+      background: rgba(212,175,55,0.15);
+      border-color: rgba(212,175,55,0.3);
+    }
+
+    .score-box {
+      text-align: center;
+      font-size: 1.15rem;
+      margin-top: 20px;
+      color: #e8e8e8;
+    }
+
+    .flashcards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px;
+      margin-top: 25px;
+    }
+
+    .flashcard {
+      perspective: 1000px;
+      height: 180px;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.7s ease;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .flashcard:hover .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-front,
+    .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 22px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 18px;
+      backface-visibility: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+
+    .flashcard-front {
+      background: #202020;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .flashcard-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, #d4af37, #9f7912);
+      color: #111;
+      font-weight: 700;
+    }
+
+    .progress {
+      width: 100%;
+      height: 12px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 30px;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #d4af37, #f1d67a);
+      transition: 0.3s;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .glow {
+      color: #d4af37;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div style="position:fixed;top:0;left:0;width:100%;height:6px;background:linear-gradient(90deg,#d4af37,#ffffff,#d4af37);z-index:1000;opacity:0.9;"></div>
+
+<div class="container">
+<div style="display:flex;justify-content:center;margin-bottom:25px;">
+  
+  
+  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:12px 22px;border-radius:999px;display:flex;gap:18px;align-items:center;backdrop-filter:blur(10px);box-shadow:0 8px 30px rgba(0,0,0,0.25);">
+    <span style="color:#d4af37;font-weight:700;letter-spacing:2px;">HISTORY TRAINING</span>
+    <span style="color:#777;">|</span>
+    <span style="color:#cfcfcf;">Discipline • Mémoire • Progression</span>
+  </div>
+</div>
+
+  <div id="home" class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;margin-bottom:25px;">
+      <div>
+        <p style="color:#d4af37;font-weight:700;letter-spacing:2px;font-size:0.9rem;">HISTOIRE • RÉVISION PREMIUM</p>
+        <h1 style="margin-top:8px;text-align:left;line-height:1.1;">Level up<br>tes révisions.</h1>
+        <p style="margin-top:15px;color:#bdbdbd;max-width:520px;line-height:1.6;font-size:1rem;">
+          Une interface inspirée des apps et plateformes de 2025-2026 : design minimal, progression claire, animations discrètes et expérience premium sans surcharge visuelle.
+        </p>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#d4af37,#f5d77c);padding:22px;border-radius:24px;min-width:220px;color:#111;box-shadow:0 10px 30px rgba(212,175,55,0.25);">
+        <div style="font-size:0.85rem;font-weight:700;opacity:0.7;">SESSION</div>
+        <div style="font-size:2.3rem;font-weight:800;margin:8px 0;">20/20</div>
+        <div style="font-size:0.95rem;font-weight:600;">Objectif maîtrise totale</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:30px;">
+      <div style="background:rgba(255,255,255,0.04);padding:20px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:2rem;">📈</div>
+        <h3 style="margin-top:12px;">Mémoire rapide</h3>
+        <p style="margin-top:8px;color:#b5b5b5;line-height:1.5;">Retiens les dates plus vite avec une méthode visuelle inspirée des apps éducatives modernes.</p>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);padding:20px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:2rem;">🎯</div>
+        <h3 style="margin-top:12px;">Mode Challenge</h3>
+        <p style="margin-top:8px;color:#b5b5b5;line-height:1.5;">Des sessions rapides et efficaces pensées pour garder ta concentration.</p>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);padding:20px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:2rem;">🧩</div>
+        <h3 style="margin-top:12px;">Progression</h3>
+        <p style="margin-top:8px;color:#b5b5b5;line-height:1.5;">Suis ta progression et débloque un vrai rythme de révision.</p>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-bottom:25px;">
+      <div onclick="selectMode('Histoire')" class="modeCard" style="background:rgba(255,255,255,0.05);padding:24px;border-radius:22px;border:2px solid rgba(255,255,255,0.05);cursor:pointer;transition:0.3s;">
+        <div style="font-size:2rem;">📜</div>
+        <h3 style="margin-top:12px;">Histoire</h3>
+        <p style="margin-top:8px;color:#a8a8a8;line-height:1.5;">Dates clés, guerres mondiales, République et Guerre froide.</p>
+      </div>
+
+      <div onclick="selectMode('Géographie')" class="modeCard" style="background:rgba(255,255,255,0.05);padding:24px;border-radius:22px;border:2px solid rgba(255,255,255,0.05);cursor:pointer;transition:0.3s;">
+        <div style="font-size:2rem;">🌍</div>
+        <h3 style="margin-top:12px;">Géographie</h3>
+        <p style="margin-top:8px;color:#a8a8a8;line-height:1.5;">Territoires, mondialisation, espaces productifs et développement.</p>
+      </div>
+
+      <div onclick="selectMode('Les deux')" class="modeCard" style="background:linear-gradient(135deg,#d4af37,#9f7912);padding:24px;border-radius:22px;border:none;cursor:pointer;color:#111;transition:0.3s;">
+        <div style="font-size:2rem;">🏆</div>
+        <h3 style="margin-top:12px;">Mode Total</h3>
+        <p style="margin-top:8px;line-height:1.5;font-weight:600;">Histoire + Géographie pour une vraie session complète.</p>
+      </div>
+    </div>
+
+    <div id="selectedMode" style="text-align:center;margin-bottom:20px;color:#d4af37;font-weight:700;letter-spacing:2px;">
+      MODE : HISTOIRE
+    </div>
+
+    <input type="text" id="pseudo" placeholder="Entre ton pseudo" />
+
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px;">
+      <button onclick="toggleMusic()">🎵 Ambiance</button>
+      <button onclick="startQuiz()">🎯 Commencer le QCM</button>
+      <button onclick="showFlashcards()">📚 Flashcards</button>
+    </div>
+
+    <div class="score-box">
+      <p>🏆 Meilleur Score : <span id="bestScore">0</span>/20</p>
+    </div>
+  </div>
+
+  <div id="quiz" class="card hidden">
+    <div class="topbar">
+      <div class="glow" id="player"></div>
+      <div class="glow">Score : <span id="score">0</span></div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+      <div style="color:#bdbdbd;font-size:0.95rem;">Progression session</div>
+      <div style="color:#ffffff;font-weight:700;" id="questionCounter"></div>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="question" id="question"></div>
+    <div class="answers" id="answers"></div>
+  </div>
+
+  <div id="result" class="card hidden">
+    <h2>🎉 Résultat Final</h2>
+    <div class="score-box" id="finalScore"></div>
+    <div style="text-align:center;margin-top:20px;">
+      <button onclick="restartQuiz()">Rejouer</button>
+      <button onclick="goHome()">Accueil</button>
+    </div>
+  </div>
+
+  <div id="flashcardsSection" class="card hidden">
+    <h2>📚 Flashcards</h2>
+    <p style="text-align:center;color:#9f9f9f;margin-bottom:25px;">Travaille les dates clés comme un athlète prépare une compétition.</p>
+
+    <div class="flashcards" id="flashcards"></div>
+
+    <div style="margin-top:40px;">
+      <h2>🕒 Frise Chronologique</h2>
+      <p style="text-align:center;color:#9f9f9f;margin:10px 0 30px;">
+        Complète mentalement les événements avant de retourner les cartes.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:18px;">
+
+        <div style="background:rgba(255,255,255,0.04);padding:18px 22px;border-radius:18px;border-left:5px solid #d4af37;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+          <div>
+            <div style="font-size:0.85rem;color:#d4af37;font-weight:700;letter-spacing:2px;">1914-1918</div>
+            <div style="font-size:1.15rem;font-weight:700;margin-top:5px;">_______________</div>
+          </div>
+          <button onclick="this.previousElementSibling.children[1].innerText='Première Guerre mondiale'">Voir</button>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04);padding:18px 22px;border-radius:18px;border-left:5px solid #d4af37;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+          <div>
+            <div style="font-size:0.85rem;color:#d4af37;font-weight:700;letter-spacing:2px;">1939-1945</div>
+            <div style="font-size:1.15rem;font-weight:700;margin-top:5px;">_______________</div>
+          </div>
+          <button onclick="this.previousElementSibling.children[1].innerText='Seconde Guerre mondiale'">Voir</button>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04);padding:18px 22px;border-radius:18px;border-left:5px solid #d4af37;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+          <div>
+            <div style="font-size:0.85rem;color:#d4af37;font-weight:700;letter-spacing:2px;">1947-1991</div>
+            <div style="font-size:1.15rem;font-weight:700;margin-top:5px;">_______________</div>
+          </div>
+          <button onclick="this.previousElementSibling.children[1].innerText='Guerre froide'">Voir</button>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04);padding:18px 22px;border-radius:18px;border-left:5px solid #d4af37;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+          <div>
+            <div style="font-size:0.85rem;color:#d4af37;font-weight:700;letter-spacing:2px;">1954-1962</div>
+            <div style="font-size:1.15rem;font-weight:700;margin-top:5px;">_______________</div>
+          </div>
+          <button onclick="this.previousElementSibling.children[1].innerText='Guerre d’Algérie'">Voir</button>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04);padding:18px 22px;border-radius:18px;border-left:5px solid #d4af37;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+          <div>
+            <div style="font-size:0.85rem;color:#d4af37;font-weight:700;letter-spacing:2px;">1989</div>
+            <div style="font-size:1.15rem;font-weight:700;margin-top:5px;">_______________</div>
+          </div>
+          <button onclick="this.previousElementSibling.children[1].innerText='Chute du mur de Berlin'">Voir</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:35px;">
+      <button onclick="goHome()">Retour</button>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+const geoQuestions = [
+  {
+    q: "Combien y a-t-il de régions métropolitaines en France ?",
+    choices: ["10", "12", "13", "15"],
+    answer: 2
+  },
+  {
+    q: "Quel est le plus long fleuve de France ?",
+    choices: ["La Seine", "Le Rhône", "La Loire", "La Garonne"],
+    answer: 2
+  },
+  {
+    q: "Quelle ville est la capitale de l'Union européenne en Belgique ?",
+    choices: ["Amsterdam", "Bruxelles", "Berlin", "Luxembourg"],
+    answer: 1
+  },
+  {
+    q: "Quel détroit relie la Méditerranée à l’océan Atlantique ?",
+    choices: ["Suez", "Panama", "Gibraltar", "Béring"],
+    answer: 2
+  },
+  {
+    q: "Quel est le plus grand désert chaud du monde ?",
+    choices: ["Gobi", "Kalahari", "Sahara", "Atacama"],
+    answer: 2
+  },
+  {
+    q: "Quelle mégalopole se situe au Japon ?",
+    choices: ["Tokyo-Osaka", "Paris-Lyon", "Rio-Sao Paulo", "Berlin-Hambourg"],
+    answer: 0
+  },
+  {
+    q: "Quel fleuve traverse l’Égypte ?",
+    choices: ["Yangzi", "Nil", "Mississippi", "Congo"],
+    answer: 1
+  },
+  {
+    q: "Quel massif montagneux se situe entre la France et l’Espagne ?",
+    choices: ["Les Alpes", "Les Vosges", "Les Pyrénées", "Le Jura"],
+    answer: 2
+  },
+  {
+    q: "Combien d’États membres compte l’Union européenne ?",
+    choices: ["25", "27", "30", "32"],
+    answer: 1
+  },
+  {
+    q: "Quel est le principal aéroport de Paris ?",
+    choices: ["Orly", "Charles-de-Gaulle", "Le Bourget", "Nice"],
+    answer: 1
+  }
+];
+
+const questions = [
+  {
+    q: "Quand a eu lieu la Première Guerre mondiale ?",
+    choices: ["1914-1918", "1939-1945", "1870-1871", "1920-1924"],
+    answer: 0
+  },
+  {
+    q: "Quelle bataille importante a eu lieu en 1916 ?",
+    choices: ["Waterloo", "Verdun", "Stalingrad", "Austerlitz"],
+    answer: 1
+  },
+  {
+    q: "Quel événement majeur a eu lieu en Russie en 1917 ?",
+    choices: ["Révolution russe", "Mur de Berlin", "Traité de Rome", "ONU"],
+    answer: 0
+  },
+  {
+    q: "Quelle date marque l'armistice de la Première Guerre mondiale ?",
+    choices: ["8 mai 1945", "11 novembre 1918", "18 juin 1940", "9 novembre 1989"],
+    answer: 1
+  },
+  {
+    q: "Qui dirige l'URSS entre 1924 et 1953 ?",
+    choices: ["Lénine", "Staline", "Khrouchtchev", "Trotski"],
+    answer: 1
+  },
+  {
+    q: "Qui dirige l'Allemagne nazie ?",
+    choices: ["Mussolini", "Churchill", "Hitler", "Roosevelt"],
+    answer: 2
+  },
+  {
+    q: "Quand commence la Seconde Guerre mondiale ?",
+    choices: ["1939", "1918", "1945", "1929"],
+    answer: 0
+  },
+  {
+    q: "Quel appel célèbre est lancé le 18 juin 1940 ?",
+    choices: ["Appel de Churchill", "Appel de De Gaulle", "Appel de Napoléon", "Appel de Jaurès"],
+    answer: 1
+  },
+  {
+    q: "Quelle opération militaire a lieu le 6 juin 1944 ?",
+    choices: ["Débarquement de Normandie", "Bataille de Verdun", "Traité de Rome", "Révolution russe"],
+    answer: 0
+  },
+  {
+    q: "Quand les femmes obtiennent-elles le droit de vote en France ?",
+    choices: ["1944-1945", "1914", "1968", "1981"],
+    answer: 0
+  },
+  {
+    q: "Quelle organisation est créée en 1945 ?",
+    choices: ["OTAN", "ONU", "UE", "URSS"],
+    answer: 1
+  },
+  {
+    q: "Quand a lieu la Guerre froide ?",
+    choices: ["1914-1918", "1947-1991", "1939-1945", "1954-1962"],
+    answer: 1
+  },
+  {
+    q: "Quel traité crée la construction européenne en 1957 ?",
+    choices: ["Traité de Versailles", "Traité de Maastricht", "Traité de Rome", "Traité de Paris"],
+    answer: 2
+  },
+  {
+    q: "Quand naît la Ve République ?",
+    choices: ["1945", "1958", "1962", "1975"],
+    answer: 1
+  },
+  {
+    q: "Quand a lieu la Guerre d'Algérie ?",
+    choices: ["1939-1945", "1947-1991", "1954-1962", "1968-1975"],
+    answer: 2
+  },
+  {
+    q: "Quel événement a lieu le 9 novembre 1989 ?",
+    choices: ["Chute du mur de Berlin", "Création de l'ONU", "Traité de Rome", "Euro"],
+    answer: 0
+  },
+  {
+    q: "Quel événement se produit le 11 septembre 2001 ?",
+    choices: ["Chute du mur", "Attentats aux États-Unis", "Fin de l'URSS", "Traité de Maastricht"],
+    answer: 1
+  },
+  {
+    q: "Quel traité européen est signé en 1992 ?",
+    choices: ["Traité de Rome", "Traité de Maastricht", "Traité de Versailles", "Traité de Berlin"],
+    answer: 1
+  },
+  {
+    q: "Que se passe-t-il en 1991 ?",
+    choices: ["Création de l'ONU", "Fin de la Guerre froide", "Dislocation de l'URSS", "Débarquement"],
+    answer: 2
+  },
+  {
+    q: "Quelle monnaie européenne apparaît en 2002 ?",
+    choices: ["Le Franc", "Le Dollar", "L'Euro", "Le Mark"],
+    answer: 2
+  }
+];
+
+const geoFlashcards = [
+  ["13 régions", "Nombre de régions métropolitaines françaises"],
+  ["Nil", "Grand fleuve de l’Égypte"],
+  ["Sahara", "Plus grand désert chaud"],
+  ["Bruxelles", "Capitale politique de l’UE"],
+  ["Tokyo", "Grande métropole mondiale"],
+  ["Gibraltar", "Détroit entre Atlantique et Méditerranée"],
+  ["Alpes", "Grande chaîne de montagnes européenne"],
+  ["Amazonie", "Grande forêt dense"],
+  ["Union européenne", "27 États membres"],
+  ["Charles-de-Gaulle", "Grand aéroport français"]
+];
+
+const flashcardsData = [
+  ["1914-1918", "Première Guerre mondiale"],
+  ["1916", "Bataille de Verdun"],
+  ["1917", "Révolution russe"],
+  ["11 novembre 1918", "Armistice"],
+  ["1939-1945", "Seconde Guerre mondiale"],
+  ["18 juin 1940", "Appel du Général De Gaulle"],
+  ["6 juin 1944", "Débarquement de Normandie"],
+  ["1945", "Création de l'ONU"],
+  ["1947-1991", "Guerre froide"],
+  ["1957", "Traité de Rome"],
+  ["1958", "Naissance de la Ve République"],
+  ["1975", "Loi Veil sur l'IVG"],
+  ["9 novembre 1989", "Chute du mur de Berlin"],
+  ["1992", "Traité de Maastricht"],
+  ["2002", "Euro"],
+];
+
+let selectedMode = 'Histoire';
+
+function selectMode(mode) {
+  selectedMode = mode;
+  document.getElementById('selectedMode').innerText = 'MODE : ' + mode.toUpperCase();
+
+  document.querySelectorAll('.modeCard').forEach(card => {
+    card.style.transform = 'scale(1)';
+    card.style.border = '2px solid rgba(255,255,255,0.05)';
+  });
+
+  event.currentTarget.style.transform = 'scale(1.03)';
+  event.currentTarget.style.border = '2px solid #d4af37';
+}
+
+let currentQuestion = 0;
+let score = 0;
+let pseudo = "";
+
+function startQuiz() {
+  if(selectedMode === 'Géographie') {
+    questions.splice(0, questions.length, ...geoQuestions);
+  }
+
+  if(selectedMode === 'Les deux') {
+    questions.splice(0, questions.length, ...questions, ...geoQuestions);
+  }
+
+  pseudo = document.getElementById('pseudo').value || 'Joueur';
+
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+
+  document.getElementById('player').innerText = '👤 ' + pseudo;
+
+  currentQuestion = 0;
+  score = 0;
+
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = questions[currentQuestion];
+
+  document.getElementById('question').innerText = q.q;
+  document.getElementById('score').innerText = score;
+  document.getElementById('questionCounter').innerText = `Question ${currentQuestion + 1}/${questions.length}`;
+
+  const answersDiv = document.getElementById('answers');
+  answersDiv.innerHTML = '';
+
+  q.choices.forEach((choice, index) => {
+    const btn = document.createElement('button');
+    btn.innerText = choice;
+    btn.onclick = () => selectAnswer(index);
+    answersDiv.appendChild(btn);
+  });
+
+  const progress = ((currentQuestion) / questions.length) * 100;
+  document.getElementById('progressBar').style.width = progress + '%';
+}
+
+function selectAnswer(index) {
+  if(index === questions[currentQuestion].answer) {
+    score++;
+  }
+
+  currentQuestion++;
+
+  if(currentQuestion < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+
+  const badge = getBadge(score);
+
+  document.getElementById('finalScore').innerHTML = `
+    👤 <strong>${pseudo}</strong><br><br>
+    Tu as obtenu <span class="glow">${score}/${questions.length}</span><br><br>
+    <div style="margin-top:10px;font-size:1.2rem;font-weight:700;">
+      ${badge}
+    </div>
+    <div style="margin-top:18px;background:rgba(255,255,255,0.04);padding:16px;border-radius:16px;color:#bdbdbd;line-height:1.6;">
+      ${randomQuote()}
+    </div>
+  `;
+
+  const best = localStorage.getItem('bestScore') || 0;
+
+  if(score > best) {
+    localStorage.setItem('bestScore', score);
+    document.getElementById('bestScore').innerText = score;
+  }
+}
+
+function restartQuiz() {
+  document.getElementById('result').classList.add('hidden');
+  startQuiz();
+}
+
+function goHome() {
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('flashcardsSection').classList.add('hidden');
+  document.getElementById('home').classList.remove('hidden');
+}
+
+function showFlashcards() {
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('flashcardsSection').classList.remove('hidden');
+
+  const container = document.getElementById('flashcards');
+  container.innerHTML = '';
+
+  let cardsToShow = [...flashcardsData];
+
+  if(selectedMode === 'Géographie') {
+    cardsToShow = geoFlashcards;
+  }
+
+  if(selectedMode === 'Les deux') {
+    cardsToShow = [...flashcardsData, ...geoFlashcards];
+  }
+
+  cardsToShow.forEach(card => {
+    const div = document.createElement('div');
+    div.className = 'flashcard';
+
+    div.innerHTML = `
+      <div class="flashcard-inner">
+        <div class="flashcard-front">
+          <h3>${card[0]}</h3>
+        </div>
+        <div class="flashcard-back">
+          <p>${card[1]}</p>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+// ===== SYSTÈME DE BADGES =====
+const badges = [
+  { score: 5, title: '📘 Débutant motivé' },
+  { score: 10, title: '🔥 En progression' },
+  { score: 15, title: '🏆 Machine à réviser' },
+  { score: 20, title: '👑 Master HG' }
+];
+
+function getBadge(score) {
+  let current = badges[0].title;
+
+  badges.forEach(b => {
+    if(score >= b.score) {
+      current = b.title;
+    }
+  });
+
+  return current;
+}
+
+// ===== CITATION MOTIVATION =====
+const motivationQuotes = [
+  'La discipline bat la motivation.',
+  '1% meilleur chaque jour.',
+  'Travaille maintenant, remercie-toi plus tard.',
+  'Le cerveau retient ce qu’il répète.',
+  'Les dates deviennent faciles avec la régularité.'
+];
+
+function randomQuote() {
+  return motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
+}
+
+window.onload = () => {
+  const quoteBox = document.createElement('div');
+
+  quoteBox.innerHTML = `
+    <div style="margin-top:20px;background:rgba(255,255,255,0.04);padding:18px;border-radius:18px;text-align:center;color:#d0d0d0;font-weight:600;letter-spacing:1px;">
+      ${randomQuote()}
+    </div>
+  `;
+
+  document.getElementById('home').appendChild(quoteBox);
+
+  document.getElementById('bestScore').innerText = localStorage.getItem('bestScore') || 0;
+};
+
+// Animation particules futuristes
+// ===== MINI AMBIANCE SONORE =====
+let audioStarted = false;
+
+function toggleMusic() {
+  if(audioStarted) return;
+
+  const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8f1b4d8f5.mp3?filename=lofi-study-112191.mp3');
+  audio.volume = 0.15;
+  audio.loop = true;
+  audio.play();
+
+  audioStarted = true;
+}
+
+// ===== BACKGROUND =====
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+
+for(let i = 0; i < 100; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    radius: Math.random() * 2,
+    dx: (Math.random() - 0.5) * 1,
+    dy: (Math.random() - 0.5) * 1
+  });
+}
+
+function animate() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'cyan';
+    ctx.fill();
+
+    p.x += p.dx;
+    p.y += p.dy;
+
+    if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>

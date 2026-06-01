@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maths Révisions - Flashcards & QCM</title>
+    <style>
+        :root {
+            /* Palette dégradée Rose pâle et Vert clair */
+            --rose-pale: #FFE5EC;
+            --rose-accent: #FB6F92;
+            --vert-clair: #E8F5E9;
+            --vert-accent: #2E7D32;
+            --vert-pastel: #C8E6C9;
+            --success: #2E7D32;
+            --danger: #D32F2F;
+            --text: #264653;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Fond dégradé Rose pâle vers Vert clair */
+            background: linear-gradient(135deg, var(--rose-pale), #F3EFE0, var(--vert-clair));
+            background-attachment: fixed;
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, rgba(251, 111, 146, 0.2), rgba(200, 230, 201, 0.4));
+            backdrop-filter: blur(5px);
+            text-align: center;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-bottom: 2px solid rgba(255,255,255,0.4);
+        }
+
+        h1 { margin: 0; font-size: 2.2rem; font-weight: 800; color: #2c3e50; }
+        p.subtitle { margin: 0.5rem 0 0 0; opacity: 0.9; font-weight: 600; color: #57606f; }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Onglets de Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 2px solid transparent;
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #57606f;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--rose-accent), var(--vert-accent));
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* Style des Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 550px;
+            height: 320px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2.2rem;
+            box-sizing: border-box;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .card-front { 
+            background-color: var(--card-bg); 
+            border-left: 8px solid var(--rose-accent);
+        }
+        
+        .card-back { 
+            background: linear-gradient(135deg, #FFF0F5, #E8F8F5); 
+            color: var(--text); 
+            transform: rotateY(180deg);
+            border-left: 8px solid var(--vert-accent); 
+        }
+
+        .card-front h3 { color: var(--rose-accent); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 1rem 0; }
+        .card-front p { font-size: 1.3rem; font-weight: 600; color: #2c3e50; margin: 0; }
+        .card-back h3 { font-size: 1.2rem; color: var(--vert-accent); margin-bottom: 0.8rem; font-weight: 700; }
+        .card-back p { font-size: 1.2rem; color: #1e272e; font-weight: 500; white-space: pre-line; }
+
+        .controls { display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin-top: 1.5rem; }
+
+        .btn {
+            background: linear-gradient(135deg, #2f3542, #57606f);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+
+        /* Style des zones de QCM */
+        .qcm-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .options-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+        
+        .option-item {
+            background-color: #F8F9FA;
+            border: 2px solid #E9ECEF;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .option-item:hover { background-color: #F1F3F5; border-color: var(--rose-accent); transform: translateX(3px); }
+        .option-item.correct { background-color: #E8F5E9; border-color: var(--success); color: #1B5E20; font-weight: bold; }
+        .option-item.wrong { background-color: #FFEBEE; border-color: var(--danger); color: #B71C1C; }
+
+        #feedback { font-weight: 700; font-size: 1.1rem; margin-top: 1rem; min-height: 24px; }
+        
+        .explanation {
+            background-color: #E8F5E9;
+            border-left: 4px solid var(--vert-accent);
+            padding: 1rem;
+            border-radius: 4px;
+            color: #1B5E20;
+            margin-top: 0.8rem;
+            display: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Mathématiques : Brevet & Collège</h1>
+        <p class="subtitle">Automatismes • Formules • Définitions</p>
+    </header>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+            <button class="tab-btn" onclick="switchTab('qcm')">📝 Entraînement QCM</button>
+        </div>
+
+        <div id="flashcards-panel" class="panel active">
+            <div class="flashcard-container" onclick="toggleCard()">
+                <div class="flashcard" id="main-card">
+                    <div class="card-face card-front">
+                        <h3 id="card-id-view">Question</h3>
+                        <p id="card-question">Chargement de la question...</p>
+                        <span style="font-size: 0.8rem; color: #999; margin-top: auto;">💡 Cliquez sur la carte pour voir la réponse</span>
+                    </div>
+                    <div class="card-face card-back">
+                        <h3>Réponse</h3>
+                        <p id="card-answer">Chargement de la réponse...</p>
+                        <span style="font-size: 0.8rem; color: #555; margin-top: auto;">👋 Cliquez pour revenir à la question</span>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="prevCard()">◀ Précédent</button>
+                <span id="card-counter" style="font-weight: bold; color: #2c3e50;">1 / X</span>
+                <button class="btn" onclick="nextCard()">Suivant ▶</button>
+            </div>
+        </div>
+
+        <div id="qcm-panel" class="panel">
+            <div class="qcm-card">
+                <div style="display: flex; justify-content: space-between; color: #888; font-size: 0.9rem; font-weight: 600;">
+                    <span>Question en cours</span>
+                    <span id="qcm-score-live" style="color: var(--vert-accent);">Score : 0/0</span>
+                </div>
+                <h3 id="qcm-prompt" style="margin: 1.5rem 0; color: #2c3e50;">Chargement...</h3>
+                <ul class="options-list" id="qcm-options"></ul>
+                <div id="feedback"></div>
+                <div id="qcm-explanation" class="explanation"></div>
+                <div style="text-align: right; margin-top: 1.5rem;">
+                    <button id="next-q-btn" class="btn" onclick="nextQuestion()" style="display: none; background: linear-gradient(135deg, var(--vert-accent), #1b5e20);">Question suivante ➔</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- BASE DE DONNÉES COMPLÈTE DES MATHÉMATIQUES ---
+        const qaDataset = [
+            { q: "Dire les noms du résultat de l’addition, la soustraction, la multiplication, la division.", a: "Addition : somme\nSoustraction : différence\nMultiplication : produit\nDivision : quotient" },
+            { q: "Écrire l’égalité correspondante à la division euclidienne de a par b avec un reste r.", a: "a = b × q + r avec r < b" },
+            { q: "Cite un multiple de 12.", a: "12, 24, 36, 48, 60..." },
+            { q: "Cite un diviseur de 15.", a: "1, 3, 5 ou 15" },
+            { q: "7 est-il un multiple de 14 ?", a: "Non, 7 est un diviseur de 14 (car 14 = 7 × 2)." },
+            { q: "Comment repère-t-on un nombre qui se divise par 2 ?", a: "Il est pair : il se termine par 0, 2, 4, 6 ou 8." },
+            { q: "Comment repère-t-on un nombre qui se divise par 3 (ou par 9) ?", a: "La somme de ses chiffres est dans la table de 3 (ou de 9)." },
+            { q: "Comment repère-t-on un nombre qui se divise par 5 ?", a: "Il se termine par 0 ou 5." },
+            { q: "Quelle est l’écriture mathématique d’un nombre pair ? impair ? (avec k entier)", a: "Pair : 2k\nImpair : 2k + 1" },
+            { q: "Quelle est l’écriture mathématique d’un nombre multiple de 7 ? (avec k entier)", a: "7k" },
+            { q: "Qu’est-ce qu’un nombre premier ?", a: "Un nombre entier positif qui possède exactement deux diviseurs distincts : 1 et lui-même." },
+            { q: "Récite les nombres premiers entre 1 et 30.", a: "2, 3, 5, 7, 11, 13, 17, 19, 23, 29" },
+            { q: "Qu’est-ce qu’une fraction irréductible ?", a: "Une fraction qu’on ne peut plus simplifier (le numérateur et le dénominateur ont 1 pour seul diviseur commun)." },
+            { q: "Comment rendre une fraction irréductible ?", a: "2 méthodes : par divisions successives par des diviseurs communs OU en décomposant en produit de facteurs premiers puis en simplifiant les facteurs communs." },
+            { q: "Comment ajoute-t-on deux nombres négatifs ?", a: "On ajoute leurs distances à zéro et on conserve le signe (-) au résultat." },
+            { q: "Comment ajoute-t-on deux nombres de signes contraires ?", a: "On soustrait la plus petite distance à zéro de la plus grande, et on met le signe du nombre qui a la plus grande distance à zéro." },
+            { q: "Soustraire un nombre revient à...", a: "Ajouter son opposé." },
+            { q: "Comment ajouter ou soustraire deux fractions ?", a: "On les met au même dénominateur. On ajoute/soustrait les numérateurs et on garde le dénominateur commun." },
+            { q: "Comment multiplier deux fractions ?", a: "On multiplie les numérateurs entre eux et les dénominateurs entre eux (penser à simplifier avant de calculer)." },
+            { q: "Comment calcule-t-on la fraction d’une quantité ?", a: "On multiplie la quantité par la fraction." },
+            { q: "Qu’est-ce que deux nombres opposés ?", a: "Deux nombres dont la somme vaut 0 (Exemple : 3 et -3)." },
+            { q: "Qu’est-ce que deux nombres inverses ?", a: "Deux nombres dont le produit vaut 1 (Exemple : 3 et 1/3)." },
+            { q: "Comment diviser deux fractions ?", a: "On multiplie la première fraction par l'inverse de la deuxième." },
+            { q: "Que signifie a³ ?", a: "a × a × a" },
+            { q: "Que signifie aⁿ ?", a: "a × a × ... × a (n fois)" },
+            { q: "Que signifie a⁻ⁿ ?", a: "L'inverse de aⁿ, soit 1 / aⁿ" },
+            { q: "Comment multiplie-t-on un nombre par 10ⁿ ?", a: "On décale la virgule de n rangs vers la droite." },
+            { q: "Comment multiplie-t-on un nombre par 10⁻ⁿ ?", a: "On décale la virgule de n rangs vers la gauche." },
+            { q: "Que signifie le préfixe méga ?", a: "1 000 000 ou 1 million ou 10⁶" },
+            { q: "Que signifie le préfixe giga ?", a: "1 000 000 000 ou 1 milliard ou 10⁹" },
+            { q: "Que signifie le préfixe micro ?", a: "0,000 001 ou 1 millionième ou 10⁻⁶" },
+            { q: "Que signifie le préfixe nano ?", a: "0,000 000 001 ou 1 milliardième ou 10⁻⁹" },
+            { q: "Quelles sont les deux formules de distributivité (simple et double) ?", a: "Simple : k(a + b) = ka + kb\nDouble : (a + b)(c + d) = ac + ad + bc + bd" },
+            { q: "Quelle est la forme factorisée de a² - b² ?", a: "(a - b)(a + b)" },
+            { q: "Comment factoriser une expression ?", a: "Il faut identifier un facteur commun ou utiliser une identité remarquable." },
+            { q: "Comment résoudre une équation du 1er degré ?", a: "Isoler les x d'un côté et les termes constants de l'autre en effectuant les mêmes opérations sur les deux membres." },
+            { q: "Comment appelle-t-on le type d'équation (ax+b)(cx+d)=0 ?", a: "Une équation-produit nul." },
+            { q: "Comment résout-on une équation produit nul ?", a: "Un produit est nul si et seulement si au moins un de ses facteurs est nul : ax + b = 0 OU cx + d = 0." },
+            { q: "Quelles sont les solutions de x² = a avec a positif ?", a: "x = √a et x = -√a" },
+            { q: "Que vaut la somme des angles dans un triangle ?", a: "180°" },
+            { q: "Quelles sont les propriétés d’un triangle isocèle ?", a: "Deux côtés de même longueur et deux angles à la base de même mesure." },
+            { q: "Quelles sont les propriétés d’un triangle équilatéral ?", a: "Trois côtés de même longueur et trois angles égaux de 60°." },
+            { q: "Comment s’appelle le côté le plus long dans un triangle rectangle ?", a: "L’hypoténuse." },
+            { q: "À quoi sert le théorème de Pythagore ?", a: "À calculer la longueur d'un côté dans un triangle rectangle." },
+            { q: "Dans quelle configuration peut-on utiliser le théorème de Pythagore ?", a: "Un triangle rectangle." },
+            { q: "Quelles données faut-il pour utiliser la réciproque ou la contraposée de Pythagore ?", a: "Un triangle dont on connaît les longueurs des 3 côtés." },
+            { q: "À quoi servent la réciproque et la contraposée de Pythagore ?", a: "Réciproque : prouver qu’un triangle EST rectangle.\nContraposée : prouver qu’un triangle N'EST PAS rectangle." },
+            { q: "Qu’est-ce que la médiatrice d’un segment ?", a: "La droite perpendiculaire à ce segment qui passe par son milieu." },
+            { q: "Quelles sont les propriétés d’un parallélogramme ?", a: "Côtés opposés parallèles et égaux, diagonales qui se coupent en leur milieu." },
+            { q: "Quelles sont les propriétés d’un rectangle ?", a: "4 angles droits, diagonales de même longueur qui se coupent en leur milieu." },
+            { q: "Quelles sont les propriétés d’un losange ?", a: "4 côtés de même longueur, diagonales perpendiculaires qui se coupent en leur milieu." },
+            { q: "Quelles sont les propriétés d’un carré ?", a: "4 côtés égaux, 4 angles droits, diagonales de même longueur, perpendiculaires et se coupant en leur milieu." },
+            { q: "À quoi sert le théorème de Thalès ?", a: "À calculer des longueurs de côtés." },
+            { q: "Dans quelles configurations peut-on utiliser le théorème de Thalès ?", a: "Triangles emboîtés ou configuration 'papillon' avec deux droites parallèles." },
+            { q: "Énonce le théorème de Thalès.", a: "Si (BC) // (MN) dans des triangles emboîtés de sommet A, alors AM/AB = AN/AC = MN/BC." },
+            { q: "À quoi servent la réciproque et la contraposée du théorème de Thalès ?", a: "Réciproque : montrer que deux droites sont parallèles.\nContraposée : montrer que deux droites ne sont pas parallèles." },
+            { q: "À quoi sert la trigonométrie ?", a: "Dans un triangle rectangle, à calculer une longueur de côté ou la mesure d’un angle." },
+            { q: "Donne la formule du cosinus d’un angle.", a: "Cosinus = Côté adjacent / Hypoténuse" },
+            { q: "Donne la formule du sinus d’un angle.", a: "Sinus = Côté opposé / Hypoténuse" },
+            { q: "Donne la formule de la tangente d’un angle.", a: "Tangente = Côté opposé / Côté adjacent" },
+            { q: "Comment calculer un angle avec la trigonométrie ?", a: "On utilise les touches Arccos (ou cos⁻¹), Arcsin (ou sin⁻¹), ou Arctan (ou tan⁻¹) de la calculatrice." },
+            { q: "En quoi consiste une translation ?", a: "Faire glisser une figure selon un vecteur (direction, sens, longueur) sans la déformer ni la tourner." },
+            { q: "En quoi consiste une rotation ?", a: "Faire tourner une figure autour d’un centre, selon un angle et un sens donné." },
+            { q: "En quoi consiste une homothétie de rapport k positif ?", a: "Agrandir (si k>1) ou réduire (si k<1) une figure par rapport à un centre." },
+            { q: "En quoi consiste une homothétie de rapport k négatif ?", a: "Agrandir ou réduire une figure, et lui faire subir un demi-tour (180°) autour du centre." },
+            { q: "Comment reconnaître deux triangles semblables ?", a: "Ils ont leurs angles deux à deux égaux ou leurs longueurs de côtés proportionnelles." },
+            { q: "Comment se nomme le méridien de référence sur la Terre ?", a: "Le méridien de Greenwich." },
+            { q: "Comment se nomme le parallèle de référence sur la Terre ?", a: "L’équateur." },
+            { q: "Comment repère-t-on un point sur une sphère ?", a: "Avec ses coordonnées géographiques : la latitude et la longitude." },
+            { q: "Périmètre d’un rectangle ?", a: "2 × (Longueur + largeur)" },
+            { q: "Périmètre d’un carré ?", a: "4 × Côté" },
+            { q: "Périmètre d’un cercle ?", a: "2 × π × Rayon  OU  π × Diamètre" },
+            { q: "Aire d’un rectangle ?", a: "Longueur × largeur" },
+            { q: "Aire d’un carré ?", a: "Côté × Côté (ou Côté²)" },
+            { q: "Aire d’un triangle ?", a: "(Base × Hauteur) / 2" },
+            { q: "Qu’est-ce qu’une hauteur dans un triangle ?", a: "Une droite passant par un sommet et perpendiculaire au côté opposé." },
+            { q: "Aire d’un disque ?", a: "π × Rayon²" },
+            { q: "Dans un repère, comment s’appelle l’axe horizontal ?", a: "L’axe des abscisses." },
+            { q: "Dans un repère, comment s’appelle l’axe vertical ?", a: "L’axe des ordonnées." },
+            { q: "Pour le point (5 ; -7), qu'est-ce que le 5 ? le -7 ?", a: "5 est l’abscisse (axe horizontal)\n-7 est l’ordonnée (axe vertical)" },
+            { q: "Par quel nombre passe-t-on d'une unité de longueur à la suivante ?", a: "Par 10." },
+            { q: "Par quel nombre passe-t-on d'une unité d'aire à la suivante ?", a: "Par 100." },
+            { q: "Par quel nombre passe-t-on d'une unité de volume à la suivante ?", a: "Par 1000." },
+            { q: "Quelle est la correspondance entre 1 L et les dm³ ?", a: "1 L = 1 dm³" },
+            { q: "Volume d’un cube ?", a: "Côté³" },
+            { q: "Volume d’un pavé droit ?", a: "Longueur × largeur × Hauteur" },
+            { q: "Volume d’un cylindre ?", a: "π × Rayon² × Hauteur" },
+            { q: "Volume d’une pyramide ou d'un cône ?", a: "(Aire de la base × Hauteur) / 3" },
+            { q: "Volume d’une sphère ?", a: "(4/3) × π × Rayon³" },
+            { q: "Si les longueurs sont multipliées par k, par quoi est multipliée l'aire ? le volume ?", a: "L'aire est multipliée par k²\nLe volume est multiplié par k³" },
+            { q: "Comment vérifie-t-on la proportionnalité dans un tableau ?", a: "On divise chaque nombre de la 2ème ligne par celui de la 1ère ligne. On vérifie si ce rapport est constant." },
+            { q: "Comment reconnaît-on une situation de proportionnalité sur un graphique ?", a: "Les points sont alignés sur une droite qui passe par l’origine du repère." },
+            { q: "Donne la formule reliant vitesse (v), distance (d) et temps (t).", a: "v = d / t" },
+            { q: "Donne l'écriture décimale et fractionnaire de 15%.", a: "15/100  ou  0,15" },
+            { q: "Augmenter une quantité de a% revient à la multiplier par...", a: "1 + a/100" },
+            { q: "Diminuer une quantité de a% revient à la multiplier par...", a: "1 - a/100" },
+            { q: "Qu’est-ce qu’une fonction ?", a: "Un processus qui, à un nombre de départ (antécédent), associe un unique nombre d'arrivée (image)." },
+            { q: "Sur un graphique de fonction, sur quel axe lit-on l'antécédent ? l'image ?", a: "Antécédent : axe des abscisses (horizontal)\nImage : axe des ordonnées (vertical)" },
+            { q: "Soit f(3) = 13,9. Quel nombre est l'image ? l'antécédent ?", a: "13,9 est l'image de 3\n3 est l'antécédent de 13,9" },
+            { q: "Donner la forme d’une fonction linéaire.", a: "f(x) = ax (représente une situation de proportionnalité)" },
+            { q: "Donner la forme d’une fonction affine.", a: "f(x) = ax + b (où a est le coefficient directeur et b l'ordonnée à l'origine)" },
+            { q: "Comment calcule-t-on la moyenne d'une série statistique ?", a: "On fait la somme de toutes les valeurs et on divise par l'effectif total." },
+            { q: "Comment calcule-t-on l'étendue d'une série statistique ?", a: "Valeur maximale - Valeur minimale." }
+        ];
+
+        // --- GESTION DES ONGLETS ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+            
+            if(tabName === 'flashcards') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('flashcards-panel').classList.add('active');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('qcm-panel').classList.add('active');
+                initQCM();
+            }
+        }
+
+        // --- MODULE FLASHCARDS ---
+        let currentCardIndex = 0;
+        const mainCard = document.getElementById('main-card');
+
+        function updateCard() {
+            mainCard.classList.remove('flipped');
+            setTimeout(() => {
+                const data = qaDataset[currentCardIndex];
+                document.getElementById('card-id-view').textContent = `Question n°${currentCardIndex + 1}`;
+                document.getElementById('card-question').textContent = data.q;
+                document.getElementById('card-answer').textContent = data.a;
+                document.getElementById('card-counter').textContent = `${currentCardIndex + 1} / ${qaDataset.length}`;
+            }, 150);
+        }
+
+        function toggleCard() { mainCard.classList.toggle('flipped'); }
+        function nextCard() { currentCardIndex = (currentCardIndex + 1) % qaDataset.length; updateCard(); }
+        function prevCard() { currentCardIndex = (currentCardIndex - 1 + qaDataset.length) % qaDataset.length; updateCard(); }
+
+
+        // --- MODULE QCM EN DIRECT ---
+        let currentQcmIndex = 0;
+        let score = 0;
+        let totalAnswered = 0;
+        let activeQcmPool = [];
+        let qcmHasAnswered = false;
+
+        function initQCM() {
+            // Mélange l'ordre global des questions pour le mode questionnaire
+            activeQcmPool = [...qaDataset].sort(() => Math.random() - 0.5);
+            currentQcmIndex = 0;
+            score = 0;
+            totalAnswered = 0;
+            loadQcmQuestion();
+        }
+
+        function loadQcmQuestion() {
+            qcmHasAnswered = false;
+            document.getElementById('next-q-btn').style.display = 'none';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('qcm-explanation').style.display = 'none';
+            
+            const item = activeQcmPool[currentQcmIndex];
+            document.getElementById('qcm-score-live').textContent = `Score : ${score}/${totalAnswered}`;
+            document.getElementById('qcm-prompt').textContent = item.q;
+
+            // Sélection de 2 distractors (fausses réponses piégées au hasard)
+            let distractors = qaDataset
+                .filter(d => d.a !== item.a)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 2)
+                .map(d => d.a);
+
+            // Fusionner et mélanger les propositions du QCM (1 vraie + 2 fausses)
+            let choices = [item.a, ...distractors].sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('qcm-options');
+            optionsContainer.innerHTML = '';
+
+            choices.forEach(choice => {
+                const li = document.createElement('li');
+                li.className = 'option-item';
+                li.textContent = choice;
+                li.onclick = () => verifyQcmAnswer(li, choice, item.a);
+                optionsContainer.appendChild(li);
+            });
+        }
+
+        function verifyQcmAnswer(element, chosen, correct) {
+            if (qcmHasAnswered) return;
+            qcmHasAnswered = true;
+            totalAnswered++;
+
+            const items = document.querySelectorAll('.option-item');
+            const feedback = document.getElementById('feedback');
+            const expDiv = document.getElementById('qcm-explanation');
+
+            if (chosen === correct) {
+                element.classList.add('correct');
+                feedback.textContent = "🎯 Parfait ! C'est la bonne définition.";
+                feedback.style.color = "var(--success)";
+                score++;
+            } else {
+                element.classList.add('wrong');
+                feedback.textContent = "❌ Ce n'est pas tout à fait ça.";
+                feedback.style.color = "var(--danger)";
+                
+                // Révèle la bonne réponse en vert
+                items.forEach(i => {
+                    if (i.textContent === correct) i.classList.add('correct');
+                });
+            }
+
+            expDiv.innerHTML = `<strong>Rappel de la règle :</strong><br>${correct}`;
+            expDiv.style.display = 'block';
+
+            document.getElementById('qcm-score-live').textContent = `Score : ${score}/${totalAnswered}`;
+            document.getElementById('next-q-btn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            if (currentQcmIndex < activeQcmPool.length - 1) {
+                currentQcmIndex++;
+                loadQcmQuestion();
+            } else {
+                alert(`Fin du test ! Votre score final est de : ${score}/${totalAnswered}. On recommence avec de nouvelles questions !`);
+                initQCM();
+            }
+        }
+
+        // Lancement initial au démarrage
+        updateCard();
+    </script>
+</body>
+</html>

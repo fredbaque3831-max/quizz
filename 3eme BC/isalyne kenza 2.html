@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Révisions Collège</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .menu select, .menu button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 1em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu button {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .menu button:hover {
+            background-color: #2980b9;
+        }
+
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .question-container {
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 12px;
+            border: 1px solid var(--light);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: white;
+        }
+
+        .option:hover {
+            background-color: var(--light);
+            border-color: var(--primary);
+        }
+
+        .option.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .option.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .option.incorrect {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .feedback {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger);
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .progress {
+            height: 10px;
+            background-color: var(--light);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .subject-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .subject-card h3 {
+            margin-top: 0;
+            color: white;
+        }
+
+        .subject-card.history { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+        .subject-card.geo { background: linear-gradient(135deg, #16a085, #27ae60); }
+        .subject-card.french { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .subject-card.maths { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .subject-card.science { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+
+        @media (max-width: 768px) {
+            .menu {
+                flex-direction: column;
+                align-items: center;
+            }
+            .subject-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎓 Quiz de Révisions Collège</h1>
+            <p>Révise tout le programme du collège par matière et par niveau</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Choisis une matière</h2>
+        <div class="subject-grid">
+            <div class="subject-card history" onclick="selectSubject('histoire')">
+                <h3>📜 Histoire</h3>
+            </div>
+            <div class="subject-card geo" onclick="selectSubject('géographie')">
+                <h3>🌍 Géographie</h3>
+            </div>
+            <div class="subject-card french" onclick="selectSubject('français')">
+                <h3>📖 Français</h3>
+            </div>
+            <div class="subject-card maths" onclick="selectSubject('maths')">
+                <h3>➗ Mathématiques</h3>
+            </div>
+            <div class="subject-card science" onclick="selectSubject('sciences')">
+                <h3>🔬 Sciences</h3>
+            </div>
+        </div>
+
+        <div id="level-selector" style="display: none;">
+            <h2>Choisis ton niveau</h2>
+            <div class="menu">
+                <select id="level-select">
+                    <option value="6ème">6ème</option>
+                    <option value="5ème">5ème</option>
+                    <option value="4ème">4ème</option>
+                    <option value="3ème">3ème</option>
+                </select>
+                <button onclick="startQuiz()">Commencer le quiz</button>
+            </div>
+        </div>
+
+        <div id="quiz-container" class="quiz-container">
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="question-container">
+                <div class="question" id="question"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+            <div class="controls">
+                <button id="prev-btn" class="btn-primary" style="display: none;">Précédent</button>
+                <button id="next-btn" class="btn-primary">Suivant</button>
+            </div>
+            <div class="score" id="score">Score : 0/0</div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="restart-btn" class="btn-success" style="display: none;">Recommencer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de données des questions par matière et niveau
+        const quizData = {
+            histoire: {
+                "6ème": [
+                    {
+                        question: "Quel est le premier homme à avoir marché sur la Lune ?",
+                        options: ["Neil Armstrong", "Buzz Aldrin", "Youri Gagarine", "Thomas Pesquet"],
+                        answer: "Neil Armstrong"
+                    },
+                    {
+                        question: "En quelle année a eu lieu la chute de Rome ?",
+                        options: ["476", "1492", "1789", "1945"],
+                        answer: "476"
+                    },
+                    {
+                        question: "Qui était le roi de France pendant la Révolution française ?",
+                        options: ["Louis XIV", "Louis XVI", "Napoléon", "Henri IV"],
+                        answer: "Louis XVI"
+                    }
+                ],
+                "5ème": [
+                    {
+                        question: "Quel événement marque le début du Moyen Âge ?",
+                        options: ["La chute de l'Empire romain", "La découverte de l'Amérique", "La Révolution française", "La Première Guerre mondiale"],
+                        answer: "La chute de l'Empire romain"
+                    },
+                    {
+                        question: "Qui a écrit 'Les Misérables' ?",
+                        options: ["Victor Hugo", "Gustave Flaubert", "Émile Zola", "Albert Camus"],
+                        answer: "Victor Hugo"
+                    },
+                    {
+                        question: "En quelle année a commencé la Première Guerre mondiale ?",
+                        options: ["1914", "1918", "1939", "1945"],
+                        answer: "1914"
+                    }
+                ],
+                "4ème": [
+                    {
+                        question: "Quel traité a mis fin à la Première Guerre mondiale ?",
+                        options: ["Traité de Versailles", "Traité de Rome", "Traité de Maastricht", "Traité de Tordesillas"],
+                        answer: "Traité de Versailles"
+                    },
+                    {
+                        question: "Qui était le chef de la France libre pendant la Seconde Guerre mondiale ?",
+                        options: ["Charles de Gaulle", "Philippe Pétain", "François Mitterrand", "Georges Clemenceau"],
+                        answer: "Charles de Gaulle"
+                    },
+                    {
+                        question: "En quelle année a eu lieu la Révolution industrielle en France ?",
+                        options: ["Fin du XVIIIᵉ siècle", "Début du XIXᵉ siècle", "Milieu du XIXᵉ siècle", "Fin du XIXᵉ siècle"],
+                        answer: "Milieu du XIXᵉ siècle"
+                    }
+                ],
+                "3ème": [
+                    {
+                        question: "En quelle année a eu lieu la chute du mur de Berlin ?",
+                        options: ["1985", "1989", "1991", "1995"],
+                        answer: "1989"
+                    },
+                    {
+                        question: "Qui a fondé la Ve République en France ?",
+                        options: ["Charles de Gaulle", "François Mitterrand", "Georges Pompidou", "Valéry Giscard d'Estaing"],
+                        answer: "Charles de Gaulle"
+                    },
+                    {
+                        question: "Quel est le nom du régime politique en France entre 1940 et 1944 ?",
+                        options: ["Régime de Vichy", "Régime de la Terreur", "Régime de la Restauration", "Régime de la IIIe République"],
+                        answer: "Régime de Vichy"
+                    },
+                    {
+                        question: "Quel événement marque le début de la Première Guerre mondiale ?",
+                        options: ["L'assassinat de l'archiduc François-Ferdinand", "La signature du traité de Versailles", "L'invasion de la Pologne", "La bataille de Verdun"],
+                        answer: "L'assassinat de l'archiduc François-Ferdinand"
+                    }
+                ]
+            },
+            géographie: {
+                "6ème": [
+                    {
+                        question: "Quel est le plus long fleuve du monde ?",
+                        options: ["Le Nil", "L'Amazone", "Le Yangtsé", "Le Mississippi"],
+                        answer: "Le Nil"
+                    },
+                    {
+                        question: "Quel est le continent le plus grand ?",
+                        options: ["L'Asie", "L'Afrique", "L'Amérique", "L'Europe"],
+                        answer: "L'Asie"
+                    },
+                    {
+                        question: "Quelle est la capitale de la France ?",
+                        options: ["Paris", "Lyon", "Marseille", "Bordeaux"],
+                        answer: "Paris"
+                    }
+                ],
+                "5ème": [
+                    {
+                        question: "Quel océan borde la France à l'ouest ?",
+                        options: ["L'océan Atlantique", "La mer Méditerranée", "La Manche", "L'océan Pacifique"],
+                        answer: "L'océan Atlantique"
+                    },
+                    {
+                        question: "Quel est le pays le plus peuplé du monde ?",
+                        options: ["La Chine", "L'Inde", "Les États-Unis", "L'Indonésie"],
+                        answer: "L'Inde"
+                    },
+                    {
+                        question: "Quelle est la montagne la plus haute du monde ?",
+                        options: ["L'Everest", "Le K2", "Le Mont Blanc", "L'Annapurna"],
+                        answer: "L'Everest"
+                    }
+                ],
+                "4ème": [
+                    {
+                        question: "Quel est le climat dominant en France ?",
+                        options: ["Climat océanique", "Climat méditerranéen", "Climat continental", "Climat montagnard"],
+                        answer: "Climat océanique"
+                    },
+                    {
+                        question: "Quel pays n'est pas membre de l'Union européenne ?",
+                        options: ["La Suisse", "L'Allemagne", "L'Espagne", "L'Italie"],
+                        answer: "La Suisse"
+                    },
+                    {
+                        question: "Quelle est la capitale du Canada ?",
+                        options: ["Ottawa", "Montréal", "Toronto", "Vancouver"],
+                        answer: "Ottawa"
+                    }
+                ],
+                "3ème": [
+                    {
+                        question: "Quel est le pays le plus grand du monde ?",
+                        options: ["La Russie", "Le Canada", "Les États-Unis", "La Chine"],
+                        answer: "La Russie"
+                    },
+                    {
+                        question: "Quelle est la capitale de l'Australie ?",
+                        options: ["Canberra", "Sydney", "Melbourne", "Brisbane"],
+                        answer: "Canberra"
+                    },
+                    {
+                        question: "Quel désert est le plus grand du monde ?",
+                        options: ["Le désert du Sahara", "Le désert d'Arabie", "Le désert de Gobi", "Le désert d'Antarctique"],
+                        answer: "Le désert d'Antarctique"
+                    }
+                ]
+            },
+            français: {
+                "6ème": [
+                    {
+                        question: "Quel est le pluriel de 'cheval' ?",
+                        options: ["Chevaux", "Chevals", "Chevalx", "Chevales"],
+                        answer: "Chevaux"
+                    },
+                    {
+                        question: "Quel est le féminin de 'coq' ?",
+                        options: ["Poule", "Coque", "Coche", "Coquine"],
+                        answer: "Poule"
+                    },
+                    {
+                        question: "Quel est le synonyme de 'rapide' ?",
+                        options: ["Vif", "Lent", "Calme", "Doux"],
+                        answer: "Vif"
+                    }
+                ],
+                "5ème": [
+                    {
+                        question: "Quel est l'auteur de 'Le Petit Prince' ?",
+                        options: ["Antoine de Saint-Exupéry", "Victor Hugo", "Guy de Maupassant", "Albert Camus"],
+                        answer: "Antoine de Saint-Exupéry"
+                    },
+                    {
+                        question: "Quel est le temps du verbe dans la phrase : 'Il mange une pomme.' ?",
+                        options: ["Présent", "Passé composé", "Futur simple", "Imparfait"],
+                        answer: "Présent"
+                    },
+                    {
+                        question: "Quel est le mot invariable parmi ces propositions ?",
+                        options: ["Hier", "Beau", "Gentil", "Rapide"],
+                        answer: "Hier"
+                    }
+                ],
+                "4ème": [
+                    {
+                        question: "Quel est le genre du mot 'épithète' ?",
+                        options: ["Féminin", "Masculin", "Les deux", "Aucun"],
+                        answer: "Féminin"
+                    },
+                    {
+                        question: "Quel est le pluriel de 'bijou' ?",
+                        options: ["Bijoux", "Bijous", "Bijoues", "Bijouxs"],
+                        answer: "Bijoux"
+                    },
+                    {
+                        question: "Quel est le sens propre du mot 'feuille' ?",
+                        options: ["Partie verte d'une plante", "Page d'un livre", "Morceau de papier", "Éléments d'un arbre"],
+                        answer: "Partie verte d'une plante"
+                    }
+                ],
+                "3ème": [
+                    {
+                        question: "Quel est le registre du texte qui cherche à faire rire ?",
+                        options: ["Comique", "Tragique", "Lyrique", "Épique"],
+                        answer: "Comique"
+                    },
+                    {
+                        question: "Quel est l'auteur de 'Les Fleurs du Mal' ?",
+                        options: ["Charles Baudelaire", "Arthur Rimbaud", "Paul Verlaine", "Guillaume Apollinaire"],
+                        answer: "Charles Baudelaire"
+                    },
+                    {
+                        question: "Quel est le temps du verbe dans la phrase : 'Il avait fini son travail.' ?",
+                        options: ["Plus-que-parfait", "Passé composé", "Passé simple", "Imparfait"],
+                        answer: "Plus-que-parfait"
+                    }
+                ]
+            },
+            maths: {
+                "6ème": [
+                    {
+                        question: "Quel est le résultat de 7 × 8 ?",
+                        options: ["56", "48", "64", "42"],
+                        answer: "56"
+                    },
+                    {
+                        question: "Quel est le périmètre d'un carré de côté 5 cm ?",
+                        options: ["20 cm", "25 cm", "15 cm", "10 cm"],
+                        answer: "20 cm"
+                    },
+                    {
+                        question: "Quel est le résultat de 15 - 7 ?",
+                        options: ["8", "9", "7", "6"],
+                        answer: "8"
+                    }
+                ],
+                "5ème": [
+                    {
+                        question: "Quel est le résultat de 3/4 + 1/4 ?",
+                        options: ["1", "1/2", "3/8", "4/4"],
+                        answer: "1"
+                    },
+                    {
+                        question: "Quel est l'aire d'un rectangle de longueur 6 cm et de largeur 4 cm ?",
+                        options: ["24 cm²", "20 cm²", "10 cm²", "12 cm²"],
+                        answer: "24 cm²"
+                    },
+                    {
+                        question: "Quel est le résultat de 2 × (3 + 4) ?",
+                        options: ["14", "10", "16", "21"],
+                        answer: "14"
+                    }
+                ],
+                "4ème": [
+                    {
+                        question: "Quel est le résultat de √16 ?",
+                        options: ["4", "8", "2", "16"],
+                        answer: "4"
+                    },
+                    {
+                        question: "Quel est le théorème qui permet de calculer l'hypoténuse d'un triangle rectangle ?",
+                        options: ["Théorème de Pythagore", "Théorème de Thalès", "Théorème des milieux", "Théorème de l'angle droit"],
+                        answer: "Théorème de Pythagore"
+                    },
+                    {
+                        question: "Quel est le résultat de 3x + 2 = 8 ?",
+                        options: ["x = 2", "x = 3", "x = 4", "x = 1"],
+                        answer: "x = 2"
+                    }
+                ],
+                "3ème": [
+                    {
+                        question: "Quel est le résultat de (x + 2)² ?",
+                        options: ["x² + 4x + 4", "x² + 2x + 4", "x² + 4x + 2", "x² + 4"],
+                        answer: "x² + 4x + 4"
+                    },
+                    {
+                        question: "Quel est le volume d'une sphère de rayon 3 cm ? (π ≈ 3,14)",
+                        options: ["113,04 cm³", "37,68 cm³", "452,16 cm³", "28,26 cm³"],
+                        answer: "113,04 cm³"
+                    },
+                    {
+                        question: "Quel est le résultat de 2x + 3 = 5x - 6 ?",
+                        options: ["x = 3", "x = 2", "x = 1", "x = -1"],
+                        answer: "x = 3"
+                    }
+                ]
+            },
+            sciences: {
+                "6ème": [
+                    {
+                        question: "Quel est le symbole chimique de l'eau ?",
+                        options: ["H₂O", "O₂", "CO₂", "H₂"],
+                        answer: "H₂O"
+                    },
+                    {
+                        question: "Quel est l'organe qui permet de respirer ?",
+                        options: ["Les poumons", "Le cœur", "Le foie", "L'estomac"],
+                        answer: "Les poumons"
+                    },
+                    {
+                        question: "Quel est le phénomène qui permet aux plantes de fabriquer leur nourriture ?",
+                        options: ["La photosynthèse", "La respiration", "La digestion", "La transpiration"],
+                        answer: "La photosynthèse"
+                    }
+                ],
+                "5ème": [
+                    {
+                        question: "Quel est le gaz nécessaire à la combustion ?",
+                        options: ["Le dioxygène", "Le diazote", "Le dioxyde de carbone", "Le méthane"],
+                        answer: "Le dioxygène"
+                    },
+                    {
+                        question: "Quel est le mouvement de la Terre autour du Soleil ?",
+                        options: ["La révolution", "La rotation", "La translation", "L'orbite"],
+                        answer: "La révolution"
+                    },
+                    {
+                        question: "Quel est le rôle des globules rouges dans le sang ?",
+                        options: ["Transporter l'oxygène", "Défendre l'organisme", "Coaguler le sang", "Transporter les nutriments"],
+                        answer: "Transporter l'oxygène"
+                    }
+                ],
+                "4ème": [
+                    {
+                        question: "Quel est le pH d'une solution neutre ?",
+                        options: ["7", "0", "14", "1"],
+                        answer: "7"
+                    },
+                    {
+                        question: "Quel est le nom de la force qui attire tous les objets vers le centre de la Terre ?",
+                        options: ["La gravité", "La poussée d'Archimède", "La force électromagnétique", "La force nucléaire"],
+                        answer: "La gravité"
+                    },
+                    {
+                        question: "Quel est le processus par lequel les cellules se multiplient ?",
+                        options: ["La mitose", "La méiose", "La fécondation", "La respiration"],
+                        answer: "La mitose"
+                    }
+                ],
+                "3ème": [
+                    {
+                        question: "Quel est le nom de la particule constitutive de la matière ?",
+                        options: ["L'atome", "La molécule", "L'ion", "L'électron"],
+                        answer: "L'atome"
+                    },
+                    {
+                        question: "Quel est le phénomène responsable de la diversité des espèces ?",
+                        options: ["L'évolution", "La sélection naturelle", "La mutation", "L'adaptation"],
+                        answer: "L'évolution"
+                    },
+                    {
+                        question: "Quel est le nom de l'énergie produite par le mouvement ?",
+                        options: ["Énergie cinétique", "Énergie potentielle", "Énergie thermique", "Énergie lumineuse"],
+                        answer: "Énergie cinétique"
+                    }
+                ]
+            }
+        };
+
+        // Variables globales
+        let currentSubject = null;
+        let currentLevel = null;
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let userAnswers = [];
+
+        // Éléments du DOM
+        const quizContainer = document.getElementById("quiz-container");
+        const questionElement = document.getElementById("question");
+        const optionsElement = document.getElementById("options");
+        const feedbackElement = document.getElementById("feedback");
+        const nextButton = document.getElementById("next-btn");
+        const prevButton = document.getElementById("prev-btn");
+        const scoreElement = document.getElementById("score");
+        const restartButton = document.getElementById("restart-btn");
+        const progressBar = document.getElementById("progress-bar");
+        const levelSelector = document.getElementById("level-selector");
+        const levelSelect = document.getElementById("level-select");
+
+        // Fonction pour sélectionner une matière
+        function selectSubject(subject) {
+            currentSubject = subject;
+            levelSelector.style.display = "block";
+            document.querySelectorAll('.subject-card').forEach(card => {
+                card.style.opacity = "0.6";
+            });
+            document.querySelector(`.subject-card.${subject}`).style.opacity = "1";
+        }
+
+        // Fonction pour démarrer le quiz
+        function startQuiz() {
+            currentLevel = levelSelect.value;
+            currentQuestions = [...quizData[currentSubject][currentLevel]];
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedOption = null;
+            userAnswers = Array(currentQuestions.length).fill(null);
+
+            // Mélanger les questions
+            shuffleArray(currentQuestions);
+
+            quizContainer.style.display = "block";
+            levelSelector.style.display = "none";
+            showQuestion();
+        }
+
+        // Fonction pour mélanger un tableau
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Fonction pour afficher une question
+        function showQuestion() {
+            const currentQuestion = currentQuestions[currentQuestionIndex];
+            questionElement.textContent = currentQuestion.question;
+
+            optionsElement.innerHTML = "";
+            currentQuestion.options.forEach((option, index) => {
+                const optionElement = document.createElement("div");
+                optionElement.classList.add("option");
+                optionElement.textContent = option;
+                optionElement.addEventListener("click", () => {
+                    document.querySelectorAll(".option").forEach(el => {
+                        el.classList.remove("selected", "correct", "incorrect");
+                    });
+                    optionElement.classList.add("selected");
+                    selectedOption = option;
+                });
+
+                // Si l'utilisateur a déjà répondu à cette question
+                if (userAnswers[currentQuestionIndex] !== null) {
+                    if (userAnswers[currentQuestionIndex] === option) {
+                        optionElement.classList.add("selected");
+                        selectedOption = option;
+                    }
+                    if (option === currentQuestion.answer) {
+                        optionElement.classList.add("correct");
+                    } else if (userAnswers[currentQuestionIndex] === option) {
+                        optionElement.classList.add("incorrect");
+                    }
+                }
+
+                optionsElement.appendChild(optionElement);
+            });
+
+            feedbackElement.style.display = "none";
+            updateProgressBar();
+            updateScore();
+            updateButtons();
+        }
+
+        // Fonction pour vérifier la réponse
+        function checkAnswer() {
+            if (selectedOption === null) {
+                feedbackElement.textContent = "⚠️ Veuillez sélectionner une réponse !";
+                feedbackElement.className = "feedback incorrect";
+                feedbackElement.style.display = "block";
+                return false;
+            }
+
+            const currentQuestion = currentQuestions[currentQuestionIndex];
+            userAnswers[currentQuestionIndex] = selectedOption;
+
+            if (selectedOption === currentQuestion.answer) {
+                feedbackElement.textContent = "✅ Bravo, c'est la bonne réponse !";
+                feedbackElement.className = "feedback correct";
+                if (score < currentQuestions.length) {
+                    score++;
+                }
+            } else {
+                feedbackElement.textContent = `❌ Faux ! La bonne réponse était : ${currentQuestion.answer}`;
+                feedbackElement.className = "feedback incorrect";
+            }
+            feedbackElement.style.display = "block";
+
+            // Mettre à jour les couleurs des options
+            document.querySelectorAll(".option").forEach(optionEl => {
+                if (optionEl.textContent === currentQuestion.answer) {
+                    optionEl.classList.add("correct");
+                } else if (optionEl.textContent === selectedOption) {
+                    optionEl.classList.add("incorrect");
+                }
+            });
+
+            updateScore();
+            return true;
+        }
+
+        // Fonction pour passer à la question suivante
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                selectedOption = userAnswers[currentQuestionIndex];
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // Fonction pour revenir à la question précédente
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                selectedOption = userAnswers[currentQuestionIndex];
+                showQuestion();
+            }
+        }
+
+        // Fonction pour mettre à jour la barre de progression
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Fonction pour mettre à jour le score
+        function updateScore() {
+            scoreElement.textContent = `Score : ${score}/${currentQuestions.length}`;
+        }
+
+        // Fonction pour mettre à jour les boutons
+        function updateButtons() {
+            prevButton.style.display = currentQuestionIndex > 0 ? "inline-block" : "none";
+            nextButton.textContent = currentQuestionIndex < currentQuestions.length - 1 ? "Suivant" : "Terminer";
+        }
+
+        // Fonction pour terminer le quiz
+        function endQuiz() {
+            questionElement.textContent = `Quiz terminé ! Ton score : ${score}/${currentQuestions.length}`;
+            optionsElement.innerHTML = "";
+            nextButton.style.display = "none";
+            prevButton.style.display = "none";
+            restartButton.style.display = "inline-block";
+            feedbackElement.style.display = "none";
+
+            // Afficher un message personnalisé
+            const percentage = (score / currentQuestions.length) * 100;
+            let message = "";
+            if (percentage === 100) {
+                message = "🌟 Félicitations, tu as tout bon !";
+            } else if (percentage >= 75) {
+                message = "👍 Très bien, continue comme ça !";
+            } else if (percentage >= 50) {
+                message = "😊 Pas mal, mais il faut réviser un peu plus !";
+            } else {
+                message = "📚 Il est temps de relire ton cours !";
+            }
+            scoreElement.textContent = message;
+        }
+
+        // Fonction pour recommencer le quiz
+        function restartQuiz() {
+            quizContainer.style.display = "none";
+            levelSelector.style.display = "block";
+            document.querySelectorAll('.subject-card').forEach(card => {
+                card.style.opacity = "1";
+            });
+        }
+
+        // Événements
+        nextButton.addEventListener("click", () => {
+            if (nextButton.textContent === "Terminer") {
+                checkAnswer();
+                nextQuestion();
+            } else {
+                if (checkAnswer()) {
+                    nextQuestion();
+                }
+            }
+        });
+
+        prevButton.addEventListener("click", prevQuestion);
+        restartButton.addEventListener("click", restartQuiz);
+    </script>
+</body>
+</html>

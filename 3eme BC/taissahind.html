@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Quizz Français Brevet 2026 | Style Ultra Cool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Luckiest+Guy&family=Bungee&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #12122a;
+            --accent-1: #ff2a6d;
+            --accent-2: #f97794;
+            --accent-3: #6558d3;
+            --accent-4: #4cc9f0;
+            --text-light: #f8f9fa;
+            --text-dark: #212529;
+            --success: #4caf50;
+            --warning: #ffc107;
+            --danger: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background avec effet de grille */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 42, 109, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 42, 109, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Lignes lumineuses en diagonale */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 49%, rgba(101, 88, 211, 0.05) 50%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, rgba(76, 201, 240, 0.05) 50%, transparent 51%);
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 50px 20px 30px;
+            position: relative;
+        }
+
+        header h1 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3), var(--accent-4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 42, 109, 0.3);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        header p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        /* Barre de progression */
+        .progress-container {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-4);
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-3), var(--accent-4));
+            border-radius: 5px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+            border-radius: 5px;
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 42, 109, 0.1);
+            border: 1px solid rgba(255, 42, 109, 0.3);
+            border-radius: 10px;
+        }
+
+        .timer-value {
+            font-family: 'Poppins', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-1);
+            text-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .quiz-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(101, 88, 211, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(76, 201, 240, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Question Container */
+        .question-container {
+            display: none;
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Category Badge */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .category-grammaire {
+            border-color: var(--accent-3);
+            color: var(--accent-3);
+        }
+
+        .category-conjugaison {
+            border-color: var(--accent-1);
+            color: var(--accent-1);
+        }
+
+        .category-orthographe {
+            border-color: var(--accent-4);
+            color: var(--accent-4);
+        }
+
+        .category-vocabulaire {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        /* Question */
+        .question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: var(--text-light);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-4);
+        }
+
+        /* Options */
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 22px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            color: var(--text-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .option:hover::before {
+            transform: translateX(0%);
+        }
+
+        .option:hover {
+            border-color: var(--accent-4);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .option.selected {
+            border-color: var(--accent-3);
+            background: rgba(101, 88, 211, 0.15);
+            transform: translateX(8px);
+            box-shadow: 0 4px 15px rgba(101, 88, 211, 0.3);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(76, 175, 80, 0.15);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            animation: correctPulse 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: translateX(8px) scale(1); }
+            50% { transform: translateX(8px) scale(1.02); }
+        }
+
+        .option.incorrect {
+            border-color: var(--danger);
+            background: rgba(244, 67, 54, 0.15);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(8px) translateY(0); }
+            25% { transform: translateX(8px) translateY(-4px); }
+            75% { transform: translateX(8px) translateY(4px); }
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Explanation */
+        .explanation {
+            background: rgba(255, 42, 109, 0.05);
+            border-left: 4px solid var(--accent-1);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 25px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .explanation.active {
+            display: block;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: var(--accent-1);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--accent-3), var(--accent-1));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(101, 88, 211, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(101, 88, 211, 0.5);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Result Container */
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 50px 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-container.active {
+            display: block;
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Score Display */
+        .score-display {
+            margin-bottom: 40px;
+        }
+
+        .score-number {
+            font-family: 'Bungee', cursive;
+            font-size: 5rem;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3), var(--accent-4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 42, 109, 0.3);
+            animation: scorePulse 1s ease-in-out infinite;
+        }
+
+        @keyframes scorePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .score-label {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 10px;
+        }
+
+        /* Result Title */
+        .result-title {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 10px rgba(76, 201, 240, 0.3);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(76, 201, 240, 0.5), 0 0 30px rgba(76, 201, 240, 0.3);
+            }
+        }
+
+        .result-message {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* Performance Stats */
+        .performance {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .performance h3 {
+            font-size: 1.5rem;
+            color: var(--accent-4);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+        }
+
+        /* Floating elements for celebration */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+
+        .celebration.active {
+            display: block;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            animation: floatUp 3s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 3rem;
+            }
+
+            header p {
+                font-size: 1.1rem;
+            }
+
+            .progress-container {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .quiz-container {
+                padding: 30px 20px;
+            }
+
+            .question {
+                font-size: 1.3rem;
+                padding: 15px;
+            }
+
+            .option {
+                padding: 14px 18px;
+                font-size: 0.95rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .score-number {
+                font-size: 4rem;
+            }
+
+            .result-title {
+                font-size: 2.2rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+
+            .question {
+                font-size: 1.1rem;
+            }
+
+            .option {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+
+            .score-number {
+                font-size: 3rem;
+            }
+
+            .result-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Celebration elements -->
+    <div class="celebration" id="celebration"></div>
+
+    <div class="container">
+        <header>
+            <h1>FRANÇAIS BREVET 2026</h1>
+            <p>Le quiz le plus stylé pour réviser comme un pro !</p>
+        </header>
+
+        <div class="progress-container">
+            <div class="progress-info">
+                <span class="progress-text" id="progress-text">Question 1/20</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="timer-container">
+                <span class="timer-value" id="timer">30:00</span>
+            </div>
+        </div>
+
+        <div class="quiz-container" id="quiz-container">
+            <!-- Questions will be inserted here -->
+        </div>
+
+        <div class="result-container" id="result-container">
+            <div class="score-display">
+                <div class="score-number" id="score-number">0%</div>
+                <div class="score-label">Taux de réussite</div>
+            </div>
+
+            <h2 class="result-title" id="result-title">Super travail !</h2>
+            <p class="result-message" id="result-message">Tu as terminé le quiz. Continue comme ça !</p>
+
+            <div class="performance">
+                <h3>📊 Tes Statistiques</h3>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="correct-answers">0</div>
+                        <div class="stat-label">Bonnes réponses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-value" id="total-questions">20</div>
+                        <div class="stat-label">Questions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-value" id="percentage">0%</div>
+                        <div class="stat-label">Réussite</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value" id="time-taken">0:00</div>
+                        <div class="stat-label">Temps</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="restart-btn" id="restart-btn">🔄 Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        // Questions du quiz
+        const questions = [
+            {
+                id: 1,
+                question: "Quel est le sujet dans : 'Le chat dort sur le canapé' ?",
+                options: ["Le chat", "dort", "sur le canapé", "le canapé"],
+                correctAnswer: 0,
+                explanation: "Le sujet est 'Le chat' car c'est lui qui fait l'action (dormir). C'est le groupe nominal qui répond à la question 'qui est-ce qui dort ?'.",
+                category: "grammaire",
+                icon: "🐱"
+            },
+            {
+                id: 2,
+                question: "Quel complément circonstanciel y a-t-il dans : 'Il partira à 8h demain' ?",
+                options: ["à 8h", "demain", "à 8h demain", "partira"],
+                correctAnswer: 2,
+                explanation: "'à 8h demain' est un complément circonstanciel de temps (CCT) qui indique quand l'action se déroule.",
+                category: "grammaire",
+                icon: "⏰"
+            },
+            {
+                id: 3,
+                question: "Quelle phrase contient une subordonnée relative ?",
+                options: [
+                    "J'aime le gâteau.",
+                    "Le gâteau que j'ai mangé était bon.",
+                    "Je mange un gâteau.",
+                    "C'est un bon gâteau."
+                ],
+                correctAnswer: 1,
+                explanation: "'que j'ai mangé' est une proposition subordonnée relative qui complète 'le gâteau'.",
+                category: "grammaire",
+                icon: "🍰"
+            },
+            {
+                id: 4,
+                question: "Quel est le temps de 'avait fini' ?",
+                options: ["Plus-que-parfait", "Passé simple", "Imparfait", "Passé composé"],
+                correctAnswer: 0,
+                explanation: "'avait fini' = auxiliaire avoir à l'imparfait (avait) + participe passé (fini) = plus-que-parfait.",
+                category: "conjugaison",
+                icon: "⏳"
+            },
+            {
+                id: 5,
+                question: "Conjuguez 'être' au subjonctif présent, 2e personne du singulier :",
+                options: ["es", "sois", "seras", "étais"],
+                correctAnswer: 1,
+                explanation: "Que tu sois, que je sois, qu'il soit... C'est la conjugaison du subjonctif présent de 'être'.",
+                category: "conjugaison",
+                icon: "📜"
+            },
+            {
+                id: 6,
+                question: "Quel verbe est au conditionnel présent ?",
+                options: ["Il mangera", "Il mangerait", "Il mange", "Il a mangé"],
+                correctAnswer: 1,
+                explanation: "'mangerait' a la terminaison -rait caractéristique du conditionnel présent.",
+                category: "conjugaison",
+                icon: "🍽️"
+            },
+            {
+                id: 7,
+                question: "Quelle phrase a une faute d'orthographe ?",
+                options: [
+                    "Nous allons au cinéma.",
+                    "Ils sont partis hier.",
+                    "Tu c'est sympa.",
+                    "Elle a chanté."
+                ],
+                correctAnswer: 2,
+                explanation: "'Tu c'est' est incorrect. La bonne forme est 'Tu es' (verbe être).",
+                category: "orthographe",
+                icon: "✏️"
+            },
+            {
+                id: 8,
+                question: "Quel mot prend un 's' final ?",
+                options: ["ne", "pas", "plus", "tou"],
+                correctAnswer: 1,
+                explanation: "'pas' prend un 's' final. Les autres : ne (sans s), plus (sans s), tous (avec s).",
+                category: "orthographe",
+                icon: "🔤"
+            },
+            {
+                id: 9,
+                question: "Complétez : 'Il faut que tu ... à l'heure.' (venir)",
+                options: ["viennes", "vienne", "viens", "viendras"],
+                correctAnswer: 0,
+                explanation: "Au subjonctif présent, 'venir' à la 2e personne du singulier est 'viennes'.",
+                category: "orthographe",
+                icon: "🕐"
+            },
+            {
+                id: 10,
+                question: "Quel est le synonyme de 'rapide' ?",
+                options: ["Lent", "Vif", "Fatigué", "Lourd"],
+                correctAnswer: 1,
+                explanation: "'Vif' signifie rapide, ce sont des synonymes.",
+                category: "vocabulaire",
+                icon: "🏃"
+            },
+            {
+                id: 11,
+                question: "Quel est l'antonyme de 'joyeux' ?",
+                options: ["Content", "Heureux", "Triste", "Gai"],
+                correctAnswer: 2,
+                explanation: "'Triste' est le contraire de 'joyeux'.",
+                category: "vocabulaire",
+                icon: "😢"
+            },
+            {
+                id: 12,
+                question: "Quel mot est un adverbe ?",
+                options: ["Rapide", "Rapidement", "Rapidité", "Rapide"],
+                correctAnswer: 1,
+                explanation: "'Rapidement' est un adverbe (termine par -ment et modifie un verbe).",
+                category: "vocabulaire",
+                icon: "✨"
+            },
+            {
+                id: 13,
+                question: "Quelle est la fonction de 'animal domestique' dans : 'Le chat, animal domestique, dort.' ?",
+                options: ["Sujet", "Apposition", "COD", "Attribut"],
+                correctAnswer: 1,
+                explanation: "'animal domestique' est une apposition : il donne une précision sur 'Le chat' et est séparé par des virgules.",
+                category: "grammaire",
+                icon: "🐈"
+            },
+            {
+                id: 14,
+                question: "Quel est le genre de 'épithète' ?",
+                options: ["Masculin", "Féminin", "Les deux", "Aucun"],
+                correctAnswer: 1,
+                explanation: "'Épithète' est un nom féminin : une épithète.",
+                category: "vocabulaire",
+                icon: "🏷️"
+            },
+            {
+                id: 15,
+                question: "Quelle phrase est à la voix passive ?",
+                options: [
+                    "Le chat mange la souris.",
+                    "La souris est mangée par le chat.",
+                    "Le chat a mangé la souris.",
+                    "Le chat va manger."
+                ],
+                correctAnswer: 1,
+                explanation: "'est mangée' = auxiliaire être + participe passé + complément d'agent = voix passive.",
+                category: "grammaire",
+                icon: "🔄"
+            },
+            {
+                id: 16,
+                question: "Quel est le participe passé de 'prendre' ?",
+                options: ["prenné", "pris", "prant", "prand"],
+                correctAnswer: 1,
+                explanation: "Le participe passé de 'prendre' est 'pris'.",
+                category: "conjugaison",
+                icon: "🎯"
+            },
+            {
+                id: 17,
+                question: "Dans 'Il est parti sans dire au revoir', quel est l'infinitif du verbe conjugué ?",
+                options: ["être", "partir", "dire", "au revoir"],
+                correctAnswer: 1,
+                explanation: "'parti' vient du verbe 'partir'.",
+                category: "conjugaison",
+                icon: "🚪"
+            },
+            {
+                id: 18,
+                question: "Quel mot a un accent grave ?",
+                options: ["déjà", "ici", "la", "a"],
+                correctAnswer: 0,
+                explanation: "'déjà' prend un accent grave (`) sur le premier e.",
+                category: "orthographe",
+                icon: "`"
+            },
+            {
+                id: 19,
+                question: "Quel est le pluriel de 'cheval' ?",
+                options: ["chevaux", "chevals", "chevalx", "chevaus"],
+                correctAnswer: 0,
+                explanation: "Le pluriel de 'cheval' est 'chevaux'.",
+                category: "orthographe",
+                icon: "🐴"
+            },
+            {
+                id: 20,
+                question: "Qu'est-ce qu'une métaphore ?",
+                options: [
+                    "Une comparaison sans mot-outil",
+                    "Une exagération",
+                    "Une répétition",
+                    "Une opposition"
+                ],
+                correctAnswer: 0,
+                explanation: "Une métaphore est une comparaison sans mot-outil (comme, être, sembler...). Exemple : 'La vie est un voyage'.",
+                category: "vocabulaire",
+                icon: "🌌"
+            }
+        ];
+
+        // Variables
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 1800;
+        let startTime = Date.now();
+        let timerInterval;
+        let selectedAnswer = null;
+        let answerSubmitted = false;
+
+        // DOM Elements
+        const quizContainer = document.getElementById('quiz-container');
+        const resultContainer = document.getElementById('result-container');
+        const progressText = document.getElementById('progress-text');
+        const progressFill = document.getElementById('progress-fill');
+        const timerElement = document.getElementById('timer');
+        const scoreNumber = document.getElementById('score-number');
+        const resultTitle = document.getElementById('result-title');
+        const resultMessage = document.getElementById('result-message');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const percentageElement = document.getElementById('percentage');
+        const timeTakenElement = document.getElementById('time-taken');
+        const restartBtn = document.getElementById('restart-btn');
+        const celebration = document.getElementById('celebration');
+
+        // Create floating celebration icons
+        function createCelebration() {
+            const icons = ['🎉', '🎊', '🌟', '✨', '🎆', '🎇', '🥳', '🎈'];
+            const count = 50;
+            
+            for (let i = 0; i < count; i++) {
+                const icon = document.createElement('div');
+                icon.className = 'floating-icon';
+                icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+                icon.style.left = `${Math.random() * 100}%`;
+                icon.style.animationDelay = `${Math.random() * 2}s`;
+                icon.style.animationDuration = `${Math.random() + 2}s`;
+                icon.style.fontSize = `${Math.random() * 1.5 + 0.8}rem`;
+                celebration.appendChild(icon);
+            }
+        }
+
+        // Launch celebration
+        function launchCelebration() {
+            celebration.classList.add('active');
+            celebration.innerHTML = '';
+            createCelebration();
+            setTimeout(() => {
+                celebration.classList.remove('active');
+            }, 4000);
+        }
+
+        // Initialize quiz
+        function initQuiz() {
+            shuffleArray(questions);
+            currentQuestion = 0;
+            score = 0;
+            timeLeft = 1800;
+            startTime = Date.now();
+            selectedAnswer = null;
+            answerSubmitted = false;
+
+            clearInterval(timerInterval);
+            updateTimer();
+            startTimer();
+            displayQuestion();
+
+            quizContainer.style.display = 'block';
+            resultContainer.classList.remove('active');
+        }
+
+        // Shuffle array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Display question
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            
+            progressText.textContent = `Question ${currentQuestion + 1}/${questions.length}`;
+            const progressPercentage = ((currentQuestion + 1) / questions.length) * 100;
+            progressFill.style.width = `${progressPercentage}%`;
+
+            answerSubmitted = false;
+            selectedAnswer = null;
+
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question-container active';
+
+            // Category badge
+            const categoryBadge = document.createElement('span');
+            categoryBadge.className = `category-badge category-${question.category}`;
+            categoryBadge.innerHTML = `<span>${question.icon}</span> ${question.category}`;
+            questionElement.appendChild(categoryBadge);
+
+            // Question
+            const questionTitle = document.createElement('div');
+            questionTitle.className = 'question';
+            questionTitle.textContent = question.question;
+            questionElement.appendChild(questionTitle);
+
+            // Options
+            const optionsElement = document.createElement('div');
+            optionsElement.className = 'options';
+
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.index = index;
+
+                optionElement.addEventListener('click', () => {
+                    if (!answerSubmitted) {
+                        selectOption(optionElement, index);
+                    }
+                });
+
+                optionsElement.appendChild(optionElement);
+            });
+
+            questionElement.appendChild(optionsElement);
+
+            // Explanation
+            const explanationElement = document.createElement('div');
+            explanationElement.className = 'explanation';
+            explanationElement.innerHTML = `
+                <div class="explanation-title">💡 Explication</div>
+                <div>${question.explanation}</div>
+            `;
+            questionElement.appendChild(explanationElement);
+
+            // Navigation
+            const navigationElement = document.createElement('div');
+            navigationElement.className = 'navigation';
+
+            const previousBtn = document.createElement('button');
+            previousBtn.textContent = '← Précédent';
+            previousBtn.disabled = currentQuestion === 0;
+            previousBtn.addEventListener('click', () => {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    displayQuestion();
+                }
+            });
+
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? 'Terminer' : 'Suivant →';
+            nextBtn.addEventListener('click', () => {
+                if (answerSubmitted) {
+                    if (currentQuestion < questions.length - 1) {
+                        currentQuestion++;
+                        displayQuestion();
+                    } else {
+                        showResults();
+                    }
+                } else if (selectedAnswer !== null) {
+                    submitAnswer();
+                }
+            });
+
+            navigationElement.appendChild(previousBtn);
+            navigationElement.appendChild(nextBtn);
+            questionElement.appendChild(navigationElement);
+
+            quizContainer.innerHTML = '';
+            quizContainer.appendChild(questionElement);
+        }
+
+        // Select option
+        function selectOption(optionElement, index) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            optionElement.classList.add('selected');
+            selectedAnswer = index;
+        }
+
+        // Submit answer
+        function submitAnswer() {
+            const question = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            const explanation = document.querySelector('.explanation');
+
+            answerSubmitted = true;
+
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+            });
+
+            if (selectedAnswer === question.correctAnswer) {
+                score++;
+                options[selectedAnswer].classList.add('correct');
+            } else {
+                options[selectedAnswer].classList.add('incorrect');
+                options[question.correctAnswer].classList.add('correct');
+            }
+
+            explanation.classList.add('active');
+
+            const nextBtn = document.querySelector('#quiz-container button:last-child');
+            if (currentQuestion < questions.length - 1) {
+                nextBtn.textContent = 'Suivant →';
+            } else {
+                nextBtn.textContent = 'Terminer';
+            }
+        }
+
+        // Show results
+        function showResults() {
+            clearInterval(timerInterval);
+
+            const percentage = Math.round((score / questions.length) * 100);
+            const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+
+            scoreNumber.textContent = `${percentage}%`;
+            correctAnswersElement.textContent = score;
+            percentageElement.textContent = `${percentage}%`;
+            timeTakenElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Custom messages
+            if (percentage >= 90) {
+                resultTitle.textContent = "🏆 INCROYABLE !";
+                resultMessage.textContent = "Tu es ultra prêt(e) pour le brevet ! Avec ce score, tu vas tout déchirer à l'examen. 💥";
+                setTimeout(launchCelebration, 500);
+            } else if (percentage >= 70) {
+                resultTitle.textContent = "🥇 EXCELLENT !";
+                resultMessage.textContent = "Tu as un super niveau ! Quelques révisions et tu seras parfait(e) pour le jour J. 💪";
+                setTimeout(launchCelebration, 500);
+            } else if (percentage >= 50) {
+                resultTitle.textContent = "👍 BIEN JOUÉ !";
+                resultMessage.textContent = "Tu as les bases solides. Un peu plus de travail et tu seras au top ! 📚";
+            } else if (percentage >= 30) {
+                resultTitle.textContent = "🌱 EN PROGRÈS !";
+                resultMessage.textContent = "Ne lâche rien ! Plus tu t'entraînes, plus tu deviens fort(e). Refais le quiz pour progresser. 🚀";
+            } else {
+                resultTitle.textContent = "💪 COURAGE !";
+                resultMessage.textContent = "Ne te décourage pas ! Le français, c'est comme un muscle. Plus tu t'entraînes, plus ça devient facile. 💯";
+            }
+
+            quizContainer.style.display = 'none';
+            resultContainer.classList.add('active');
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeLeft <= 60) {
+                timerElement.style.color = '#f44336';
+                timerElement.style.textShadow = '0 0 10px #f44336';
+            } else if (timeLeft <= 300) {
+                timerElement.style.color = '#ffc107';
+                timerElement.style.textShadow = '0 0 10px #ffc107';
+            } else {
+                timerElement.style.color = '#4cc9f0';
+                timerElement.style.textShadow = '0 0 10px rgba(76, 201, 240, 0.5)';
+            }
+        }
+
+        // Event listeners
+        restartBtn.addEventListener('click', initQuiz);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !answerSubmitted && selectedAnswer !== null) {
+                submitAnswer();
+            } else if (e.key === 'ArrowRight' && answerSubmitted) {
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            } else if (e.key === 'ArrowLeft' && answerSubmitted && currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        });
+
+        // Initialize
+        createCelebration();
+        initQuiz();
+    </script>
+</body>
+</html>

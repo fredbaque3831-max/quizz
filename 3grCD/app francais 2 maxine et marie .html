@@ -1,0 +1,303 @@
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Révisions Français 3e</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    margin:0;
+    background:#FFF9DB;
+    color:#444;
+}
+
+header{
+    background:#F7E98E;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+h1{
+    margin:0;
+    color:#6b5b00;
+}
+
+.container{
+    padding:20px;
+    max-width:1000px;
+    margin:auto;
+}
+
+.section{
+    background:white;
+    padding:20px;
+    margin-bottom:25px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+h2{
+    color:#b58b00;
+}
+
+.flashcards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.card{
+    perspective:1000px;
+    cursor:pointer;
+}
+
+.card-inner{
+    position:relative;
+    width:100%;
+    height:160px;
+    transition:transform 0.6s;
+    transform-style:preserve-3d;
+}
+
+.card.flipped .card-inner{
+    transform:rotateY(180deg);
+}
+
+.card-front,
+.card-back{
+    position:absolute;
+    width:100%;
+    height:100%;
+    backface-visibility:hidden;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+    text-align:center;
+    box-sizing:border-box;
+    font-weight:bold;
+}
+
+.card-front{
+    background:#FFF2A8;
+}
+
+.card-back{
+    background:#FDE68A;
+    transform:rotateY(180deg);
+}
+
+.quiz-question{
+    margin-bottom:20px;
+}
+
+button{
+    background:#F7D94C;
+    border:none;
+    padding:10px 15px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+button:hover{
+    background:#eacb39;
+}
+
+.result{
+    margin-top:15px;
+    font-size:20px;
+    font-weight:bold;
+    color:#8a6d00;
+}
+
+ul{
+    line-height:1.8;
+}
+
+.mode{
+    background:#fff7c2;
+    padding:8px;
+    border-radius:8px;
+    margin-bottom:8px;
+}
+
+footer{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 Révisions Français - 3ème</h1>
+</header>
+
+<div class="container">
+
+    <div class="section">
+        <h2>♦ Les Modes</h2>
+
+        <div class="mode"><b>Indicatif :</b> Je pars en vacances.</div>
+        <div class="mode"><b>Subjonctif :</b> Il faut qu’il parte.</div>
+        <div class="mode"><b>Conditionnel :</b> Il partirait avec toi.</div>
+        <div class="mode"><b>Impératif :</b> Pars !</div>
+        <div class="mode"><b>Infinitif :</b> partir</div>
+        <div class="mode"><b>Participe :</b> partant / parti</div>
+        <div class="mode"><b>Gérondif :</b> en partant</div>
+    </div>
+
+    <div class="section">
+        <h2>🃏 Flashcards - Figures de style</h2>
+
+        <div class="flashcards">
+
+            <div class="card" onclick="flip(this)">
+                <div class="card-inner">
+                    <div class="card-front">Antithèse</div>
+                    <div class="card-back">
+                        Opposition entre deux mots contraires.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="flip(this)">
+                <div class="card-inner">
+                    <div class="card-front">Oxymore</div>
+                    <div class="card-back">
+                        Deux mots opposés rapprochés.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="flip(this)">
+                <div class="card-inner">
+                    <div class="card-front">Périphrase</div>
+                    <div class="card-back">
+                        Expression qui remplace un mot.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="flip(this)">
+                <div class="card-inner">
+                    <div class="card-front">Personnification</div>
+                    <div class="card-back">
+                        Donner des qualités humaines à un objet ou animal.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="flip(this)">
+                <div class="card-inner">
+                    <div class="card-front">Allégorie</div>
+                    <div class="card-back">
+                        Représentation imagée d’une idée abstraite.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>❓ Quiz Interactif</h2>
+
+        <div id="quiz"></div>
+
+        <button onclick="checkQuiz()">Voir mon score</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+</div>
+
+<footer>
+    Application de révision de français ✨
+</footer>
+
+<script>
+
+function flip(card){
+    card.classList.toggle("flipped");
+}
+
+const quizData = [
+{
+question:"Quel est le mode de : « Il faut qu’il parte » ?",
+answers:["Indicatif","Subjonctif","Impératif"],
+correct:"Subjonctif"
+},
+{
+question:"Quelle figure de style oppose deux mots contraires ?",
+answers:["Oxymore","Antithèse","Périphrase"],
+correct:"Antithèse"
+},
+{
+question:"« Cette obscure clarté » est un...",
+answers:["Oxymore","Allégorie","Comparaison"],
+correct:"Oxymore"
+},
+{
+question:"Le mode de « Pars ! » est...",
+answers:["Indicatif","Impératif","Participe"],
+correct:"Impératif"
+},
+{
+question:"La personnification donne des qualités humaines à...",
+answers:["Des objets ou animaux","Des verbes","Des couleurs"],
+correct:"Des objets ou animaux"
+}
+];
+
+const quizContainer = document.getElementById("quiz");
+
+quizData.forEach((q,index)=>{
+    const div=document.createElement("div");
+    div.classList.add("quiz-question");
+
+    let html=`<p><b>${index+1}. ${q.question}</b></p>`;
+
+    q.answers.forEach(answer=>{
+        html+=`
+        <label>
+            <input type="radio" name="q${index}" value="${answer}">
+            ${answer}
+        </label><br>
+        `;
+    });
+
+    div.innerHTML=html;
+    quizContainer.appendChild(div);
+});
+
+function checkQuiz(){
+
+    let score=0;
+
+    quizData.forEach((q,index)=>{
+        const selected=document.querySelector(`input[name="q${index}"]:checked`);
+
+        if(selected && selected.value===q.correct){
+            score++;
+        }
+    });
+
+    document.getElementById("result").innerHTML=
+        `🎉 Ton score : ${score} / ${quizData.length}`;
+}
+
+</script>
+
+</body>
+</html>
+```

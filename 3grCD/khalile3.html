@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Maths 3ème - Fiches de Mémorisation Active</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary: #3498db;
+            --primary-hover: #2980b9;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a2e;
+            --container-bg: #16213e;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary: #00adb5;
+            --primary-hover: #00fff5;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        h1 span {
+            color: var(--primary);
+        }
+
+        .theme-btn {
+            background: none;
+            border: 2px solid var(--text-muted);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Options de filtrage */
+        .filter-container {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: var(--container-bg);
+            border: 1px solid rgba(0,0,0,0.1);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        body[data-theme="dark"] .filter-btn {
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--container-bg);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stats-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        body[data-theme="dark"] .progress-container {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Zone Flashcard */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            height: 280px;
+            margin-bottom: 30px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: var(--radius);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: var(--card-shadow);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, var(--container-bg) 0%, rgba(52, 152, 219, 0.03) 100%);
+            color: var(--text-main);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--container-bg) 0%, rgba(46, 204, 113, 0.03) 100%);
+            color: var(--text-main);
+            transform: rotateY(180deg);
+        }
+
+        .card-tag {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 10px;
+        }
+
+        .card-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Boutons de contrôle */
+        .controls {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn {
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background-color: var(--primary); color: white; width: 100%; justify-content: center;}
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success); color: white; flex: 1; }
+        .btn-danger { background-color: var(--danger); color: white; flex: 1; }
+
+        .hidden { display: none !important; }
+
+        /* Écran de Résultats Finaux */
+        .end-screen {
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+        }
+        .end-screen h2 { font-size: 1.8rem; margin-bottom: 15px; }
+        .score-big { font-size: 3.5rem; font-weight: 800; color: var(--success); margin-bottom: 25px; }
+        .end-buttons { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; margin: 0 auto; }
+
+        @media(max-width: 600px) {
+            .card-text { font-size: 1.1rem; }
+            .flashcard-wrapper { height: 320px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Maths 3ème <span>Brevet</span></h1>
+        <button class="theme-btn" id="themeToggle">Mode Sombre</button>
+    </header>
+
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterCategory('tous', this)">📚 Tout réviser</button>
+        <button class="filter-btn" onclick="filterCategory('Arithmétique & Algèbre', this)">🧮 Algèbre & Nombres</button>
+        <button class="filter-btn" onclick="filterCategory('Géométrie & Trigonométrie', this)">📐 Géométrie</button>
+        <button class="filter-btn" onclick="filterCategory('Fonctions & Statistique', this)">📈 Fonctions & Stats</button>
+        <button class="filter-btn" onclick="filterCategory('Grandeurs & Volumes', this)">📦 Volumes & Grandeurs</button>
+    </div>
+
+    <div class="main-container">
+        <div id="quiz-zone" style="width: 100%;">
+            <div class="stats-bar">
+                <span id="card-counter">Fiche : 1 / --</span>
+                <span id="score-counter">Score : --</span>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress"></div>
+            </div>
+
+            <div class="flashcard-wrapper">
+                <div class="flashcard" id="flashcard" onclick="toggleFlip()">
+                    <div class="card-face card-front">
+                        <span class="card-tag" id="tagFront">Fiche</span>
+                        <div class="card-text" id="questionText">Chargement...</div>
+                        <span class="hint">💡 Cliquez sur la carte pour l'inverser</span>
+                    </div>
+                    <div class="card-face card-back">
+                        <span class="card-tag" id="tagBack">Réponse</span>
+                        <div class="card-text" id="answerText">Chargement...</div>
+                        <span class="hint">🔄 Cliquez pour revenir à la question</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="revealBtn" onclick="toggleFlip()">Afficher la réponse</button>
+                <button class="btn btn-danger hidden" id="wrongBtn" onclick="handleAnswer(false, event)">❌ À revoir</button>
+                <button class="btn btn-success hidden" id="correctBtn" onclick="handleAnswer(true, event)">✅ Acquis</button>
+            </div>
+        </div>
+
+        <div id="end-zone" class="end-screen hidden">
+            <h2>Session Terminée ! 🎉</h2>
+            <p>Votre taux d'assimilation active :</p>
+            <div class="score-big" id="finalScore">0%</div>
+            <div class="end-buttons">
+                <button class="btn btn-primary" onclick="resetQuiz()">Recommencer tout</button>
+                <button class="btn btn-danger hidden" id="reviewBadOnesBtn" onclick="startReviewBadOnes()">Revoir uniquement les erreurs</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de données structurée par catégories thématiques pour le Brevet
+        const dataset = [
+            { id: 1, cat: "Arithmétique & Algèbre", q: "Dire les noms du résultat de l’addition, la soustraction, la multiplication, la division.", a: "Somme (addition) | Différence (soustraction) | Produit (multiplication) | Quotient (division)." },
+            { id: 3, cat: "Arithmétique & Algèbre", q: "Cite un multiple de 12.", a: "12, 24, 36, 48, 60..." },
+            { id: 4, cat: "Arithmétique & Algèbre", q: "Cite un diviseur de 15.", a: "1, 3, 5, ou 15." },
+            { id: 5, cat: "Arithmétique & Algèbre", q: "7 est-il un multiple de 14 ?", a: "Non, 7 est un diviseur de 14. C'est 14 qui est un multiple de 7." },
+            { id: 6, cat: "Arithmétique & Algèbre", q: "Comment repère-t-on un nombre qui se divise par 2 ?", a: "C'est un nombre pair : il se termine par 0, 2, 4, 6 ou 8." },
+            { id: 7, cat: "Arithmétique & Algèbre", q: "Comment repère-t-on un nombre qui se divise par 3 (ou par 9) ?", a: "La somme de ses chiffres est dans la table de 3 (ou de 9)." },
+            { id: 8, cat: "Arithmétique & Algèbre", q: "Comment repère-t-on un nombre qui se divise par 5 ?", a: "Il se termine simplement par 0 ou 5." },
+            { id: 9, cat: "Arithmétique & Algèbre", q: "Quelle est l’écriture mathématique d’un nombre pair ? d'un nombre impair ?", a: "Pair : 2n | Impair : 2n + 1 (où n est un entier)." },
+            { id: 10, cat: "Arithmétique & Algèbre", q: "Quelle est l’écriture mathématique d’un nombre multiple de 7 ?", a: "7n (où n est un nombre entier)." },
+            { id: 11, cat: "Arithmétique & Algèbre", q: "Qu’est-ce qu’un nombre premier ?", a: "Un nombre entier positif qui possède exactement deux diviseurs distincts : 1 et lui-même." },
+            { id: 12, cat: "Arithmétique & Algèbre", q: "Récite la liste des nombres premiers compris entre 1 et 30.", a: "2, 3, 5, 7, 11, 13, 17, 19, 23, 29." },
+            { id: 13, cat: "Arithmétique & Algèbre", q: "Qu’est-ce qu’une fraction irréductible ?", a: "Une fraction que l'on ne peut plus du tout simplifier." },
+            { id: 14, cat: "Arithmétique & Algèbre", q: "Comment rendre une fraction parfaitement irréductible ?", a: "Par divisions successives ou en décomposant le numérateur et le dénominateur en produits de facteurs premiers, puis en simplifiant." },
+            { id: 15, cat: "Arithmétique & Algèbre", q: "Comment ajoute-t-on deux nombres négatifs ?", a: "On additionne leurs distances à zéro et on place le signe (-) devant le résultat." },
+            { id: 16, cat: "Arithmétique & Algèbre", q: "Comment ajoute-t-on deux nombres de signes contraires ?", a: "On soustrait la plus petite distance à zéro de la plus grande, puis on prend le signe de la plus grande distance." },
+            { id: 17, cat: "Arithmétique & Algèbre", q: "Soustraire un nombre cela revient à…", a: "Ajouter son opposé." },
+            { id: 18, cat: "Arithmétique & Algèbre", q: "Comment ajouter ou soustraire deux fractions entre elles ?", a: "On les réduit au même dénominateur, on calcule les numérateurs et on conserve le dénominateur commun." },
+            { id: 19, cat: "Arithmétique & Algèbre", q: "Comment multiplier deux fractions ?", a: "On multiplie les numérateurs entre eux et les dénominateurs entre eux." },
+            { id: 20, cat: "Arithmétique & Algèbre", q: "Comment calcule-t-on la fraction d’une quantité ?", a: "On multiplie la quantité numérique directement par la fraction." },
+            { id: 21, cat: "Arithmétique & Algèbre", q: "Qu’est-ce que deux nombres opposés ?", a: "Deux nombres dont la somme est égale à 0 (Exemple : 3 et -3)." },
+            { id: 22, cat: "Arithmétique & Algèbre", q: "Qu’est-ce que deux nombres inverses ?", a: "Deux nombres dont le produit est égal à 1 (Exemple : 3 et 1/3)." },
+            { id: 23, cat: "Arithmétique & Algèbre", q: "Comment diviser deux fractions ?", a: "On multiplie la première fraction par l’inverse de la seconde." },
+            { id: 24, cat: "Arithmétique & Algèbre", q: "Que signifie concrètement a³ ?", a: "a × a × a" },
+            { id: 25, cat: "Arithmétique & Algèbre", q: "Que signifie explicitement aⁿ ?", a: "a × a × ... × a (répété n fois)" },
+            { id: 26, cat: "Arithmétique & Algèbre", q: "Que signifie mathématiquement a⁻ⁿ ?", a: "C'est l’inverse de aⁿ, c'est-à-dire : 1 / aⁿ" },
+            { id: 27, cat: "Arithmétique & Algèbre", q: "Comment multiplie-t-on un nombre par 10ⁿ ?", a: "On déplace la virgule de n rangs vers la droite." },
+            { id: 28, cat: "Arithmétique & Algèbre", q: "Comment multiplie-t-on un nombre par 10⁻ⁿ ?", a: "On déplace la virgule de n rangs vers la gauche." },
+            { id: 29, cat: "Arithmétique & Algèbre", q: "Que signifie le préfixe Méga ?", a: "1 000 000 (1 million) ou 10⁶" },
+            { id: 30, cat: "Arithmétique & Algèbre", q: "Que signifie le préfixe Giga ?", a: "1 000 000 000 (1 milliard) ou 10⁹" },
+            { id: 31, cat: "Arithmétique & Algèbre", q: "Que signifie le préfixe Micro ?", a: "0,000 001 (1 millionième) ou 10⁻⁶" },
+            { id: 32, cat: "Arithmétique & Algèbre", q: "Que signifie le préfixe Nano ?", a: "0,000 000 001 (1 milliardième) ou 10⁻⁹" },
+            { id: 35, cat: "Arithmétique & Algèbre", q: "Quelles sont les formules de distributivité simple et double ?", a: "Simple : k(a+b) = ka+kb | Double : (a+b)(c+d) = ac+ad+bc+bd" },
+            { id: 38, cat: "Arithmétique & Algèbre", q: "Quelle est la forme factorisée de a² - b² ?", a: "(a - b)(a + b)" },
+            { id: 39, cat: "Arithmétique & Algèbre", q: "Comment factoriser une expression ?", a: "On cherche un facteur commun évident ou caché, ou on emploie une identité remarquable." },
+            { id: 40, cat: "Arithmétique & Algèbre", q: "Comment résoudre une équation classique du 1er degré ?", a: "On isole les inconnues (x) d’un côté et les valeurs connues de l’autre." },
+            { id: 41, cat: "Arithmétique & Algèbre", q: "Comment appelle-t-on une équation sous la forme (ax+b)(cx+d) = 0 ?", a: "Une équation-produit nul." },
+            { id: 42, cat: "Arithmétique & Algèbre", q: "Comment résout-on une équation-produit nul ?", a: "Si un produit est nul, l'un des facteurs est nul. On résout séparément : ax+b = 0 OU cx+d = 0." },
+            { id: 43, cat: "Arithmétique & Algèbre", q: "Quelles sont les solutions de x² = a (si a est positif) ?", a: "Il y a deux solutions : x = √a et x = -√a." },
+            { id: 44, cat: "Géométrie & Trigonométrie", q: "Que vaut la somme des angles dans un triangle ?", a: "Elle est toujours égale à 180°." },
+            { id: 45, cat: "Géométrie & Trigonométrie", q: "Quelles sont les propriétés d’un triangle isocèle ?", a: "Il possède deux côtés de même longueur et deux angles à la base égaux." },
+            { id: 46, cat: "Géométrie & Trigonométrie", q: "Quelles sont les propriétés d’un triangle équilatéral ?", a: "Trois côtés égaux et trois angles identiques mesurant chacun 60°." },
+            { id: 47, cat: "Géométrie & Trigonométrie", q: "Comment se nomme le côté opposé à l'angle droit dans un triangle rectangle ?", a: "L’hypoténuse (c'est le côté le plus long)." },
+            { id: 48, cat: "Géométrie & Trigonométrie", q: "À quoi sert concrètement le théorème de Pythagore ?", a: "À calculer la longueur d'un côté d'un triangle rectangle si on connaît les deux autres." },
+            { id: 49, cat: "Géométrie & Trigonométrie", q: "Dans quelle configuration précise applique-t-on le théorème de Pythagore ?", a: "Uniquement dans un triangle rectangle." },
+            { id: 50, cat: "Géométrie & Trigonométrie", q: "Que faut-il connaître pour appliquer la réciproque ou la contraposée de Pythagore ?", a: "Il faut impérativement connaître les longueurs des 3 côtés du triangle." },
+            { id: 51, cat: "Géométrie & Trigonométrie", q: "À quoi servent la réciproque et la contraposée de Pythagore ?", a: "Réciproque : prouver qu'un triangle EST rectangle. Contraposée : prouver qu'il NE L'EST PAS." },
+            { id: 52, cat: "Géométrie & Trigonométrie", q: "Qu’est-ce que la médiatrice d’un segment ?", a: "C'est la droite coupant ce segment perpendiculairement en son milieu." },
+            { id: 53, cat: "Géométrie & Trigonométrie", q: "Quelles sont les propriétés fondamentales d’un parallélogramme ?", a: "Côtés opposés parallèles et égaux. Diagonales qui se coupent en leur milieu." },
+            { id: 54, cat: "Géométrie & Trigonométrie", q: "Quelles sont les propriétés spécifiques d’un rectangle ?", a: "4 angles droits et des diagonales de même longueur se coupant en leur milieu." },
+            { id: 55, cat: "Géométrie & Trigonométrie", q: "Quelles sont les propriétés d’un losange ?", a: "4 côtés de même longueur et des diagonales perpendiculaires se coupant en leur milieu." },
+            { id: 56, cat: "Géométrie & Trigonométrie", q: "Quelles sont les propriétés d’un carré ?", a: "4 angles droits, 4 côtés égaux. Diagonales égales, perpendiculaires se coupant en leur milieu." },
+            { id: 57, cat: "Géométrie & Trigonométrie", q: "À quoi sert le théorème de Thalès ?", a: "À calculer des longueurs de côtés proportionnels dans des triangles." },
+            { id: 58, cat: "Géométrie & Trigonométrie", q: "Dans quelles configurations géométriques utilise-t-on Thalès ?", a: "Deux triangles emboîtés (configuration classique) ou en forme de sablier (papillon) avec deux droites parallèles." },
+            { id: 59, cat: "Géométrie & Trigonométrie", q: "Énonce les égalités de Thalès pour les triangles AMN et ABC emboîtés.", a: "Si (MN) et (BC) sont parallèles, alors : AM/AB = AN/AC = MN/BC." },
+            { id: 60, cat: "Géométrie & Trigonométrie", q: "À quoi servent la réciproque et la contraposée de Thalès ?", a: "Réciproque : montrer que deux droites sont parallèles. Contraposée : montrer qu'elles ne le sont pas." },
+            { id: 61, cat: "Géométrie & Trigonométrie", q: "Quelle est la condition essentielle de la réciproque de Thalès ?", a: "Les points doivent être alignés dans le même ordre sur les deux droites avec l'égalité des rapports numériques." },
+            { id: 62, cat: "Géométrie & Trigonométrie", q: "À quoi sert l'outil de la trigonométrie ?", a: "À calculer une longueur ou l'angle aigu d'un triangle rectangle." },
+            { id: 63, cat: "Géométrie & Trigonométrie", q: "Dans quel type de triangle la trigonométrie s'applique-t-elle ?", a: "Exclusivement dans un triangle rectangle." },
+            { id: 64, cat: "Géométrie & Trigonométrie", q: "Donne la formule du cosinus d’un angle.", a: "Cosinus = Côté Adjacent / Hypoténuse" },
+            { id: 65, cat: "Géométrie & Trigonométrie", q: "Donne la formule du sinus d’un angle.", a: "Sinus = Côté Opposé / Hypoténuse" },
+            { id: 66, cat: "Géométrie & Trigonométrie", q: "Donne la formule de la tangente d’un angle.", a: "Tangente = Côté Opposé / Côté Adjacent" },
+            { id: 67, cat: "Géométrie & Trigonométrie", q: "Comment trouve-t-on l'angle en degrés avec la calculatrice ?", a: "On utilise les fonctions inverses : Arccos, Arcsin ou Arctan (ou touches 2nd+Cos/Sin/Tan)." },
+            { id: 68, cat: "Géométrie & Trigonométrie", q: "En quoi consiste l'action d'une translation ?", a: "Faire glisser une figure sans la déformer ni la faire tourner selon un vecteur." },
+            { id: 69, cat: "Géométrie & Trigonométrie", q: "En quoi consiste l'action d'une rotation ?", a: "Faire tourner une figure autour d’un centre fixe d’un angle donné." },
+            { id: 70, cat: "Géométrie & Trigonométrie", q: "En quoi consiste une homothétie de rapport k positif ?", a: "Agrandir ou réduire une figure par rapport à un centre d'alignement." },
+            { id: 71, cat: "Géométrie & Trigonométrie", q: "En quoi consiste une homothétie de rapport k négatif ?", a: "Agrandir ou réduire une figure en effectuant simultanément un retournement de 180°." },
+            { id: 72, cat: "Géométrie & Trigonométrie", q: "Comment prouver que deux triangles sont semblables ?", a: "En montrant que leurs angles sont deux à deux égaux ou que leurs côtés sont proportionnels." },
+            { id: 73, cat: "Grandeurs & Volumes", q: "Quel méridien sert d'axe de référence terrestre ?", a: "Le méridien de Greenwich (repère des longitudes)." },
+            { id: 74, cat: "Grandeurs & Volumes", q: "Quel parallèle sert de référence terrestre ?", a: "L’Équateur (repère des latitudes)." },
+            { id: 75, cat: "Grandeurs & Volumes", q: "Avec quelles coordonnées géographiques repère-t-on un point sur le globe ?", a: "La latitude (Nord/Sud) et la longitude (Est/Ouest)." },
+            { id: 76, cat: "Grandeurs & Volumes", q: "Donne le périmètre d’un rectangle.", a: "P = 2 × (Longueur + largeur)" },
+            { id: 77, cat: "Grandeurs & Volumes", q: "Donne le périmètre d’un carré.", a: "P = 4 × côté" },
+            { id: 78, cat: "Grandeurs & Volumes", q: "Comment trouve-t-on le périmètre d’un polygone quelconque ?", a: "On fait la somme arithmétique de tous ses côtés extérieurs." },
+            { id: 79, cat: "Grandeurs & Volumes", q: "Donne le périmètre (circonférence) d’un cercle.", a: "P = 2 × π × Rayon" },
+            { id: 80, cat: "Grandeurs & Volumes", q: "Donne l'aire d’un rectangle.", a: "Aire = Longueur × largeur" },
+            { id: 81, cat: "Grandeurs & Volumes", q: "Donne l'aire d’un carré.", a: "Aire = côté × côté = côté²" },
+            { id: 82, cat: "Grandeurs & Volumes", q: "Donne l'aire d’un triangle.", a: "Aire = (Base × Hauteur) / 2" },
+            { id: 83, cat: "Grandeurs & Volumes", q: "Qu’est-ce que la hauteur dans un triangle ?", a: "Une droite passant par un sommet perpendiculairement à la base opposée." },
+            { id: 84, cat: "Grandeurs & Volumes", q: "Donne l'aire d’un disque.", a: "Aire = π × Rayon²" },
+            { id: 85, cat: "Fonctions & Statistique", q: "Dans un repère cartésien, comment s’appelle l’axe horizontal ?", a: "L’axe des abscisses." },
+            { id: 86, cat: "Fonctions & Statistique", q: "Dans un repère cartésien, comment s’appelle l’axe vertical ?", a: "L’axe des ordonnées." },
+            { id: 87, cat: "Fonctions & Statistique", q: "De quoi est composé le repère d'un point dans le plan ?", a: "De deux coordonnées structurées : (abscisse ; ordonnée)." },
+            { id: 88, cat: "Fonctions & Statistique", q: "Pour le point (5 ; -7), que représentent le 5 et le -7 ?", a: "5 est l’abscisse (axe horizontal) et -7 est l’ordonnée (axe vertical)." },
+            { id: 89, cat: "Grandeurs & Volumes", q: "Liste les unités de longueur principales de kilo à milli.", a: "km, hm, dam, m, dm, cm, mm." },
+            { id: 90, cat: "Grandeurs & Volumes", q: "Par quel facteur passe-t-on d'une unité de longueur à sa suivante ?", a: "On multiplie ou divise par 10." },
+            { id: 91, cat: "Grandeurs & Volumes", q: "Par quel facteur passe-t-on d'une unité d'aire (m²) à sa suivante ?", a: "On multiplie ou divise par 100." },
+            { id: 92, cat: "Grandeurs & Volumes", q: "Par quel facteur passe-t-on d'une unité de volume (m³) à sa suivante ?", a: "On multiplie ou divise par 1000." },
+            { id: 93, cat: "Grandeurs & Volumes", q: "Quelle est l'équivalence exacte entre le Litre et les dm³ ?", a: "1 L = 1 dm³" },
+            { id: 94, cat: "Grandeurs & Volumes", q: "Donne le volume d’un cube.", a: "V = côté³" },
+            { id: 95, cat: "Grandeurs & Volumes", q: "Donne le volume d’un pavé droit.", a: "V = Longueur × largeur × Hauteur" },
+            { id: 96, cat: "Grandeurs & Volumes", q: "Donne le volume d’un cylindre de révolution.", a: "V = π × Rayon² × Hauteur" },
+            { id: 97, cat: "Grandeurs & Volumes", q: "Donne le volume générique d’un prisme droit.", a: "V = Aire de la base × Hauteur" },
+            { id: 98, cat: "Grandeurs & Volumes", q: "Donne le volume d’une pyramide.", a: "V = (Aire de la base × Hauteur) / 3" },
+            { id: 99, cat: "Grandeurs & Volumes", q: "Donne le volume d’un cône de révolution.", a: "V = (π × Rayon² × Hauteur) / 3" },
+            { id: 100, cat: "Grandeurs & Volumes", q: "Donne le volume d’une boule (sphère).", a: "V = (4/3) × π × Rayon³" },
+            { id: 101, cat: "Grandeurs & Volumes", q: "Qu'engendre un agrandissement/réduction de rapport k ?", a: "Les longueurs sont multipliées par k, les angles restent inchangés." },
+            { id: 102, cat: "Grandeurs & Volumes", q: "Que devient l’aire d’une figure après un rapport k ?", a: "Elle se voit multipliée par k²." },
+            { id: 103, cat: "Grandeurs & Volumes", q: "Que devient le volume d’un solide après un rapport k ?", a: "Il se voit multiplié par k³." },
+            { id: 104, cat: "Fonctions & Statistique", q: "Comment vérifie-t-on la proportionnalité d'un tableau ?", a: "On valide que le rapport Ligne2 / Ligne1 est identique pour chaque colonne." },
+            { id: 105, cat: "Fonctions & Statistique", q: "Comment s'appelle le facteur constant d'un tableau proportionnel ?", a: "Le coefficient de proportionnalité." },
+            { id: 106, cat: "Fonctions & Statistique", q: "Quelle technique applique-t-on pour calculer une inconnue dans un tableau proportionnel ?", a: "Le produit en croix." },
+            { id: 107, cat: "Fonctions & Statistique", q: "Comment valide-t-on la proportionnalité sur un graphique ?", a: "La courbe représentative est une ligne droite passant exactement par l’origine (0;0)." },
+            { id: 108, cat: "Grandeurs & Volumes", q: "Donne la formule liant vitesse, distance et temps.", a: "v = d / t" },
+            { id: 109, cat: "Grandeurs & Volumes", q: "Quelles grandeurs intègre-t-on dans un tableau lors d'exercices de vitesse ?", a: "La distance parcourue et le temps écoulé." },
+            { id: 110, cat: "Arithmétique & Algèbre", q: "Donne deux écritures équivalentes de 15%.", a: "15/100 ou sa valeur décimale 0,15." },
+            { id: 111, cat: "Arithmétique & Algèbre", q: "Comment calcule-t-on le pourcentage d’une quantité donnée ?", a: "On multiplie directement la quantité par la valeur du pourcentage." },
+            { id: 114, cat: "Arithmétique & Algèbre", q: "Augmenter une valeur de x% revient à la multiplier par...", a: "Multiplier par (1 + x/100)" },
+            { id: 115, cat: "Arithmétique & Algèbre", q: "Diminuer une valeur de x% revient à la multiplier par...", a: "Multiplier par (1 - x/100)" },
+            { id: 116, cat: "Fonctions & Statistique", q: "Qu’est-ce qu’une fonction informatique/mathématique ?", a: "Une relation qui associe à un nombre d'entrée (x) un unique nombre de sortie f(x)." },
+            { id: 117, cat: "Fonctions & Statistique", q: "Qu’est-ce que l’image d’une fonction ?", a: "Le nombre obtenu en sortie. On la lit sur l'axe vertical des ordonnées." },
+            { id: 118, cat: "Fonctions & Statistique", q: "Qu’est-ce qu’un antécédent ?", a: "Le nombre introduit au départ. On le lit sur l’axe horizontal des abscisses." },
+            { id: 121, cat: "Fonctions & Statistique", q: "Comment calcule-t-on l’image d’un nombre via une formule ?", a: "On remplace la variable x par la valeur numérique et on fait le calcul." },
+            { id: 124, cat: "Fonctions & Statistique", q: "Quelle égalité écrit-on si le point M(-4 ; 6) appartient à la courbe de g ?", a: "g(-4) = 6" },
+            { id: 125, cat: "Fonctions & Statistique", q: "Donne la structure générique d’une fonction linéaire.", a: "f(x) = ax" },
+            { id: 126, cat: "Fonctions & Statistique", q: "Quelle situation concrète est modélisée par une fonction linéaire ?", a: "Une situation de pure proportionnalité." },
+            { id: 127, cat: "Fonctions & Statistique", q: "Comment est matérialisée la courbe d'une fonction linéaire ?", a: "Une droite rectiligne passant obligatoirement par l'origine." },
+            { id: 128, cat: "Fonctions & Statistique", q: "Donne la formule d’une fonction affine.", a: "f(x) = ax + b" },
+            { id: 129, cat: "Fonctions & Statistique", q: "Dans f(x) = ax + b, quel est le nom donné au facteur 'a' ?", a: "Le coefficient directeur." },
+            { id: 130, cat: "Fonctions & Statistique", q: "Dans f(x) = ax + b, quel est le nom donné à la valeur 'b' ?", a: "L'ordonnée à l'origine." },
+            { id: 132, cat: "Fonctions & Statistique", q: "Dans une étude statistique, comment calcule-t-on une fréquence ?", a: "Fréquence = Effectif de la valeur / Effectif global" },
+            { id: 133, cat: "Fonctions & Statistique", q: "Comment détermine-t-on la moyenne d’une série statistique ?", a: "On fait la somme totale de toutes les valeurs divisée par l'effectif global." },
+            { id: 134, cat: "Fonctions & Statistique", q: "Comment détermine-t-on la médiane d’une série ?", a: "On trie par ordre croissant et on repère la donnée centrale scindant la série en deux groupes égaux." },
+            { id: 135, cat: "Fonctions & Statistique", q: "Comment calcule-t-on l’étendue d’une série ?", a: "Étendue = Valeur maximale - Valeur minimale" }
+        ];
+
+        let currentActiveCards = [];
+        let wrongCards = [];
+        let currentIndex = 0;
+        let score = 0;
+        let totalValided = 0;
+        let selectedCategory = 'tous';
+
+        // Éléments d'interface DOM
+        const flashcard = document.getElementById('flashcard');
+        const questionText = document.getElementById('questionText');
+        const answerText = document.getElementById('answerText');
+        const tagFront = document.getElementById('tagFront');
+        const cardCounter = document.getElementById('cardCounter');
+        const scoreCounter = document.getElementById('scoreCounter');
+        const progress = document.getElementById('progress');
+        
+        const revealBtn = document.getElementById('revealBtn');
+        const wrongBtn = document.getElementById('wrongBtn');
+        const correctBtn = document.getElementById('correctBtn');
+        
+        const quizZone = document.getElementById('quiz-zone');
+        const endZone = document.getElementById('end-zone');
+        const finalScore = document.getElementById('finalScore');
+        const themeToggle = document.getElementById('themeToggle');
+        const reviewBadOnesBtn = document.getElementById('reviewBadOnesBtn');
+
+        // Initialisation ou filtrage du quiz
+        function filterCategory(category, buttonElement) {
+            selectedCategory = category;
+            
+            // Mise à jour visuelle des boutons de filtres
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            if(buttonElement) buttonElement.classList.add('active');
+
+            if (category === 'tous') {
+                currentActiveCards = [...dataset];
+            } else {
+                currentActiveCards = dataset.filter(item => item.cat === category);
+            }
+            
+            wrongCards = []; // Réinitialise les erreurs
+            initQuiz();
+        }
+
+        function initQuiz() {
+            // Mélange intelligent pour casser la linéarité
+            currentActiveCards.sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+            score = 0;
+            totalValided = 0;
+            
+            endZone.classList.add('hidden');
+            quizZone.classList.remove('hidden');
+            showCard();
+        }
+
+        function showCard() {
+            if (currentIndex >= currentActiveCards.length) {
+                showEndScreen();
+                return;
+            }
+            
+            // On s'assure que la carte est face avant
+            flashcard.classList.remove('flipped');
+            
+            const currentItem = currentActiveCards[currentIndex];
+            questionText.innerText = currentItem.q;
+            answerText.innerText = currentItem.a;
+            tagFront.innerText = `N° ${currentItem.id} - ${currentItem.cat}`;
+            
+            // Compteurs dynamiques
+            cardCounter.innerText = `Fiche : ${currentIndex + 1} / ${currentActiveCards.length}`;
+            let percentProgress = (currentIndex / currentActiveCards.length) * 100;
+            progress.style.width = `${percentProgress}%`;
+            
+            // Gestion de l'affichage des boutons initiaux
+            revealBtn.classList.remove('hidden');
+            wrongBtn.classList.add('hidden');
+            correctBtn.classList.add('hidden');
+        }
+
+        // Commutateur de retournement de la carte
+        function toggleFlip() {
+            flashcard.classList.toggle('flipped');
+            if (flashcard.classList.contains('flipped')) {
+                revealBtn.classList.add('hidden');
+                wrongBtn.classList.remove('hidden');
+                correctBtn.classList.remove('hidden');
+            } else {
+                revealBtn.classList.remove('hidden');
+                wrongBtn.classList.add('hidden');
+                correctBtn.classList.add('hidden');
+            }
+        }
+
+        // FONCTION CORRIGÉE ET SÉCURISÉE POUR LES BOUTONS
+        function handleAnswer(isCorrect, event) {
+            // Empêche absolument le clic de se propager à la carte parente
+            if(event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+
+            totalValided++;
+            if (isCorrect) {
+                score++;
+            } else {
+                // On garde en mémoire la carte échouée
+                wrongCards.push(currentActiveCards[currentIndex]);
+            }
+            
+            // Met à jour l'affichage immédiat du score en haut à droite
+            let runningScore = Math.round((score / totalValided) * 100);
+            scoreCounter.innerText = `Score : ${runningScore}%`;
+
+            currentIndex++;
+            
+            // Animation de transition fluide vers la carte suivante
+            const wrapper = document.querySelector('.flashcard-wrapper');
+            wrapper.style.opacity = '0';
+            wrapper.style.transform = 'scale(0.96)';
+            
+            setTimeout(() => {
+                showCard();
+                wrapper.style.opacity = '1';
+                wrapper.style.transform = 'scale(1)';
+            }, 250);
+        }
+
+        function showEndScreen() {
+            quizZone.classList.add('hidden');
+            endZone.classList.remove('hidden');
+            
+            let finalPercent = Math.round((score / currentActiveCards.length) * 100);
+            finalScore.innerText = `${finalPercent}%`;
+            
+            if (finalPercent >= 70) {
+                finalScore.style.color = 'var(--success)';
+            } else {
+                finalScore.style.color = 'var(--danger)';
+            }
+
+            // Affiche l'option "Revoir les erreurs" seulement s'il y a eu des fautes
+            if (wrongCards.length > 0) {
+                reviewBadOnesBtn.classList.remove('hidden');
+                reviewBadOnesBtn.innerText = `🔄 Revoir uniquement les ${wrongCards.length} erreur(s)`;
+            } else {
+                reviewBadOnesBtn.classList.add('hidden');
+            }
+        }
+
+        function startReviewBadOnes() {
+            currentActiveCards = [...wrongCards];
+            wrongCards = [];
+            initQuiz();
+        }
+
+        function resetQuiz() {
+            filterCategory(selectedCategory, null);
+        }
+
+        // Mode Sombre
+        themeToggle.addEventListener('click', () => {
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                document.body.removeAttribute('data-theme');
+                themeToggle.innerText = "Mode Sombre";
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggle.innerText = "Mode Clair";
+            }
+        });
+
+        // Lancement initial par défaut
+        filterCategory('tous', null);
+    </script>
+</body>
+</html>
