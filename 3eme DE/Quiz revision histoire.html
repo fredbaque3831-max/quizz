@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révisions Brevet : Repères Chronologiques</title>
+    <style>
+        :root {
+            --primary: #2b579a;
+            --primary-hover: #1e3d6b;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --background: #f4f6f9;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --border: #e1e8ed;
+            --option-bg: #f0f3f6;
+        }
+
+        [data-theme="dark"] {
+            --background: #111827;
+            --card-bg: #1f2937;
+            --text: #f9fafb;
+            --border: #374151;
+            --option-bg: #374151;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .global-toolbar {
+            max-width: 750px;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 750px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            text-align: center;
+            box-sizing: border-box;
+            transition: background-color 0.3s;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .tool-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tool-btn:hover { background-color: var(--option-bg); }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin: 10px;
+        }
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: #7f8c8d; }
+        .btn-secondary:hover { background-color: #646f70; }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .settings-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--option-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .setting-info label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .setting-info span {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .setting-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 6px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .setting-value {
+            font-size: 16px;
+            font-weight: bold;
+            width: 95px;
+            text-align: center;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .hearts { color: var(--danger); font-size: 18px; font-weight: bold; }
+
+        .timer-container {
+            width: 100%;
+            background-color: var(--border);
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        /* --- Style Flashcards --- */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 450px;
+            height: 250px;
+            margin: 30px auto;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            border: 2px solid var(--border);
+        }
+
+        .card-front {
+            background-color: var(--option-bg);
+            color: var(--text);
+        }
+
+        .card-back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .card-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .card-content {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* --- Nouveau Mode : Grille de toutes les flashcards --- */
+        .grid-toggle-container {
+            background: var(--option-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+        .grid-toggle-container label {
+            font-weight: bold;
+            margin: 0 15px;
+            cursor: pointer;
+        }
+
+        .flashcards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mini-card-wrapper {
+            perspective: 1000px;
+            height: 160px;
+            cursor: pointer;
+        }
+
+        .mini-card-wrapper .card-content {
+            font-size: 0.95rem;
+            padding: 10px;
+        }
+
+        .mini-card-wrapper .card-label {
+            font-size: 10px;
+            margin-bottom: 8px;
+        }
+
+        /* --- Options & Inputs --- */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            background-color: var(--option-bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+            padding: 14px;
+            text-align: left;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover { background-color: var(--border); }
+        .option-btn.correct { background-color: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+        .option-btn.wrong { background-color: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
+
+        .input-container {
+            margin: 25px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--option-bg);
+            color: var(--text);
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .text-input:focus { border-color: var(--primary); }
+
+        .feedback-box {
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: left;
+            font-size: 15px;
+        }
+        .feedback-box.correct { background-color: rgba(46, 204, 113, 0.2); border-left: 5px solid var(--success); color: var(--success); }
+        .feedback-box.wrong { background-color: rgba(231, 76, 60, 0.2); border-left: 5px solid var(--danger); color: var(--danger); }
+
+        .errors-container {
+            text-align: left;
+            margin-top: 25px;
+            border-top: 2px dashed var(--border);
+            padding-top: 20px;
+        }
+
+        .error-item {
+            background: var(--option-bg);
+            border-left: 4px solid var(--danger);
+            padding: 12px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 10px;
+        }
+        .error-q { font-weight: bold; margin-bottom: 5px; }
+        .error-a { color: var(--success); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="global-toolbar">
+        <button class="tool-btn" id="sound-btn" onclick="toggleSound()">🔊</button>
+        <button class="tool-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+
+    <div class="container">
+        <div id="subject-screen">
+            <h1>Révisions Brevet</h1>
+            <p>Choisissez une matière pour commencer vos révisions :</p>
+            <div class="menu-buttons">
+                <button class="btn" onclick="selectSubject('Histoire')">Histoire</button>
+                <button class="btn btn-secondary" style="opacity: 0.6; cursor: not-allowed;" disabled>D'autres matières à venir...</button>
+            </div>
+        </div>
+
+        <div id="home-screen" class="hidden">
+            <h1 id="menu-title">Repères d'Histoire 3ème</h1>
+            <p>Sélectionnez votre méthode de révision.</p>
+            <div class="menu-buttons">
+                <button class="btn" onclick="openSettings('qcm')">Mode QCM</button>
+                <button class="btn" onclick="openSettings('write')">Mode Saisie Écrite</button>
+                <button class="btn" onclick="openSettings('flashcard')">Mode Flashcards</button>
+                <button class="btn" style="background-color: #8e44ad;" onclick="launchAllFlashcardsMode()">Mode Toutes les Flashcards</button>
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--border); margin-top: 25px;">
+            <button class="btn btn-secondary" onclick="backToSubjects()">Changer de matière</button>
+        </div>
+
+        <div id="settings-screen" class="hidden">
+            <h2>Configuration de la partie</h2>
+            <div class="settings-box">
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <label>Nombre de questions</label>
+                        <span>Combien de repères à réviser ?</span>
+                    </div>
+                    <div class="setting-controls">
+                        <button class="control-btn" onclick="adjustSetting('qty', -1)">-</button>
+                        <span class="setting-value" id="val-qty">10</span>
+                        <button class="control-btn" onclick="adjustSetting('qty', 1)">+</button>
+                    </div>
+                </div>
+                <div class="setting-row" id="row-timer">
+                    <div class="setting-info">
+                        <label>Chronomètre par question</label>
+                        <span>Temps limite pour répondre</span>
+                    </div>
+                    <div class="setting-controls">
+                        <button class="control-btn" onclick="adjustSetting('timer', -2)">-</button>
+                        <span class="setting-value" id="val-timer">Désactivé</span>
+                        <button class="control-btn" onclick="adjustSetting('timer', 2)">+</button>
+                    </div>
+                </div>
+                <div class="setting-row" id="row-lives">
+                    <div class="setting-info">
+                        <label>Système de Vies</label>
+                        <span>Nombre d'erreurs fatales permises</span>
+                    </div>
+                    <div class="setting-controls">
+                        <button class="control-btn" onclick="adjustSetting('lives', -1)">-</button>
+                        <span class="setting-value" id="val-lives">3</span>
+                        <button class="control-btn" onclick="adjustSetting('lives', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" onclick="launchGame()">C'est parti !</button>
+            <button class="btn btn-secondary" onclick="backToMenu()">Retour</button>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <div class="status-bar">
+                <div>Question <span id="current-index">1</span> / <span id="total-questions">X</span></div>
+                <div id="game-hearts" class="hearts"></div>
+            </div>
+            
+            <div class="timer-container" id="timer-wrapper"><div class="timer-bar" id="timer-bar"></div></div>
+
+            <h2 id="question-text" style="font-size: 1.3rem; margin-bottom: 25px;">Question</h2>
+
+            <div id="qcm-interface" class="hidden">
+                <div class="options-container" id="options-box"></div>
+                <button id="next-qcm-btn" class="btn hidden" onclick="nextQuestion()">Question suivante</button>
+            </div>
+
+            <div id="write-interface" class="hidden">
+                <div class="input-container">
+                    <input type="text" id="user-answer-input" class="text-input" placeholder="Tape ton texte ou ta date ici..." autocomplete="off">
+                    <button id="submit-answer-btn" class="btn" onclick="checkWriteAnswer()">Valider ma réponse</button>
+                    <div id="write-feedback" class="feedback-box hidden"></div>
+                </div>
+                <button id="next-write-btn" class="btn hidden" onclick="nextQuestion()">Question suivante</button>
+            </div>
+
+            <div id="flashcard-interface" class="hidden">
+                <p style="font-size: 14px; color: #7f8c8d; margin-top: -10px;">Clique sur la carte pour voir le verso</p>
+                <div class="flashcard-wrapper" onclick="flipCard('main-flashcard')">
+                    <div class="flashcard" id="main-flashcard">
+                        <div class="card-face card-front">
+                            <div class="card-label" id="card-front-label">Question</div>
+                            <div class="card-content" id="card-front-text">Recto de la carte</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <div class="card-label">Réponse attendue</div>
+                            <div class="card-content" id="card-back-text">Verso de la carte</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard-controls">
+                    <button class="btn btn-secondary" onclick="markFlashcard(false)">❌ Je ne savais pas</button>
+                    <button class="btn" style="background-color: var(--success)" onclick="markFlashcard(true)">✅ Je savais</button>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="backToMenu()">Quitter la partie</button>
+        </div>
+
+        <div id="all-flashcards-screen" class="hidden">
+            <h2>Toutes les Flashcards</h2>
+            <p>Consultez et mémorisez tous les repères en même temps. Cliquez sur une carte pour la retourner.</p>
+            
+            <div class="grid-toggle-container">
+                <span>Afficher en premier : </span>
+                <label>
+                    <input type="radio" name="grid-display-mode" value="date" checked onchange="renderAllFlashcardsGrid()"> 📅 Dates
+                </label>
+                <label>
+                    <input type="radio" name="grid-display-mode" value="event" onchange="renderAllFlashcardsGrid()"> 📝 Événements
+                </label>
+            </div>
+
+            <div class="flashcards-grid" id="all-cards-container"></div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="backToMenu()">Retour au menu</button>
+        </div>
+
+        <div id="end-screen" class="hidden">
+            <h1 id="end-title">Entraînement terminé !</h1>
+            <p id="score-text"></p>
+
+            <div id="errors-log" class="errors-container hidden">
+                <h3>🔍 Tes points faibles à retravailler :</h3>
+                <div id="errors-list"></div>
+            </div>
+
+            <button class="btn" onclick="backToMenu()">Retour au menu</button>
+        </div>
+    </div>
+
+    <script>
+        const database = [
+            { date: "1914-1918", event: "Grande Guerre (Première guerre mondiale)" },
+            { date: "1916", event: "Verdun (Bataille de Verdun)" },
+            { date: "1917", event: "Révolution(s) russe(s)" },
+            { date: "11 novembre 1918", event: "Armistice de la Première Guerre mondiale" },
+            { date: "1924-1953", event: "Staline au pouvoir en URSS" },
+            { date: "1933-1945", event: "L’Allemagne nazie d’Adolf Hitler" },
+            { date: "1936", event: "Victoire électorale et lois sociales du Front populaire" },
+            { date: "1939-1945", event: "Seconde Guerre mondiale" },
+            { date: "18 juin 1940", event: "Appel du général De Gaulle à la radio de Londres" },
+            { date: "1940-1944", event: "Régime de Vichy" },
+            { date: "6 juin 1944", event: "Débarquement allié en Normandie" },
+            { date: "1944-1945", event: "Libération de la France, GPRF et rétablissement de la République" },
+            { date: "1944-1945", event: "Droit de vote des femmes en France" },
+            { date: "8 mai 1945", event: "Capitulation allemande - fin de la Seconde Guerre mondiale en Europe" },
+            { date: "Août 1945", event: "Bombes atomiques sur Hiroshima et Nagasaki (Japon)" },
+            { date: "1945", event: "Création de l’ONU" },
+            { date: "1947-1991", event: "Guerre Froide" },
+            { date: "1947-1962", event: "Principale phase de décolonisation" },
+            { date: "1954-1962", event: "Guerre d’Algérie" },
+            { date: "1957", event: "Traité de Rome, création de la CEE" },
+            { date: "1958", event: "Naissance de la Ve République" },
+            { date: "1958-1969", event: "Les années de GAULLE" },
+            { date: "1962", event: "Indépendance de l’Algérie" },
+            { date: "1962", event: "Élection du président de la République au suffrage universel direct" },
+            { date: "1975", event: "Loi Veil sur l’Interruption Volontaire de Grossesse (IVG)" },
+            { date: "1981-1995", event: "Les années MITTERRAND et alternance" },
+            { date: "9 novembre 1989", event: "Chute du mur de Berlin" },
+            { date: "1991", event: "Éclatement / dislocation de l’URSS" },
+            { date: "1992", event: "Traité de Maastricht" },
+            { date: "1995-2007", event: "Les années CHIRAC" },
+            { date: "11 septembre 2001", event: "Attentats terroristes aux États-Unis" },
+            { date: "2002", event: "L'Euro devient la monnaie européenne" }
+        ];
+
+        // Chronomètre à 0 par défaut (Désactivé)
+        let config = { qty: 10, timer: 0, lives: 3 };
+        let currentSubject = '';
+        let currentMode = '';
+        let gameQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let currentLives = 0;
+        let isQuestionAnswered = false;
+        let wrongAnswersLog = [];
+
+        let soundEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let timerInterval = null;
+        let timeLeft = 0;
+
+        function toggleTheme() {
+            const body = document.documentElement;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-btn').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        function playTone(type) {
+            if (!soundEnabled) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            if (type === 'correct') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'gameover') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+            }
+        }
+
+        function shuffle(array) {
+            let res = [...array];
+            for (let i = res.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [res[i], res[j]] = [res[j], res[i]];
+            }
+            return res;
+        }
+
+        /* --- NAVIGATION MATIÈRE --- */
+        function selectSubject(subject) {
+            currentSubject = subject;
+            document.getElementById('menu-title').textContent = `Repères d'${subject} 3ème`;
+            document.getElementById('subject-screen').classList.add('hidden');
+            document.getElementById('home-screen').classList.remove('hidden');
+        }
+
+        function backToSubjects() {
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('subject-screen').classList.remove('hidden');
+        }
+
+        function openSettings(mode) {
+            currentMode = mode;
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('settings-screen').classList.remove('hidden');
+            
+            if (mode === 'flashcard') {
+                document.getElementById('row-timer').classList.add('hidden');
+                document.getElementById('row-lives').classList.add('hidden');
+            } else {
+                document.getElementById('row-timer').classList.remove('hidden');
+                document.getElementById('row-lives').classList.remove('hidden');
+            }
+            updateSettingsUI();
+        }
+
+        function adjustSetting(key, val) {
+            if (key === 'qty') config.qty = Math.max(1, Math.min(database.length, config.qty + val));
+            else if (key === 'timer') config.timer = Math.max(0, Math.min(60, config.timer + val));
+            else if (key === 'lives') config.lives = Math.max(0, Math.min(10, config.lives + val));
+            updateSettingsUI();
+        }
+
+        document.getElementById('user-answer-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !isQuestionAnswered) checkWriteAnswer();
+        });
+
+        function updateSettingsUI() {
+            document.getElementById('val-qty').textContent = config.qty;
+            document.getElementById('val-timer').textContent = config.timer === 0 ? "Désactivé" : config.timer + "s";
+            document.getElementById('val-lives').textContent = config.lives === 0 ? "Désactivé" : config.lives;
+        }
+
+        /* --- LANCEMENT JEU CLASSIC --- */
+        function launchGame() {
+            document.getElementById('settings-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+
+            let shuffledDb = shuffle(database).slice(0, config.qty);
+            gameQuestions = []; wrongAnswersLog = []; score = 0; currentIndex = 0; currentLives = config.lives;
+
+            shuffledDb.forEach(item => {
+                const askDate = Math.random() < 0.5;
+                let qText = "", correctAns = "", choices = [];
+
+                if (askDate) {
+                    qText = `Quelle est la date associée à : "${item.event}" ?`; correctAns = item.date;
+                    if (currentMode === 'qcm') {
+                        let wrongPool = [...new Set(database.map(d => d.date.trim()))].filter(x => x !== correctAns.trim());
+                        choices = shuffle([...shuffle(wrongPool).slice(0, 3), correctAns]);
+                    }
+                } else {
+                    qText = `Que s'est-il passé en : ${item.date} ?`; correctAns = item.event;
+                    if (currentMode === 'qcm') {
+                        let wrongPool = [...new Set(database.map(d => d.event.trim()))].filter(x => x !== correctAns.trim());
+                        choices = shuffle([...shuffle(wrongPool).slice(0, 3), correctAns]);
+                    }
+                }
+
+                gameQuestions.push({
+                    question: qText, answer: correctAns, choices: choices, isDateQuestion: !askDate, targetDate: item.date, rawItem: item, typeFlag: askDate
+                });
+            });
+
+            document.getElementById('total-questions').textContent = gameQuestions.length;
+            document.getElementById('qcm-interface').classList.add('hidden');
+            document.getElementById('write-interface').classList.add('hidden');
+            document.getElementById('flashcard-interface').classList.add('hidden');
+
+            if (currentMode === 'qcm') document.getElementById('qcm-interface').classList.remove('hidden');
+            else if (currentMode === 'write') document.getElementById('write-interface').classList.remove('hidden');
+            else if (currentMode === 'flashcard') document.getElementById('flashcard-interface').classList.remove('hidden');
+            
+            updateHeartsUI(); showQuestion();
+        }
+
+        /* --- MODE TOUTES LES FLASHCARDS EN MEME TEMPS --- */
+        function launchAllFlashcardsMode() {
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('all-flashcards-screen').classList.remove('hidden');
+            renderAllFlashcardsGrid();
+        }
+
+        function renderAllFlashcardsGrid() {
+            const container = document.getElementById('all-cards-container');
+            container.innerHTML = '';
+            
+            // Regarder l'option sélectionnée en haut (date ou event en premier)
+            const displayFirst = document.querySelector('input[name="grid-display-mode"]:checked').value;
+
+            database.forEach((item, idx) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'mini-card-wrapper';
+                
+                let frontLabel = "", frontText = "", backLabel = "", backText = "";
+                
+                if (displayFirst === 'date') {
+                    frontLabel = "Date"; frontText = item.date;
+                    backLabel = "Événement"; backText = item.event;
+                } else {
+                    frontLabel = "Événement"; frontText = item.event;
+                    backLabel = "Date"; backText = item.date;
+                }
+
+                wrapper.innerHTML = `
+                    <div class="flashcard" id="grid-card-${idx}">
+                        <div class="card-face card-front">
+                            <div class="card-label">${frontLabel}</div>
+                            <div class="card-content">${frontText}</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <div class="card-label">${backLabel}</div>
+                            <div class="card-content">${backText}</div>
+                        </div>
+                    </div>
+                `;
+                
+                wrapper.onclick = () => flipCard(`grid-card-${idx}`);
+                container.appendChild(wrapper);
+            });
+        }
+
+        function updateHeartsUI() {
+            const display = document.getElementById('game-hearts');
+            if (currentMode === 'flashcard' || config.lives === 0) {
+                display.textContent = "";
+            } else {
+                display.textContent = "❤️".repeat(currentLives);
+            }
+        }
+
+        function showQuestion() {
+            clearInterval(timerInterval); isQuestionAnswered = false;
+            document.getElementById('current-index').textContent = currentIndex + 1;
+            const currentQ = gameQuestions[currentIndex];
+            
+            if (currentMode === 'flashcard') {
+                document.getElementById('question-text').textContent = "Trouve la correspondance historique !";
+                const card = document.getElementById('main-flashcard');
+                card.classList.remove('flipped');
+                
+                if (currentQ.typeFlag) {
+                    document.getElementById('card-front-label').textContent = "Événement";
+                    document.getElementById('card-front-text').textContent = currentQ.rawItem.event;
+                    document.getElementById('card-back-text').textContent = currentQ.rawItem.date;
+                } else {
+                    document.getElementById('card-front-label').textContent = "Date";
+                    document.getElementById('card-front-text').textContent = currentQ.rawItem.date;
+                    document.getElementById('card-back-text').textContent = currentQ.rawItem.event;
+                }
+            } else {
+                document.getElementById('question-text').textContent = currentQ.question;
+            }
+
+            if (currentMode === 'qcm') {
+                document.getElementById('next-qcm-btn').classList.add('hidden');
+                const box = document.getElementById('options-box'); box.innerHTML = '';
+                currentQ.choices.forEach(choice => {
+                    const btn = document.createElement('button'); btn.className = 'option-btn'; btn.textContent = choice;
+                    btn.onclick = () => checkQCMAnswer(btn, choice, currentQ.answer); box.appendChild(btn);
+                });
+            } else if (currentMode === 'write') {
+                document.getElementById('next-write-btn').classList.add('hidden');
+                document.getElementById('submit-answer-btn').classList.remove('hidden');
+                const f = document.getElementById('write-feedback'); f.classList.add('hidden'); f.innerHTML = '';
+                const inp = document.getElementById('user-answer-input'); inp.value = ''; inp.disabled = false; inp.focus();
+            }
+
+            if (config.timer > 0 && currentMode !== 'flashcard') {
+                document.getElementById('timer-wrapper').classList.remove('hidden'); startTimer();
+            } else {
+                document.getElementById('timer-wrapper').classList.add('hidden');
+            }
+        }
+
+        function flipCard(id) {
+            document.getElementById(id).classList.toggle('flipped');
+        }
+
+        function markFlashcard(knewIt) {
+            const currentQ = gameQuestions[currentIndex];
+            if (knewIt) {
+                score++;
+                playTone('correct');
+            } else {
+                playTone('wrong');
+                wrongAnswersLog.push({ question: currentQ.typeFlag ? currentQ.rawItem.event : currentQ.rawItem.date, rightAnswer: currentQ.answer });
+            }
+            nextQuestion();
+        }
+
+        function startTimer() {
+            const bar = document.getElementById('timer-bar'); timeLeft = config.timer; bar.style.width = "100%";
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1; let pct = (timeLeft / config.timer) * 100; bar.style.width = `${pct}%`;
+                if (timeLeft <= 0) { clearInterval(timerInterval); handleTimeOut(); }
+            }, 100);
+        }
+
+        function handleTimeOut() {
+            if (isQuestionAnswered) return; isQuestionAnswered = true; playTone('wrong');
+            const currentQ = gameQuestions[currentIndex];
+            wrongAnswersLog.push({ question: currentQ.question, rightAnswer: currentQ.answer });
+
+            if (currentMode === 'qcm') {
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    if (btn.textContent.trim() === currentQ.answer.trim()) btn.classList.add('correct');
+                    btn.disabled = true;
+                });
+                document.getElementById('next-qcm-btn').classList.remove('hidden');
+            } else if (currentMode === 'write') {
+                document.getElementById('user-answer-input').disabled = true;
+                document.getElementById('submit-answer-btn').classList.add('hidden');
+                const f = document.getElementById('write-feedback'); f.className = "feedback-box wrong";
+                f.innerHTML = `⏳ Temps écoulé !<br>La réponse attendue était : <strong>${currentQ.answer}</strong>`;
+                f.classList.remove('hidden'); document.getElementById('next-write-btn').classList.remove('hidden');
+            }
+            reduceLife();
+        }
+
+        function checkQCMAnswer(selectedBtn, chosen, correct) {
+            if (isQuestionAnswered) return; isQuestionAnswered = true; clearInterval(timerInterval);
+            const isCorrect = chosen.trim() === correct.trim();
+            const currentQ = gameQuestions[currentIndex];
+
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.textContent.trim() === correct.trim()) btn.classList.add('correct');
+                if (btn === selectedBtn && !isCorrect) btn.classList.add('wrong');
+                btn.disabled = true;
+            });
+
+            if (isCorrect) { score++; playTone('correct'); } 
+            else { playTone('wrong'); wrongAnswersLog.push({ question: currentQ.question, rightAnswer: correct }); reduceLife(); }
+            document.getElementById('next-qcm-btn').classList.remove('hidden');
+        }
+
+        function cleanText(str) {
+            return str
+                .toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+                .replace(/[\(\)\-\',\. France]/g, " ") 
+                .replace(/\b(le|la|les|l|d|de|du|en|un|une|et|au|aux|loi|regime|annees|bataille|devient|devienne)\b/g, "") 
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function cleanOnlyNumbers(str) {
+            return str.replace(/[^0-9]/g, '');
+        }
+
+        function getLevenshteinDistance(a, b) {
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
+                    else matrix[i][j] = Math.min(matrix[i-1][j-1]+1, matrix[i][j-1]+1, matrix[i-1][j]+1);
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function checkWriteAnswer() {
+            if (isQuestionAnswered) return; isQuestionAnswered = true; clearInterval(timerInterval);
+            const input = document.getElementById('user-answer-input');
+            const feedback = document.getElementById('write-feedback');
+            input.disabled = true; document.getElementById('submit-answer-btn').classList.add('hidden');
+
+            const currentQ = gameQuestions[currentIndex];
+            let isUserCorrect = false;
+            let acceptedAnswerDisplay = currentQ.answer;
+
+            let validAnswersPool = [];
+            if (currentQ.isDateQuestion) {
+                database.forEach(d => {
+                    if (d.date.trim() === currentQ.targetDate.trim()) validAnswersPool.push(d.event);
+                });
+            } else {
+                validAnswersPool.push(currentQ.answer);
+            }
+            if (validAnswersPool.length === 0) validAnswersPool.push(currentQ.answer);
+
+            const uRaw = input.value;
+            const expectedContainsNumbers = /[0-9]/.test(currentQ.answer);
+
+            if (expectedContainsNumbers) {
+                const uDigits = cleanOnlyNumbers(uRaw);
+                for (let option of validAnswersPool) {
+                    const oDigits = cleanOnlyNumbers(option);
+                    if (uDigits === oDigits && uDigits.length > 0) {
+                        isUserCorrect = true;
+                        acceptedAnswerDisplay = option;
+                        break;
+                    }
+                }
+            } else {
+                const uClean = cleanText(uRaw);
+                for (let option of validAnswersPool) {
+                    const cClean = cleanText(option);
+                    const distance = getLevenshteinDistance(uClean, cClean);
+                    const maxAllowedErrors = cClean.length > 15 ? 4 : (cClean.length > 6 ? 2 : 0);
+
+                    if (uClean === cClean || distance <= maxAllowedErrors || (uClean.length > 3 && cClean.includes(uClean)) || (cClean.length > 3 && uClean.includes(cClean))) {
+                        isUserCorrect = true;
+                        acceptedAnswerDisplay = option;
+                        break;
+                    }
+                }
+            }
+
+            if (isUserCorrect) {
+                score++; playTone('correct');
+                feedback.className = "feedback-box correct";
+                feedback.innerHTML = `🎯 Correct ! Bien joué.<br><small>Réponse acceptée : <strong>${acceptedAnswerDisplay}</strong></small>`;
+            } else {
+                playTone('wrong');
+                wrongAnswersLog.push({ question: currentQ.question, rightAnswer: currentQ.answer });
+                feedback.className = "feedback-box wrong";
+                let alternatives = validAnswersPool.join(" <br>ou : ");
+                feedback.innerHTML = `❌ Faux.<br>Réponse attendue : <strong>${alternatives}</strong>`;
+                reduceLife();
+            }
+
+            feedback.classList.remove('hidden'); document.getElementById('next-write-btn').classList.remove('hidden');
+        }
+
+        function reduceLife() {
+            if (config.lives > 0 && currentMode !== 'flashcard') {
+                currentLives--; updateHeartsUI();
+                if (currentLives <= 0) setTimeout(() => endGame(true), 1200);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentLives <= 0 && config.lives > 0 && currentMode !== 'flashcard') return;
+            currentIndex++;
+            if (currentIndex < gameQuestions.length) showQuestion();
+            else endGame(false);
+        }
+
+        function endGame(isGameOver) {
+            clearInterval(timerInterval);
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
+            const title = document.getElementById('end-title'); const txt = document.getElementById('score-text');
+            const errorsBox = document.getElementById('errors-log'); const errorsList = document.getElementById('errors-list');
+            errorsList.innerHTML = '';
+
+            if (isGameOver) {
+                title.textContent = "💥 Game Over !"; playTone('gameover');
+                txt.innerHTML = `Tu as perdu toutes tes vies à la question <strong>${currentIndex + 1}</strong>.<br>Score : <strong>${score} / ${gameQuestions.length}</strong>.`;
+            } else {
+                title.textContent = "🎯 Entraînement terminé !";
+                let note = Math.round((score / gameQuestions.length) * 20);
+                txt.innerHTML = `Score final : <strong>${score} / ${gameQuestions.length}</strong> (Soit environ <strong>${note}/20</strong>).`;
+            }
+
+            if (wrongAnswersLog.length > 0) {
+                errorsBox.classList.remove('hidden');
+                wrongAnswersLog.forEach(item => {
+                    const div = document.createElement('div'); div.className = 'error-item';
+                    div.innerHTML = `<div class="error-q">${item.question}</div><div class="error-a">💡 Réponse attendue : ${item.rightAnswer}</div>`;
+                    errorsList.appendChild(div);
+                });
+            } else { errorsBox.classList.add('hidden'); }
+        }
+
+        function backToMenu() {
+            clearInterval(timerInterval);
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('settings-screen').classList.add('hidden');
+            document.getElementById('all-flashcards-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.add('hidden');
+            document.getElementById('home-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révisions Histoire interactives</title>
+    <style>
+        :root {
+            --primary-color: #88b04b;
+            --secondary-color: #4f7324;
+            --accent-pink: #ffb7c5;
+            --light-pink: #fff0f2;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --bg-color: #fcf8f2;
+            --card-bg: #ffffff;
+            --text-color: #4a4e4d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ---- BARRE DE CONFORT (RÉGLAGES) ---- */
+        .controls-top {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            z-index: 10;
+        }
+
+        .control-select {
+            background: white;
+            border: 2px solid #e2ebd5;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        /* ---- THÈMES & DÉCORS ---- */
+        .decor-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Styles Décors Kawaii */
+        .ground { position: absolute; bottom: -50px; left: -10%; width: 120%; height: 150px; background-color: #e2f0d9; border-radius: 50% 50% 0 0; }
+        .tree-left { position: absolute; bottom: 60px; left: 5%; }
+        .tree-left .trunk { width: 16px; height: 80px; background-color: #c99a6d; border-radius: 8px; margin: 0 auto; }
+        .tree-left .foliage { width: 90px; height: 90px; background-color: #a3d39c; border-radius: 50%; position: relative; margin-bottom: -20px; }
+        .tree-left .foliage::after { content: "🌸"; position: absolute; top: 25px; left: 30px; font-size: 1.2rem; }
+        .tree-right { position: absolute; bottom: 80px; right: 8%; }
+        .tree-right .trunk { width: 14px; height: 60px; background-color: #b38664; border-radius: 7px; margin: 0 auto; }
+        .tree-right .foliage { width: 80px; height: 80px; background-color: #ffccd5; border-radius: 50%; position: relative; margin-bottom: -15px; }
+        .bush-1 { position: absolute; bottom: 40px; left: 15%; width: 60px; height: 45px; background-color: #c2e2b7; border-radius: 40px 40px 0 0; }
+        .bush-2 { position: absolute; bottom: 50px; right: 4%; width: 75px; height: 50px; background-color: #acd8aa; border-radius: 50px 50px 0 0; }
+        .cloud { position: absolute; background-color: #ffffff; border-radius: 20px; opacity: 0.8; }
+        .cloud-1 { top: 10%; left: 10%; width: 100px; height: 30px; }
+        .cloud-2 { top: 15%; right: 15%; width: 120px; height: 35px; }
+
+        /* Désactivation des décors en mode épuré */
+        body.theme-epure .decor-container { opacity: 0; }
+
+        /* ---- INTERFACE DE L'APPLICATION ---- */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 35px 30px;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(136, 176, 75, 0.15);
+            border: 4px solid #f0f7e8;
+            backdrop-filter: blur(4px);
+            box-sizing: border-box;
+        }
+
+        h1 { text-align: center; color: var(--secondary-color); font-size: 1.6rem; margin-top: 0; margin-bottom: 20px; }
+
+        .progress-container {
+            background-color: #edf4e8;
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid #e1ebd6;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--accent-pink), var(--primary-color));
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-section { display: none; }
+        .quiz-section.active { display: block; animation: popIn 0.4s ease; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .war-title { font-size: 1.25rem; font-weight: 600; color: var(--secondary-color); margin-bottom: 25px; text-align: center; }
+
+        /* ---- CONFIGURATION DES MODES DE JEU ---- */
+        .options-container { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+        
+        .option-btn {
+            background-color: #ffffff; border: 2px solid #e2ebd5; padding: 14px 20px;
+            border-radius: 16px; cursor: pointer; font-size: 1rem; font-weight: 500;
+            color: var(--text-color); transition: all 0.2s ease; text-align: center;
+        }
+        .option-btn:hover:not(:disabled) { background-color: var(--light-pink); border-color: var(--accent-pink); transform: translateY(-2px); }
+
+        .correct { background-color: var(--success-color) !important; color: white !important; border-color: var(--success-color) !important; }
+        .incorrect { background-color: var(--error-color) !important; color: white !important; border-color: var(--error-color) !important; }
+
+        .explanation {
+            margin-top: 15px; padding: 15px; border-radius: 14px;
+            background-color: #f7faf3; border: 2px dashed var(--primary-color);
+            font-size: 0.95rem; color: #4a5243;
+        }
+
+        /* ---- LOGIQUE FLASHCARD ---- */
+        .flashcard-box {
+            background: #fff8f9; border: 3px dashed var(--accent-pink);
+            border-radius: 20px; padding: 40px 20px; text-align: center;
+            cursor: pointer; font-size: 1.4rem; font-weight: bold;
+            color: var(--secondary-color); transition: background-color 0.2s;
+            margin-bottom: 20px;
+        }
+        .flashcard-box:hover { background: var(--light-pink); }
+        
+        .flashcard-actions { display: none; justify-content: center; gap: 15px; margin-top: 20px; }
+        
+        .fc-btn {
+            padding: 12px 25px; border: none; border-radius: 20px;
+            font-weight: bold; font-size: 0.95rem; cursor: pointer; color: white;
+            transition: transform 0.1s;
+        }
+        .fc-btn-yes { background-color: var(--success-color); }
+        .fc-btn-no { background-color: var(--error-color); }
+        .fc-btn:active { transform: scale(0.95); }
+
+        /* ---- BOUTONS DE NAVIGATION ---- */
+        .next-btn {
+            display: none; background-color: var(--primary-color); color: white;
+            border: none; padding: 12px 35px; font-size: 1rem; font-weight: bold;
+            border-radius: 25px; cursor: pointer; margin: 25px auto 0 auto;
+            box-shadow: 0 4px 10px rgba(136, 176, 75, 0.3);
+        }
+        .next-btn:hover { background-color: var(--secondary-color); }
+
+        #result-container { text-align: center; display: none; }
+        .score-display { font-size: 1.8rem; font-weight: bold; color: var(--secondary-color); margin-bottom: 10px; }
+        .score-comment { font-size: 1.1rem; color: #555; margin-bottom: 25px; }
+        .reset-btn {
+            background-color: var(--accent-pink); color: #fff; border: none;
+            padding: 14px 35px; font-size: 1rem; font-weight: bold; border-radius: 25px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(255, 183, 197, 0.4);
+        }
+        .reset-btn:hover { background-color: #f49cae; }
+
+        @media (max-width: 768px) { .tree-left, .tree-right, .bush-1, .bush-2 { display: none; } }
+    </style>
+</head>
+<body>
+
+<div class="controls-top">
+    <select id="gameModeSelect" class="control-select" onchange="changerModeDeJeu()">
+        <option value="quiz">Mode : Choix Multiples (Quiz)</option>
+        <option value="flashcard">Mode : Cartes Mémoire (Flashcard)</option>
+    </select>
+    
+    <select id="themeSelect" class="control-select" onchange="changerThemeVisuel()">
+        <option value="kawaii">Thème : Printemps Kawaii 🌸</option>
+        <option value="epure">Thème : Épuré Concentration ☀️</option>
+    </select>
+</div>
+
+<div class="decor-container" id="decors">
+    <div class="cloud cloud-1"></div><div class="cloud cloud-2"></div>
+    <div class="bush-1"></div><div class="bush-2"></div>
+    <div class="tree-left"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="tree-right"><div class="foliage"></div><div class="trunk"></div></div>
+    <div class="ground"></div>
+</div>
+
+<div class="container">
+    <h1>Le Compagnon d'Histoire</h1>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress"></div>
+    </div>
+
+    <div id="quiz-space"></div>
+
+    <div id="result-container">
+        <p class="score-display">🌸 Session Terminée ! 🌸</p>
+        <p class="score-comment">Vos réponses correctes : <span id="score">0</span> / 15</p>
+        <button class="reset-btn" onclick="resetQuiz()">Recommencer un cycle 📋</button>
+    </div>
+</div>
+
+<script>
+    const sourceQuestions = [
+        { question: "Quelles sont les dates de la Première Guerre mondiale ?", options: ["1914 - 1918", "1939 - 1945", "1870 - 1871", "1947 - 1991"], correct: "1914 - 1918", explication: "Déclenchée par l'assassinat de l'archiduc François-Ferdinand à Sarajevo, elle s'achève par l'armistice du 11 novembre 1918." },
+        { question: "Quelles sont les dates de la Seconde Guerre mondiale ?", options: ["1914 - 1918", "1945 - 1953", "1939 - 1945", "1955 - 1975"], correct: "1939 - 1945", explication: "Elle débute le 1er septembre 1939 avec l'invasion de la Pologne par l'Allemagne et s'achève le 2 septembre 1945 avec la capitulation du Japon." },
+        { question: "Quelles sont les dates généralement retenues pour la Guerre froide ?", options: ["1918 - 1939", "1947 - 1991", "1950 - 1953", "1962 - 1979"], correct: "1947 - 1991", explication: "Elle s'ouvre avec la doctrine Truman et le plan Marshall en 1947, et s'achève en 1991 avec l'effondrement global de l'URSS." },
+        { question: "En quelle année a été signé le Traité de Versailles ?", options: ["1918", "1919", "1920", "1922"], correct: "1919", explication: "Signé le 28 juin 1919 dans la galerie des Glaces, ce traité fixe les lourdes sanctions économiques et territoriales imposées à l'Allemagne." },
+        { question: "À quelle date précise a eu lieu le débarquement allié en Normandie ?", options: ["11 novembre 1918", "18 juin 1940", "6 juin 1944", "8 mai 1945"], correct: "6 juin 1944", explication: "Appelé 'Jour J', ce débarquement aéronaval de grande envergure permet la libération progressive de l'Europe de l'Ouest." },
+        { question: "Pendant la Guerre froide, en quelle année le Mur de Berlin a-t-il été construit ?", options: ["1949", "1961", "1973", "1989"], correct: "1961", explication: "Le mur a été érigé en août 1961 par la RDA communiste pour stopper la fuite massive des habitants vers la zone occidentale." },
+        { question: "Quelle année marque le grand tournant de la Seconde Guerre mondiale (invasion de l'URSS et Pearl Harbor) ?", options: ["1939", "1940", "1941", "1943"], correct: "1941", explication: "En juin 1941, Hitler rompt le pacte germano-soviétique. En décembre, l'attaque de Pearl Harbor provoque l'entrée en guerre officielle des États-Unis." },
+        { question: "En quelle année s'est déroulée la crise des missiles de Cuba ?", options: ["1953", "1962", "1975", "1985"], correct: "1962", explication: "Pendant deux semaines en octobre 1962, le déploiement de missiles soviétiques à Cuba place le monde au bord d'un conflit nucléaire direct." },
+        { question: "En quelle année l'armistice de la Première Guerre mondiale a-t-il été signé ?", options: ["1917", "1918", "1919", "1921"], correct: "1918", explication: "L'armistice est signé le 11 novembre 1918 dans le wagon de Compiègne à Rethondes, actant la défaite militaire allemande." },
+        { question: "En quelle année le Mur de Berlin est-il tombé ?", options: ["1985", "1989", "1991", "1993"], correct: "1989", explication: "Le 9 novembre 1989, l'ouverture des frontières à Berlin marque symboliquement la fin imminente du bloc de l'Est." },
+        { question: "En quelle année l'Organisation des Nations Unies (ONU) a-t-elle été créée ?", options: ["1919", "1945", "1947", "1950"], correct: "1945", explication: "L'ONU naît officiellement le 24 octobre 1945 avec la ratification de la Charte de San Francisco pour préserver la paix mondiale." },
+        { question: "Pendant la Guerre froide, durant quelles années s'est déroulée la guerre de Corée ?", options: ["1945 - 1948", "1950 - 1953", "1955 - 1975", "1979 - 1989"], correct: "1950 - 1953", explication: "Premier conflit périphérique majeur de la Guerre froide, il oppose le Nord communiste au Sud capitaliste soutenu par l'ONU." },
+        { question: "En quelle année l'Allemagne nazie a-t-elle signé sa capitulation sans condition ?", options: ["1943", "1944", "1945", "1946"], correct: "1945", explication: "La capitulation est signée à Reims le 7 mai puis ratifiée à Berlin le 8 mai 1945, mettant fin aux combats en Europe." },
+        { question: "En quelle année l'OTAN (Alliance atlantique) a-t-elle été fondée ?", options: ["1945", "1949", "1955", "1961"], correct: "1949", explication: "Le Traité de l'Atlantique Nord est signé en 1949 pour faire bloc face à l'influence soviétique en Europe de l'Est." },
+        { question: "Quel événement précipite le déclenchement de la Seconde Guerre mondiale le 1er septembre 1939 ?", options: ["L'annexion de l'Autriche", "L'invasion de la Pologne", "L'attaque de Pearl Harbor", "La bataille de France"], correct: "L'invasion de la Pologne", explication: "L'agression de la Pologne pousse la France et le Royaume-Uni à déclarer la guerre à l'Allemagne deux jours plus tard." }
+    ];
+
+    let questions = [];
+    let indiceActuel = 0;
+    let score = 0;
+    let modeActuel = "quiz";
+
+    function melanger(tableau) {
+        let n = tableau.length;
+        while (n > 0) {
+            let i = Math.floor(Math.random() * n--);
+            let t = tableau[n]; tableau[n] = tableau[i]; tableau[i] = t;
+        }
+        return tableau;
+    }
+
+    function changerModeDeJeu() {
+        modeActuel = document.getElementById('gameModeSelect').value;
+        initQuiz();
+    }
+
+    function changerThemeVisuel() {
+        const theme = document.getElementById('themeSelect').value;
+        if (theme === 'epure') {
+            document.body.classList.add('theme-epure');
+        } else {
+            document.body.classList.remove('theme-epure');
+        }
+    }
+
+    function initQuiz() {
+        const quizSpace = document.getElementById('quiz-space');
+        quizSpace.innerHTML = '';
+        score = 0;
+        indiceActuel = 0;
+        document.getElementById('result-container').style.display = 'none';
+        
+        questions = melanger([...sourceQuestions]);
+
+        questions.forEach((q, index) => {
+            const section = document.createElement('div');
+            section.className = `quiz-section ${index === 0 ? 'active' : ''}`;
+            section.id = `qsection-${index}`;
+
+            const title = document.createElement('p');
+            title.className = 'war-title';
+            title.innerText = `${index + 1}. ${q.question}`;
+            section.appendChild(title);
+
+            if (modeActuel === "quiz") {
+                // RENDER STRUCTURE MODE QUIZ
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options-container';
+                const optionsMelangees = melanger([...q.options]);
+
+                optionsMelangees.forEach((opt) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerText = opt;
+                    btn.onclick = () => verifierReponseQuiz(btn, opt, q.correct, index, q.explication);
+                    optionsDiv.appendChild(btn);
+                });
+                section.appendChild(optionsDiv);
+
+                const expDiv = document.createElement('div');
+                expDiv.className = 'explanation';
+                expDiv.id = `exp-${index}`;
+                expDiv.style.display = 'none';
+                section.appendChild(expDiv);
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'next-btn';
+                nextBtn.id = `next-${index}`;
+                nextBtn.innerText = index === questions.length - 1 ? "Découvrir ma note ! ✨" : "Continuer ➔";
+                nextBtn.onclick = () => changerQuestion();
+                section.appendChild(nextBtn);
+
+            } else {
+                // RENDER STRUCTURE MODE FLASHCARD
+                const cardBox = document.createElement('div');
+                cardBox.className = 'flashcard-box';
+                cardBox.id = `cardbox-${index}`;
+                cardBox.innerText = "🔍 Cliquez pour révéler la réponse";
+                cardBox.onclick = () => retournerFlashcard(index, q.correct, q.explication);
+                section.appendChild(cardBox);
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'flashcard-actions';
+                actionsDiv.id = `fc-actions-${index}`;
+
+                const btnYes = document.createElement('button');
+                btnYes.className = 'fc-btn fc-btn-yes';
+                btnYes.innerText = "J'avais raison ! 👍";
+                btnYes.onclick = () => validerFlashcard(true);
+                
+                const btnNo = document.createElement('button');
+                btnNo.className = 'fc-btn fc-btn-no';
+                btnNo.innerText = "Je m'étais trompé(e) 👎";
+                btnNo.onclick = () => validerFlashcard(false);
+
+                actionsDiv.appendChild(btnNo);
+                actionsDiv.appendChild(btnYes);
+                section.appendChild(actionsDiv);
+            }
+
+            quizSpace.appendChild(section);
+        });
+
+        mettreAJourProgression();
+    }
+
+    // Gestion Quiz
+    function verifierReponseQuiz(boutonSelectionne, reponse, correct, index, explication) {
+        const section = document.getElementById(`qsection-${index}`);
+        const boutons = section.querySelectorAll('.option-btn');
+        const expDiv = document.getElementById(`exp-${index}`);
+        const nextBtn = document.getElementById(`next-${index}`);
+
+        boutons.forEach(btn => {
+            btn.disabled = true;
+            if (btn.innerText === correct) btn.classList.add('correct');
+        });
+
+        if (reponse !== correct) boutonSelectionne.classList.add('incorrect');
+        else score++;
+
+        expDiv.innerHTML = `💡 <strong>Note :</strong> ${explication}`;
+        expDiv.style.display = 'block';
+        nextBtn.style.display = 'block';
+    }
+
+    // Gestion Flashcards
+    function retournerFlashcard(index, correct, explication) {
+        const cardBox = document.getElementById(`cardbox-${index}`);
+        const actionsDiv = document.getElementById(`fc-actions-${index}`);
+        
+        cardBox.style.pointerEvents = 'none'; // Désactiver les clics répétés
+        cardBox.innerHTML = `<span style="color:var(--success-color); font-size:1.6rem">${correct}</span><br><br><small style="font-weight:normal; font-size:0.95rem; display:block; color:var(--text-color)">${explication}</small>`;
+        actionsDiv.style.display = 'flex';
+    }
+
+    function validerFlashcard(estCorrect) {
+        if (estCorrect) score++;
+        changerQuestion();
+    }
+
+    // Navigation globale
+    function changerQuestion() {
+        const sectionActuelle = document.getElementById(`qsection-${indiceActuel}`);
+        sectionActuelle.classList.remove('active');
+
+        indiceActuel++;
+
+        if (indiceActuel < questions.length) {
+            const prochaineSection = document.getElementById(`qsection-${indiceActuel}`);
+            prochaineSection.classList.add('active');
+            mettreAJourProgression();
+        } else {
+            document.getElementById('progress').style.width = '100%';
+            document.getElementById('score').innerText = score;
+            document.getElementById('result-container').style.display = 'block';
+        }
+    }
+
+    function mettreAJourProgression() {
+        const pourcentage = (indiceActuel / questions.length) * 100;
+        document.getElementById('progress').style.width = `${pourcentage}%`;
+    }
+
+    function resetQuiz() {
+        initQuiz();
+    }
+
+    window.onload = initQuiz;
+</script>
+
+</body>
+</html>
