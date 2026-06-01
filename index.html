@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Révisions - Accueil</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #161f38;
+            --accent-blue: #00f2fe;
+            --accent-purple: #9b51e0;
+            --accent-green: #00ff87;
+            --text-color: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(0, 242, 254, 0.05) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(155, 81, 224, 0.06) 0%, transparent 45%);
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .class-section {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            margin-bottom: 30px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .class-title {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sect-3a .class-title { color: var(--accent-blue); }
+        .sect-3bc .class-title { color: var(--accent-purple); }
+        .sect-3cd .class-title { color: var(--accent-green); }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .links-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .quiz-link {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .sect-3a .quiz-link:hover { border-color: var(--accent-blue); box-shadow: 0 5px 15px rgba(0, 242, 254, 0.1); }
+        .sect-3bc .quiz-link:hover { border-color: var(--accent-purple); box-shadow: 0 5px 15px rgba(155, 81, 224, 0.1); }
+        .sect-3cd .quiz-link:hover { border-color: var(--accent-green); box-shadow: 0 5px 15px rgba(0, 255, 135, 0.1); }
+
+        .quiz-name {
+            font-weight: 500;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 10px;
+        }
+
+        .arrow {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-link:hover .arrow {
+            transform: translateX(4px);
+            opacity: 1;
+        }
+
+        footer {
+            margin-top: 3rem;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Plateforme de Révision Brevet</h1>
+        <p>Sélectionnez un quiz pour commencer l'entraînement</p>
+    </header>
+
+    <div class="container">
+
+        <!-- SECTION 3EME A (Basée sur l'image_fe7e23) -->
+        <section class="class-section sect-3a">
+            <h2 class="class-title">📁 Classe de 3ème A</h2>
+            <div class="links-grid">
+                <a href="3eme%20A/app%20revision%20brevet%20histoire%206%20Alice.html" class="quiz-link">
+                    <span class="quiz-name">Histoire 6 - Alice</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/Felix_Simon%20(2).html" class="quiz-link">
+                    <span class="quiz-name">Félix & Simon (2)</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/gianni%20cesar%20ia%20gemini.html" class="quiz-link">
+                    <span class="quiz-name">Gianni & Cesar (IA Gemini)</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/NinonNo%c3%a9lie.html" class="quiz-link">
+                    <span class="quiz-name">Ninon & Noélie</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/quizz%20Ivano%20Et%20Rom%c3%a9o%203A.html" class="quiz-link">
+                    <span class="quiz-name">Ivano & Roméo 3A</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/quizz%20r%c3%a9visions%20z%c3%a9lie%20bourrin%20et%20Eve%20lvaldy....html" class="quiz-link">
+                    <span class="quiz-name">Zélie Bourrin & Eve Ivaldy</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/quizzleanashaina.html" class="quiz-link">
+                    <span class="quiz-name">Léana & Shaina</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/revision%20brevet%20gianni%20cesar.html" class="quiz-link">
+                    <span class="quiz-name">Révision Brevet - Gianni & Cesar</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions%20francais%20Soline-Justine%20V1.html" class="quiz-link">
+                    <span class="quiz-name">Français V1 - Soline & Justine</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions%20g%c3%a9n%c3%a9ral%20Soline-Justine%20V1.html" class="quiz-link">
+                    <span class="quiz-name">Général V1 - Soline & Justine</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions%20g%c3%a9n%c3%a9ral%20Soline-Justine%20V2.html" class="quiz-link">
+                    <span class="quiz-name">Général V2 - Soline & Justine</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions%20g%c3%a9o%20Soline-Justine%20V1.html" class="quiz-link">
+                    <span class="quiz-name">Géo V1 - Soline & Justine</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions%20histoire%20Soline-Justine%20V1.html" class="quiz-link">
+                    <span class="quiz-name">Histoire V1 - Soline & Justine</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions%20maths%20Soline-Justine%20V1.html" class="quiz-link">
+                    <span class="quiz-name">Maths V1 - Soline & Justine</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions%20maths%20Soline-Justine%20V2.html" class="quiz-link">
+                    <span class="quiz-name">Maths V2 - Soline & Justine</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions%20maths%20Soline-Justine%20V3.html" class="quiz-link">
+                    <span class="quiz-name">Maths V3 - Soline & Justine</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/R%c3%a9visions_MathieuBiard-L%c3%a9oBouvier__V2....html" class="quiz-link">
+                    <span class="quiz-name">Mathieu Biard & Léo Bouvier V2</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20A/tage%20timeo%20revision%20brevet.html" class="quiz-link">
+                    <span class="quiz-name">Révision Brevet - Timéo</span><span class="arrow">➔</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- SECTION 3EME BC (Basée sur l'image_fe7e7e) -->
+        <section class="class-section sect-3bc">
+            <h2 class="class-title">📁 Classe de 3ème BC</h2>
+            <div class="links-grid">
+                <a href="3eme%20BC/Bastien%20Et%20malo%20Quiz.html" class="quiz-link">
+                    <span class="quiz-name">Bastien & Malo Quiz</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20BC/elise%20et%20salom%c3%a9%20applie%20final.html" class="quiz-link">
+                    <span class="quiz-name">Elise & Salomé Appli Final</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20BC/elise%20et%20salom%c3%a9.html" class="quiz-link">
+                    <span class="quiz-name">Elise & Salomé</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20BC/isalyne%20kenza%202.html" class="quiz-link">
+                    <span class="quiz-name">Isalyne & Kenza 2</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20BC/taissahind.html" class="quiz-link">
+                    <span class="quiz-name">Taissa & Hind</span><span class="arrow">➔</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- SECTION 3EME CD (Basée sur l'image_fe7de7) -->
+        <section class="class-section sect-3cd">
+            <h2 class="class-title">📁 Classe de 3ème CD</h2>
+            <div class="links-grid">
+                <a href="3eme%20CD/A.C%20Kayline%20GUILLOUX%20Alyssa%20Appli%20fr%20tigre%20.html" class="quiz-link">
+                    <span class="quiz-name">Kayline G. & Alyssa - Français Tigre</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/A.C%20Kayline%20GUILLOUX%20Alyssa%20appli%20math%20tigre.html" class="quiz-link">
+                    <span class="quiz-name">Kayline G. & Alyssa - Math Tigre</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/app%20de%20Francais%20l%c3%a9anne%20et%20Nais%20.html" class="quiz-link">
+                    <span class="quiz-name">Français - Léanne & Naïs</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/app%20de%20math%c3%a9matiques%20L%c3%a9anne%20et%20Nais%20.html" class="quiz-link">
+                    <span class="quiz-name">Mathématiques - Léanne & Naïs</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/app%20francais%201%20maxine%20et%20marie%20.html" class="quiz-link">
+                    <span class="quiz-name">Français 1 - Maxine & Marie</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/app%20francais%202%20maxine%20et%20marie%20.html" class="quiz-link">
+                    <span class="quiz-name">Français 2 - Maxine & Marie</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/app%20Manelle%20Melvil.html" class="quiz-link">
+                    <span class="quiz-name">Manelle & Melvil</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/app%20revision%20melvil%20allet-coche%20fran%c3%a7ais.html" class="quiz-link">
+                    <span class="quiz-name">Français - Melvil Allet-Coche</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/appli%20geo%20A.C%20Kayline%20GUILLOUX%20Alyssa%20.html" class="quiz-link">
+                    <span class="quiz-name">Géo - Kayline G. & Alyssa</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/CLEMENT%20Neal%20revision%20francais%20.html" class="quiz-link">
+                    <span class="quiz-name">Français - Neal Clement</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/Fran%c3%a7ais%20Light%20et%20Alice%20App.html" class="quiz-link">
+                    <span class="quiz-name">Français - Light & Alice</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/gokhan_fran%c3%a7ois!DOCTYPE%20html.txt.html" class="quiz-link">
+                    <span class="quiz-name">Gokhan & François</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/khalile%202.html" class="quiz-link">
+                    <span class="quiz-name">Khalile 2</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/khalile1.html" class="quiz-link">
+                    <span class="quiz-name">Khalile 1</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/khalile3.html" class="quiz-link">
+                    <span class="quiz-name">Khalile 3</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/L%c3%a9anne%20et%20Nais%20appli%20.html" class="quiz-link">
+                    <span class="quiz-name">Léanne & Naïs Appli</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/mael%20bonnet%20machot,%20ines%20jarnija.html" class="quiz-link">
+                    <span class="quiz-name">Maël Bonnet Machot & Inès Jarnija</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/Maths%20Light%20et%20Alice%20App.html" class="quiz-link">
+                    <span class="quiz-name">Maths - Light & Alice</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/Matteo%20et%20Jules2.html" class="quiz-link">
+                    <span class="quiz-name">Matteo & Jules 2</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/pauline%20et%20joanne.html" class="quiz-link">
+                    <span class="quiz-name">Pauline & Joanne</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/Quiz%20revision%20histoire.html" class="quiz-link">
+                    <span class="quiz-name">Quiz Révision Histoire</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/quizz%20Alice-Laetitia.html" class="quiz-link">
+                    <span class="quiz-name">Quiz Alice & Laetitia</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/Revisions%20H-G%20de%20Hamza%20et%20Hugo.html" class="quiz-link">
+                    <span class="quiz-name">Révisions H-G - Hamza & Hugo</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/Rico%20Medhi%20et%20Belka%20Adil%20HG%20.html" class="quiz-link">
+                    <span class="quiz-name">Medhi Rico & Adil Belka - HG</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/Rico%20Mehdi%20et%20Belka%20Adil%20FR.html" class="quiz-link">
+                    <span class="quiz-name">Mehdi Rico & Adil Belka - FR</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/site%20brevet%20revision%20hisoire%20maxine%20et%20marie%20.html" class="quiz-link">
+                    <span class="quiz-name">Histoire - Maxine & Marie</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/tiago%20revision_histoire.html" class="quiz-link">
+                    <span class="quiz-name">Histoire - Tiago</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/VIDAUDEglantineQuizzHG.html" class="quiz-link">
+                    <span class="quiz-name">Eglantine Vidaud - Quizz HG</span><span class="arrow">➔</span>
+                </a>
+                <a href="3eme%20CD/VIDAUDEglantineQuizzHG2.html" class="quiz-link">
+                    <span class="quiz-name">Eglantine Vidaud - Quizz HG 2</span><span class="arrow">➔</span>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>Espace de Révision Collaboratif - Brevet des Collèges</p>
+    </footer>
+
+</body>
+</html>
