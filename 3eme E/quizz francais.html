@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entraînement Intensif Brevet - Français</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #4ade80;
+            --error: #f87171;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 700px;
+            padding: 30px;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 26px;
+            margin: 0 0 10px 0;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            background-color: var(--border);
+            height: 8px;
+            border-radius: 4px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .progress {
+            background-color: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            min-width: 45px;
+        }
+
+        .question-section {
+            display: block;
+        }
+
+        .question-text {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background-color: rgba(56, 189, 248, 0.15);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background-color: rgba(74, 222, 128, 0.15);
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .option.wrong {
+            border-color: var(--error);
+            background-color: rgba(248, 113, 113, 0.15);
+            color: var(--error);
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.6;
+            display: none;
+            border-left: 4px solid transparent;
+        }
+
+        .feedback-box.correct-style {
+            display: block;
+            background-color: rgba(74, 222, 128, 0.08);
+            border-left-color: var(--success);
+        }
+
+        .feedback-box.wrong-style {
+            display: block;
+            background-color: rgba(248, 113, 113, 0.08);
+            border-left-color: var(--error);
+        }
+
+        .footer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+
+        .btn-action:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-action:disabled {
+            background-color: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .hint-toggle {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .hint-content {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--border);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-style: italic;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .results-section {
+            text-align: center;
+            display: none;
+        }
+
+        .score-badge {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--primary);
+            font-size: 42px;
+            font-weight: 800;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 25px auto;
+            border: 3px solid var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="header">
+        <h1>Brevet Français : Entraînement Thématique</h1>
+        <p>Grammaire, conjugaison, valeurs des temps & figures de style</p>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress" id="progress-line"></div>
+        </div>
+        <div class="progress-text" id="progress-text">0/12</div>
+    </div>
+
+    <div id="quiz-dynamic-wrapper" class="question-section">
+        </div>
+
+    <div class="footer-controls" id="quiz-navigation">
+        <button class="hint-toggle" id="hint-link" onclick="toggleHintView()">Afficher un indice</button>
+        <button class="btn-action" id="action-submit-btn" onclick="processStep()" disabled>Valider</button>
+    </div>
+
+    <div class="results-section" id="results-wrapper">
+        <h2>Évaluation Terminée !</h2>
+        <p>Votre bilan global :</p>
+        <div class="score-badge" id="final-score">0/12</div>
+        <p id="final-commentary" style="font-size: 16px; margin-bottom: 30px; padding: 0 20px;"></p>
+        <button class="btn-action" onclick="restartQuizEngine()">Recommencer le test</button>
+    </div>
+</div>
+
+<script>
+    const questionsDatabase = [
+        {
+            question: "Dans la phrase : « Le soleil se couchait lorsque soudain un cri retentit », quelle est la valeur de l'imparfait 'se couchait' ?",
+            options: [
+                { text: "Une action de premier plan", isCorrect: false, rationale: "Le premier plan est occupé par le passé simple qui marque l'événement soudain." },
+                { text: "Une habitude passée", isCorrect: false, rationale: "Il s'agit d'un moment unique et précis de l'histoire, pas d'une routine." },
+                { text: "Un arrière-plan (action en cours de déroulement)", isCorrect: true, rationale: "L'imparfait pose le décor et l'action longue durant laquelle survient l'élément perturbateur." },
+                { text: "Une vérité générale dans le passé", isCorrect: false, rationale: "Le coucher du soleil ici fait partie d'une situation de narration bien précise." }
+            ],
+            hint: "L'imparfait s'oppose ici au passé simple 'retentit' qui vient couper l'action."
+        },
+        {
+            question: "Identifiez le temps et le mode du verbe dans la proposition suivante : « Qu'il finisse son travail immédiatement. »",
+            options: [
+                { text: "Présent de l'indicatif", isCorrect: false, rationale: "À l'indicatif, on n'utiliserait pas la conjonction 'que' pour exprimer cet ordre." },
+                { text: "Présent du subjonctif", isCorrect: true, rationale: "Il s'agit du subjonctif présent, employé ici pour exprimer un ordre à la troisième personne." },
+                { text: "Imparfait du subjonctif", isCorrect: false, rationale: "L'imparfait du subjonctif donnerait 'Qu'il finît'." },
+                { text: "Impératif présent", isCorrect: false, rationale: "L'impératif présent n'existe qu'aux 2ème personnes et à la 1ère du pluriel, sans pronom exprimé (ex: Finis !)." }
+            ],
+            hint: "Observez la présence du subordonnant 'que' en début de proposition exclamative."
+        },
+        {
+            question: "Quelle figure de style est employée dans ce vers de Racine : « Pour qui sont ces serpents qui sifflent sur vos têtes ? »",
+            options: [
+                { text: "Une allitération", isCorrect: true, rationale: "La répétition du son consonantique [s] imite harmonieusement le sifflement du serpent." },
+                { text: "Une assonance", isCorrect: false, rationale: "L'assonance est la répétition d'un même son voyelle, alors qu'ici ce sont les consonnes qui se répètent." },
+                { text: "Une litote", isCorrect: false, rationale: "La litote consiste à dire moins pour suggérer plus, aucun rapport avec l'effet sonore recherché ici." },
+                { text: "Une personnification", isCorrect: false, rationale: "Les serpents sifflent naturellement, il n'y a pas d'attribution de comportement humain." }
+            ],
+            hint: "Concentrez-vous sur la sonorité produite par la répétition de la consonne 's'."
+        },
+        {
+            question: "Dans l'énoncé : « Si tu venais demain, nous pourrions aller au cinéma », à quel mode et temps est conjugué 'pourrions' ?",
+            options: [
+                { text: "Futur simple de l'indicatif", isCorrect: false, rationale: "Le futur simple donnerait 'nous pourrons'." },
+                { text: "Présent du subjonctif", isCorrect: false, rationale: "Au subjonctif présent, on dirait 'que nous puissions'." },
+                { text: "Présent du conditionnel", isCorrect: true, rationale: "Le conditionnel présent est employé ici dans la principale pour exprimer un fait soumis à une condition (si + imparfait)." },
+                { text: "Conditionnel passé", isCorrect: false, rationale: "Au passé, la forme serait composée : 'nous aurions pu'." }
+            ],
+            hint: "Le verbe dépend d'une condition à l'imparfait ('si tu venais') et possède la terminaison de l'imparfait sur un radical de futur."
+        },
+        {
+            question: "Quelle figure de style repérez-vous dans : « Paris est magique, Paris s'éveille, Paris triomphe » ?",
+            options: [
+                { text: "Une antithèse", isCorrect: false, rationale: "L'antithèse demande une opposition de termes contraires, absente ici." },
+                { text: "Une anaphore", isCorrect: true, rationale: "L'anaphore se caractérise par la répétition d'un même mot ou groupe de mots en début de phrase ou de proposition." },
+                { text: "Une périphrase", isCorrect: false, rationale: "Une périphrase remplacerait 'Paris' par une expression comme 'La Ville Lumière'." },
+                { text: "Un chiasme", isCorrect: false, rationale: "Un chiasme suivrait une structure croisée ABBA, ce qui n'est pas le cas de cette énumération parallèle." }
+            ],
+            hint: "Le mot 'Paris' revient systématiquement en tête de chaque segment de phrase."
+        },
+        {
+            question: "Dans un conte, quelle est la valeur du présent dans la phrase : « C'est alors que le loup se jette sur l'agneau » au milieu d'un récit au passé ?",
+            options: [
+                { text: "Présent d'énonciation", isCorrect: false, rationale: "Le présent d'énonciation correspond au moment où le locuteur parle, ce qui ne s'applique pas aux actions du loup." },
+                { text: "Présent de vérité générale", isCorrect: false, rationale: "Il ne s'agit pas d'une loi scientifique mais d'une action ponctuelle de l'histoire." },
+                { text: "Présent d'habitude", isCorrect: false, rationale: "Rien n'indique que le loup répète cette action de manière cyclique ou quotidienne dans ce contexte." },
+                { text: "Présent de narration", isCorrect: true, rationale: "Il s'insère dans un récit au passé pour rendre l'action soudaine, dynamique et captivante pour le lecteur." }
+            ],
+            hint: "Ce procédé permet d'actualiser l'action passée comme si elle se déroulait sous nos yeux."
+        },
+        {
+            question: "Quel est le mode verbal utilisé pour exprimer le souhait ou le regret dans : « Vivement les vacances ! » ou « Pourvu qu'il vienne » ?",
+            options: [
+                { text: "L'indicatif", isCorrect: false, rationale: "L'indicatif est réservé aux actions réelles, certaines ou présentées comme telles." },
+                { text: "Le conditionnel", isCorrect: false, rationale: "Le conditionnel exprime le potentiel ou l'imaginaire lié à une condition, pas le souhait direct introduit par 'pourvu que'." },
+                { text: "Le subjonctif", isCorrect: true, rationale: "Le subjonctif est le mode par excellence pour exprimer le souhait, le désir, la volonté ou le doute." },
+                { text: "L'impératif", isCorrect: false, rationale: "L'impératif sert à donner des ordres directs à un interlocuteur précis sans sujet exprimé." }
+            ],
+            hint: "C'est le mode utilisé derrière des locutions exprimant l'envie ou la crainte."
+        },
+        {
+            question: "« Ses yeux étaient des océans de tristesse. » Quelle est la figure de style principale de cette description ?",
+            options: [
+                { text: "Une comparaison", isCorrect: false, rationale: "Il n'y a aucun outil comparatif explicite comme 'comme' ou 'semblable à'." },
+                { text: "Une métaphore", isCorrect: true, rationale: "C'est une analogie directe qui assimile les yeux à des océans sans mot de liaison." },
+                { text: "Une métonymie", isCorrect: false, rationale: "La métonymie repose sur un lien logique de contiguïté, pas sur un rapport de ressemblance imagée." },
+                { text: "Une hyperbole", isCorrect: false, rationale: "Bien que l'image soit forte, le procédé de transfert poétique sans outil comparatif définit d'abord la métaphore." }
+            ],
+            hint: "On crée une image d'assimilation sans utiliser le mot outil 'comme'."
+        },
+        {
+            question: "Quelle est la valeur de l'impératif dans : « Prenez ce traitement pendant huit jours » dit par un médecin ?",
+            options: [
+                { text: "Un ordre strict", isCorrect: false, rationale: "Un médecin formule généralement une recommandation médicale plutôt qu'un ordre autoritaire." },
+                { text: "Un conseil ou une prescription", isCorrect: true, rationale: "L'impératif prend ici une valeur de recommandation guidée par l'intérêt du destinataire." },
+                { text: "Une interdiction", isCorrect: false, rationale: "La phrase ne comporte aucune négation syntaxique limitative." },
+                { text: "Une supplication", isCorrect: false, rationale: "Le locuteur est en position d'expert, il ne supplie pas son patient." }
+            ],
+            hint: "Pensez au contexte d'un professionnel de santé qui oriente un comportement pour le bien du patient."
+        },
+        {
+            question: "« Je ne dis pas non à un petit morceau de chocolat. » Quelle figure de style se cache derrière cette formulation ?",
+            options: [
+                { text: "Un euphémisme", isCorrect: false, rationale: "L'euphémisme atténue une idée pénible ou effrayante (comme la mort), ce qui n'est pas le cas ici." },
+                { text: "Une hyperbole", isCorrect: false, rationale: "Il n'y a aucune exagération grandiloquente dans ce propos doux." },
+                { text: "Une litote", isCorrect: true, rationale: "La litote consiste à utiliser une formulation négative ou atténuée pour faire entendre une affirmation forte ('j'accepte avec plaisir')." },
+                { text: "Une antiphrase", isCorrect: false, rationale: "L'antiphrase exprimerait de l'ironie pure en affirmant exactement le contraire de la pensée réelle." }
+            ],
+            hint: "On utilise une double négation apparente ou une atténuation pour en fait dire 'Oui, j'en veux volontiers !'"
+        },
+        {
+            question: "Dans la phrase : « L'eau bout à 100 degrés Celsius », quelle est la valeur du présent de l'indicatif ?",
+            options: [
+                { text: "Présent d'énonciation", isCorrect: false, rationale: "Ce fait ne se limite pas à la seconde précise où la phrase est prononcée." },
+                { text: "Présent de vérité générale", isCorrect: true, rationale: "Le présent exprime ici une loi scientifique et physique permanente, vraie de tout temps." },
+                { text: "Présent de narration", isCorrect: false, rationale: "Cette phrase ne s'inscrit pas au cœur des péripéties dynamiques d'un récit littéraire passager." },
+                { text: "Présent d'habitude", isCorrect: false, rationale: "Il s'agit d'une constante scientifique incontestable, pas d'une coutume humaine répétée." }
+            ],
+            hint: "Il s'agit d'un fait scientifique immuable."
+        },
+        {
+            question: "Identifiez la figure de style : « Le fer a tué plus d'hommes que l'or ».",
+            options: [
+                { text: "Une métonymie", isCorrect: true, rationale: "On désigne l'arme par sa matière (le fer) et l'argent/la cupidité par le métal précieux (l'or)." },
+                { text: "Une métaphore", isCorrect: false, rationale: "Il n'y a pas d'assimilation par ressemblance poétique pure entre deux concepts distincts." },
+                { text: "Une personnification", isCorrect: false, rationale: "Les métaux ne sont pas doués d'intentions ou d'attributs anthropomorphes autonomes ici." },
+                { text: "Un oxymore", isCorrect: false, rationale: "Aucun mot de sens contradictoire n'est juxtaposé côte à côte au sein du même syntagme." }
+            ],
+            hint: "Le mot utilisé désigne la matière ou l'objet physique pour désigner le concept ou l'objet final (l'épée, la richesse)."
+        }
+    ];
+
+    let activeIndex = 0;
+    let userScore = 0;
+    let currentSelectedOption = null;
+    let stepValidated = false;
+
+    const dynamicWrapper = document.getElementById("quiz-dynamic-wrapper");
+    const actionBtn = document.getElementById("action-submit-btn");
+    const hintLink = document.getElementById("hint-link");
+    const progressLine = document.getElementById("progress-line");
+    const progressText = document.getElementById("progress-text");
+
+    function initQuestion() {
+        stepValidated = false;
+        currentSelectedOption = null;
+        actionBtn.innerText = "Valider";
+        actionBtn.disabled = true;
+        hintLink.style.display = "block";
+
+        const currentProgress = (activeIndex / questionsDatabase.length) * 100;
+        progressLine.style.width = currentProgress + "%";
+        progressText.innerText = `${activeIndex}/${questionsDatabase.length}`;
+
+        dynamicWrapper.innerHTML = "";
+        const data = questionsDatabase[activeIndex];
+
+        const qText = document.createElement("div");
+        qText.className = "question-text";
+        qText.innerText = `Q${activeIndex + 1}. ${data.question}`;
+        dynamicWrapper.appendChild(qText);
+
+        const optionsGrid = document.createElement("div");
+        optionsGrid.className = "options-grid";
+
+        data.options.forEach((opt, idx) => {
+            const div = document.createElement("div");
+            div.className = "option";
+            div.innerText = opt.text;
+            div.onclick = () => handleOptionClick(idx, div);
+            optionsGrid.appendChild(div);
+        });
+
+        dynamicWrapper.appendChild(optionsGrid);
+
+        const feedback = document.createElement("div");
+        feedback.id = "feedback-output";
+        feedback.className = "feedback-box";
+        dynamicWrapper.appendChild(feedback);
+
+        const hintContainer = document.createElement("div");
+        hintContainer.id = "hint-output";
+        hintContainer.className = "hint-content";
+        hintContainer.innerText = data.hint;
+        dynamicWrapper.appendChild(hintContainer);
+    }
+
+    function handleOptionClick(idx, element) {
+        if (stepValidated) return;
+        currentSelectedOption = idx;
+        actionBtn.disabled = false;
+
+        document.querySelectorAll(".option").forEach(el => el.classList.remove("selected"));
+        element.classList.add("selected");
+    }
+
+    function toggleHintView() {
+        const hBox = document.getElementById("hint-output");
+        if (hBox.style.display === "block") {
+            hBox.style.display = "none";
+            hintLink.innerText = "Afficher un indice";
+        } else {
+            hBox.style.display = "block";
+            hintLink.innerText = "Masquer l'indice";
+        }
+    }
+
+    function processStep() {
+        if (!stepValidated) {
+            stepValidated = true;
+            hintLink.style.display = "none";
+            const hBox = document.getElementById("hint-output");
+            if (hBox) hBox.style.display = "none";
+
+            const data = questionsDatabase[activeIndex];
+            const domOptions = document.querySelectorAll(".option");
+            const feedbackBlock = document.getElementById("feedback-output");
+            const chosen = data.options[currentSelectedOption];
+
+            domOptions.forEach((el, idx) => {
+                el.classList.remove("selected");
+                if (data.options[idx].isCorrect) {
+                    el.classList.add("correct");
+                } else if (idx === currentSelectedOption) {
+                    el.classList.add("wrong");
+                }
+            });
+
+            if (chosen.isCorrect) {
+                userScore++;
+                feedbackBlock.innerHTML = `<strong>Parfait !</strong> ${chosen.rationale}`;
+                feedbackBlock.className = "feedback-box correct-style";
+            } else {
+                feedbackBlock.innerHTML = `<strong>Erreur.</strong> ${chosen.rationale}`;
+                feedbackBlock.className = "feedback-box wrong-style";
+            }
+
+            if (activeIndex === questionsDatabase.length - 1) {
+                actionBtn.innerText = "Terminer le quiz";
+            } else {
+                actionBtn.innerText = "Suivant";
+            }
+        } else {
+            activeIndex++;
+            if (activeIndex < questionsDatabase.length) {
+                initQuestion();
+            } else {
+                renderFinalResults();
+            }
+        }
+    }
+
+    function renderFinalResults() {
+        progressLine.style.width = "100%";
+        progressText.innerText = `${questionsDatabase.length}/${questionsDatabase.length}`;
+        dynamicWrapper.style.display = "none";
+        document.getElementById("quiz-navigation").style.display = "none";
+
+        const resSection = document.getElementById("results-wrapper");
+        resSection.style.display = "block";
+
+        const badge = document.getElementById("final-score");
+        badge.innerText = `${userScore}/${questionsDatabase.length}`;
+
+        const textOutput = document.getElementById("final-commentary");
+        if (userScore === questionsDatabase.length) {
+            textOutput.innerText = "Impressionnant ! Un sans-faute digne d'une mention Très Bien très solide au Brevet.";
+        } else if (userScore >= 9) {
+            textOutput.innerText = "Excellent score. La plupart des pièges sur les valeurs de temps et les figures complexes sont maîtrisés !";
+        } else if (userScore >= 6) {
+            textOutput.innerText = "Résultat correct, mais attention aux confusions sur les modes et les nuances délicates des figures d'atténuation.";
+        } else {
+            textOutput.innerText = "Il est nécessaire de retravailler tes fiches de révisions. Reprends méthodiquement les règles de base.";
+        }
+    }
+
+    function restartQuizEngine() {
+        activeIndex = 0;
+        userScore = 0;
+        dynamicWrapper.style.display = "block";
+        document.getElementById("quiz-navigation").style.display = "flex";
+        document.getElementById("results-wrapper").style.display = "none";
+        initQuestion();
+    }
+
+    window.onload = initQuestion;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Histoire App</title>
+
+<style>
+
+/* =========================
+   GLOBAL + BACKGROUND APP
+========================= */
+body{
+  margin:0;
+  font-family:Arial;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+
+/* 🌈 fond dynamique dégradé */
+#bg{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  transition:opacity 1.5s ease-in-out;
+}
+
+/* =========================
+   MENU DECORÉ
+========================= */
+
+.bg-animation{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(-45deg,#0b3d91,#3b82f6,#ffffff,#16a34a);
+  background-size:400% 400%;
+  animation: gradientMove 12s ease infinite;
+  z-index:-3;
+}
+
+@keyframes gradientMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+.bubbles span{
+  position:absolute;
+  width:20px;
+  height:20px;
+  background:rgba(255,255,255,0.35);
+  border-radius:50%;
+  bottom:-150px;
+  animation: rise 20s linear infinite;
+}
+
+.bubbles span:nth-child(1){left:10%;}
+.bubbles span:nth-child(2){left:25%;width:40px;height:40px;animation-duration:22s;}
+.bubbles span:nth-child(3){left:50%;}
+.bubbles span:nth-child(4){left:70%;width:30px;height:30px;}
+.bubbles span:nth-child(5){left:90%;}
+
+@keyframes rise{
+  0%{transform:translateY(0);}
+  100%{transform:translateY(-110vh);}
+}
+
+/* MENU CARD */
+.menu{
+  position:relative;
+  z-index:2;
+  text-align:center;
+  padding:40px;
+  border-radius:25px;
+  background:rgba(255,255,255,0.15);
+  backdrop-filter: blur(15px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.2);
+  animation: pop 0.8s ease;
+}
+
+@keyframes pop{
+  from{opacity:0; transform:scale(0.8);}
+  to{opacity:1; transform:scale(1);}
+}
+
+.menu h1{
+  font-size:38px;
+  color:white;
+  text-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 14px;
+  background:white;
+  color:#0b3d91;
+  border-radius:20px;
+  font-weight:bold;
+  margin-bottom:15px;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.1);}
+  100%{transform:scale(1);}
+}
+
+.menu button{
+  width:280px;
+  margin:12px;
+  padding:16px;
+  border:none;
+  border-radius:16px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:17px;
+  transition:0.3s;
+  box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+
+.menu button:nth-child(2){
+  background:#0b3d91;
+  color:white;
+}
+
+.menu button:nth-child(3){
+  background:#16a34a;
+  color:white;
+}
+
+.menu button:hover{
+  transform:scale(1.08);
+}
+
+/* =========================
+   APP
+========================= */
+
+.box{
+  width:90%;
+  max-width:750px;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.15);
+  display:none;
+}
+
+#progress{
+  text-align:center;
+  font-weight:bold;
+  margin-bottom:10px;
+  color:#0b3d91;
+}
+
+#timer{
+  height:10px;
+  background:#16a34a;
+  border-radius:20px;
+  margin-bottom:15px;
+  transition:width 1s linear;
+}
+
+#question{
+  text-align:center;
+  font-size:24px;
+  margin:20px 0;
+}
+
+/* ANSWERS */
+.answer{
+  width:100%;
+  margin:8px 0;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#e5e7eb;
+  color:#0b3d91;
+  transition:0.2s;
+}
+
+.answer:hover{
+  transform:scale(1.03);
+  background:#dbeafe;
+}
+
+.good{background:#16a34a !important;color:white;}
+.bad{background:#dc2626 !important;color:white;}
+.lock{pointer-events:none;opacity:0.75;}
+
+/* FLASH */
+.flash{
+  text-align:center;
+  font-size:26px;
+  padding:60px 20px;
+  border-radius:18px;
+  background:#0b3d91;
+  color:white;
+  cursor:pointer;
+}
+
+/* STREAK */
+#streak{
+  text-align:center;
+  font-weight:bold;
+  margin-top:10px;
+  color:#dc2626;
+}
+
+.streakGood{color:#16a34a;}
+
+/* BTN */
+.btn{
+  margin-top:15px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:bold;
+  background:#dc2626;
+  color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- MENU DECOR -->
+<div class="bg-animation"></div>
+<div class="bubbles">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div id="bg"></div>
+
+<!-- MENU -->
+<div class="menu" id="menu">
+
+  <div class="badge">📚 HISTOIRE MASTER</div>
+
+  <h1>Apprendre en s’amusant</h1>
+
+  <button onclick="start('quiz')">🎯 QCM</button>
+  <button onclick="start('flash')">🧠 Flashcards</button>
+
+</div>
+
+<!-- APP -->
+<div class="box" id="app">
+
+<div id="progress"></div>
+<div id="timer"></div>
+
+<div id="question"></div>
+<div id="answers"></div>
+
+<div id="streak"></div>
+
+<button class="btn" onclick="backMenu()">🏠 Retour menu</button>
+
+</div>
+
+<script>
+
+/* =========================
+   DATA
+========================= */
+const data=[
+{d:"1914-1918",e:"Grande Guerre",t:"war"},
+{d:"1916",e:"Verdun",t:"war"},
+{d:"1917",e:"Révolutions russes",t:"war"},
+{d:"1939-1945",e:"Seconde Guerre mondiale",t:"war"},
+{d:"1958",e:"Ve République",t:"modern"},
+{d:"1989",e:"Chute du mur de Berlin",t:"europe"},
+{d:"2002",e:"Euro",t:"europe"},
+{d:"1945",e:"ONU",t:"europe"},
+{d:"1975",e:"IVG loi Veil",t:"modern"},
+{d:"1957",e:"Traité de Rome",t:"europe"}
+];
+
+let list=[];
+let i=0;
+let timer;
+let time=10;
+let locked=false;
+let flip=false;
+let streak=0;
+
+/* =========================
+   START
+========================= */
+function start(mode){
+
+  document.getElementById("menu").style.display="none";
+  document.getElementById("app").style.display="block";
+
+  list=[...data].sort(()=>Math.random()-0.5).slice(0,10);
+
+  i=0;
+  streak=0;
+
+  mode==="quiz" ? qcm() : flash();
+}
+
+/* =========================
+   BACK MENU
+========================= */
+function backMenu(){
+  document.getElementById("menu").style.display="block";
+  document.getElementById("app").style.display="none";
+  clearInterval(timer);
+}
+
+/* =========================
+   THEME GRADIENT FLUIDE
+========================= */
+function setTheme(type){
+
+  let bg=document.getElementById("bg");
+
+  let gradient="";
+
+  if(type==="war"){
+    gradient="linear-gradient(135deg,#7f1d1d,#000000)";
+  }
+  else if(type==="europe"){
+    gradient="linear-gradient(135deg,#0b3d91,#3b82f6)";
+  }
+  else{
+    gradient="linear-gradient(135deg,#0b3d91,#ffffff)";
+  }
+
+  bg.style.opacity="0";
+
+  setTimeout(()=>{
+    bg.style.background=gradient;
+    bg.style.opacity="1";
+  },500);
+}
+
+/* =========================
+   TIMER
+========================= */
+function startTimer(){
+  clearInterval(timer);
+  time=10;
+
+  let bar=document.getElementById("timer");
+  bar.style.width="100%";
+
+  timer=setInterval(()=>{
+    time--;
+    bar.style.width=(time*10)+"%";
+
+    if(time<=0){
+      clearInterval(timer);
+      if(!locked) check(null,null);
+    }
+  },1000);
+}
+
+/* =========================
+   QCM
+========================= */
+function qcm(){
+
+  if(i>=list.length){
+    document.getElementById("question").innerHTML=
+    "🏆 FIN ! Streak max : "+streak;
+    document.getElementById("answers").innerHTML="";
+    return;
+  }
+
+  let q=list[i];
+
+  setTheme(q.t);
+
+  startTimer();
+  locked=false;
+
+  document.getElementById("progress").innerHTML=
+  "Question "+(i+1)+" / "+list.length;
+
+  document.getElementById("question").innerHTML=
+  "Date de : "+q.e;
+
+  document.getElementById("streak").innerHTML=
+  "🔥 Streak : "+streak;
+
+  let ans=document.getElementById("answers");
+  ans.innerHTML="";
+
+  let opt=[q.d];
+
+  while(opt.length<4){
+    let r=data[Math.floor(Math.random()*data.length)].d;
+    if(!opt.includes(r)) opt.push(r);
+  }
+
+  opt.sort(()=>Math.random()-0.5);
+
+  opt.forEach(o=>{
+    let b=document.createElement("button");
+    b.className="answer";
+    b.innerHTML=o;
+
+    b.onclick=()=>{
+      if(locked) return;
+      locked=true;
+      clearInterval(timer);
+      check(b,q.d);
+    };
+
+    ans.appendChild(b);
+  });
+}
+
+/* =========================
+   CHECK + STREAK
+========================= */
+function check(btn,correct){
+
+  let buttons=document.querySelectorAll(".answer");
+
+  buttons.forEach(b=>{
+    b.classList.add("lock");
+
+    if(b.innerHTML===correct){
+      b.classList.add("good");
+    }
+
+    if(btn && b===btn && btn.innerHTML!==correct){
+      b.classList.add("bad");
+    }
+  });
+
+  if(btn && btn.innerHTML===correct){
+    streak++;
+  }else{
+    streak=0;
+  }
+
+  document.getElementById("streak").className =
+    streak>=3 ? "streakGood" : "";
+
+  i++;
+  setTimeout(qcm,900);
+}
+
+/* =========================
+   FLASHCARDS
+========================= */
+function flash(){
+
+  if(i>=list.length){
+    document.getElementById("question").innerHTML=
+    "🏆 FIN FLASH";
+    document.getElementById("answers").innerHTML="";
+    return;
+  }
+
+  let q=list[i];
+
+  setTheme(q.t);
+
+  document.getElementById("progress").innerHTML=
+  "Carte "+(i+1)+" / "+list.length;
+
+  document.getElementById("question").innerHTML=
+  `<div class="flash" onclick="flipCard()">${q.e}</div>`;
+
+  document.getElementById("answers").innerHTML="";
+}
+
+function flipCard(){
+
+  let q=list[i];
+  let c=document.querySelector(".flash");
+
+  if(!flip){
+    c.innerHTML=q.d;
+    flip=true;
+  }else{
+    flip=false;
+    i++;
+    flash();
+  }
+}
+
+</script>
+
+</body>
+</html>

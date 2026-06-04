@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Souverain du Brevet : L'Application de Révision Ultime</title>
+    <style>
+        /* CONFIGURATION DES VARIABLES GLOBALES */
+        :root {
+            --bg-color: #f5f7fa;
+            --bg-pattern: radial-gradient(#3498db 0.5px, transparent 0.5px), radial-gradient(#3498db 0.5px, #f5f7fa 0.5px);
+            --bg-size: 20px 20px;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --border-color: #dee2e6;
+            --card-border-radius: 12px;
+            --box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --glow: none;
+            --animation: none;
+        }
+
+        /* THÈME BRAIROT */
+        [data-theme="brairot"] {
+            --bg-color: #5c4033;
+            --bg-pattern: linear-gradient(135deg, #704d3c 25%, transparent 25%), linear-gradient(225deg, #704d3c 25%, transparent 25%), radial-gradient(circle at 10% 80%, #5c4033 2px, transparent 0);
+            --bg-size: 40px 40px, 40px 40px, 30px 30px;
+            --card-bg: #fff8f0;
+            --text-color: #3d2516;
+            --primary-color: #8b5a2b;
+            --secondary-color: #556b2f;
+            --danger-color: #b22222;
+            --border-color: #8b5a2b;
+            --card-border-radius: 16px;
+            --box-shadow: 6px 6px 0px #3d2516;
+            --font-family: 'Trebuchet MS', sans-serif;
+        }
+
+        /* THÈME SKIBIDITENTAFRUIT */
+        [data-theme="skibiditentafruit"] {
+            --bg-color: #120124;
+            --bg-pattern: radial-gradient(circle at 20% 30%, #ff007f 0%, transparent 40%), radial-gradient(circle at 80% 70%, #7000ff 0%, transparent 40%);
+            --bg-size: 100% 100%;
+            --card-bg: rgba(20, 0, 35, 0.9);
+            --text-color: #39ff14;
+            --primary-color: #bc13fe;
+            --secondary-color: #00ffff;
+            --danger-color: #ff0055;
+            --border-color: #39ff14;
+            --card-border-radius: 24px;
+            --box-shadow: 0 0 30px rgba(57, 255, 20, 0.4);
+            --font-family: 'Impact', sans-serif;
+            --glow: 0 0 12px #39ff14;
+            --animation: shakeEffect 0.4s infinite alternate;
+        }
+        @keyframes shakeEffect { 0% { transform: skewX(-0.5deg); } 100% { transform: skewX(0.5deg); } }
+
+        /* THÈME BRAINROT */
+        [data-theme="brainrot"] {
+            --bg-color: #0a0a16;
+            --bg-pattern: linear-gradient(rgba(0, 255, 200, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 200, 0.05) 1px, transparent 1px);
+            --bg-size: 25px 25px;
+            --card-bg: #111125;
+            --text-color: #00ffcc;
+            --primary-color: #ff0055;
+            --secondary-color: #00ffcc;
+            --danger-color: #ff3333;
+            --border-color: #ff0055;
+            --card-border-radius: 8px;
+            --box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
+            --font-family: 'Courier New', monospace;
+            --glow: 0 0 8px #ff0055;
+        }
+
+        /* THÈME LE FISC */
+        [data-theme="fisc"] {
+            --bg-color: #141414;
+            --bg-pattern: linear-gradient(rgba(255, 0, 0, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 0, 0.07) 1px, transparent 1px);
+            --bg-size: 35px 35px;
+            --card-bg: #222222;
+            --text-color: #ff4444;
+            --primary-color: #888888;
+            --secondary-color: #ffcc00;
+            --danger-color: #ff1111;
+            --border-color: #444444;
+            --card-border-radius: 4px;
+            --box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 15px rgba(255, 68, 68, 0.2);
+            --font-family: 'Courier New', monospace;
+            --glow: 0 0 6px #ff4444;
+        }
+
+        /* THÈME COMPLOT PIGEONS */
+        [data-theme="pigeons"] {
+            --bg-color: #031203;
+            --bg-pattern: radial-gradient(rgba(0, 255, 0, 0.2) 1.5px, transparent 1.5px);
+            --bg-size: 40px 40px;
+            --card-bg: #092409;
+            --text-color: #33ff33;
+            --primary-color: #00b300;
+            --secondary-color: #00ffcc;
+            --danger-color: #ff3333;
+            --border-color: #33ff33;
+            --card-border-radius: 14px;
+            --box-shadow: inset 0 0 25px rgba(0,255,0,0.35), 0 0 20px rgba(0,255,0,0.2);
+            --font-family: sans-serif;
+            --glow: 0 0 10px rgba(51, 255, 51, 0.5);
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            background-image: var(--bg-pattern);
+            background-size: var(--bg-size);
+            color: var(--text-color);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; transition: all 0.3s ease;
+        }
+
+        .quiz-container {
+            background-color: var(--card-bg);
+            border-radius: var(--card-border-radius);
+            box-shadow: var(--box-shadow);
+            border: 3px solid var(--border-color);
+            width: 100%; max-width: 680px;
+            padding: 30px; box-sizing: border-box;
+            animation: var(--animation);
+        }
+
+        h1, h2 { text-align: center; color: var(--primary-color); margin-top: 0; text-shadow: var(--glow); text-transform: uppercase; }
+        h1 { font-size: 1.8rem; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; }
+        .config-group { margin-bottom: 18px; }
+        .config-group label { display: block; font-weight: bold; margin-bottom: 6px; }
+        .config-group select { width: 100%; padding: 10px; border-radius: 6px; border: 2px solid var(--border-color); background-color: var(--card-bg); color: var(--text-color); font-family: var(--font-family); font-size: 1rem; }
+        
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
+        .progress-bar { height: 10px; width: 75%; background-color: var(--border-color); border-radius: 5px; overflow: hidden; }
+        .progress { height: 100%; background-color: var(--primary-color); width: 0%; transition: width 0.3s ease; }
+        
+        .timer-badge { background-color: var(--primary-color); color: white; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; box-shadow: var(--glow); }
+        .timer-badge.warning { background-color: var(--danger-color); animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        .question-box { font-size: 1.2rem; font-weight: 600; margin-bottom: 15px; line-height: 1.4; }
+        .hint-box { background-color: rgba(0, 0, 0, 0.04); border-left: 4px solid var(--primary-color); padding: 10px 15px; margin-bottom: 20px; border-radius: 4px; font-style: italic; font-size: 0.95rem; }
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .option-btn { background-color: var(--card-bg); border: 2px solid var(--border-color); border-radius: var(--card-border-radius); padding: 14px 20px; font-size: 1rem; font-family: var(--font-family); text-align: left; cursor: pointer; transition: all 0.2s ease; color: var(--text-color); box-shadow: var(--glow); }
+        .option-btn:hover:not(:disabled) { background-color: rgba(0,0,0,0.06); transform: scale(1.005); }
+        .option-btn.correct { background-color: #2ecc71 !important; border-color: #27ae60 !important; color: #fff !important; text-shadow: none; }
+        .option-btn.incorrect { background-color: #e74c3c !important; border-color: #c0392b !important; color: #fff !important; text-shadow: none; }
+        
+        .explanation-box { margin-top: 20px; padding: 15px; border-radius: 6px; background-color: rgba(0, 0, 0, 0.04); border-left: 4px solid var(--secondary-color); display: none; font-size: 0.95rem; line-height: 1.5; }
+        .action-btn { display: block; width: 100%; background-color: var(--primary-color); color: white; border: 2px solid var(--border-color); border-radius: var(--card-border-radius); padding: 14px; font-size: 1.1rem; font-family: var(--font-family); font-weight: bold; cursor: pointer; margin-top: 25px; box-shadow: var(--box-shadow); text-transform: uppercase; }
+        .action-btn:hover { filter: brightness(1.15); }
+        
+        /* Classe d'invisibilité */
+        .hidden { display: none !important; }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; background-color: rgba(0, 0, 0, 0.03); display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; color: var(--primary-color); margin: 20px auto; border: 4px solid var(--primary-color); box-shadow: var(--glow); }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="setup-screen">
+        <h1>SOUVERAIN DU BREVET</h1>
+        <h2>Menu de Révision de Combat</h2>
+        
+        <div class="config-group">
+            <label for="subject-select">📚 Secteur d'Enseignement :</label>
+            <select id="subject-select">
+                <option value="mix" selected>Mélange des Mondes (Toutes Disciplines)</option>
+                <option value="francais">Français (Modes, Temps & Figures de Style)</option>
+                <option value="histoire">Histoire & Géo (Repères Temporels et Spatiaux)</option>
+                <option value="maths">Mathématiques (Arithmétique, Algèbre & Théorèmes)</option>
+            </select>
+        </div>
+
+        <div class="config-group">
+            <label for="theme-select">🎨 Holo-Décor Réaliste :</label>
+            <select id="theme-select" onchange="changeTheme(this.value)">
+                <option value="light">Salle de Classe Neutre</option>
+                <option value="brairot">Le Terroir de Brairot 🐻🌾</option>
+                <option value="skibiditentafruit">Skibiditentafruit Oméga 🛸🍇💥</option>
+                <option value="brainrot">Mode BRAINROT Cyber-Réaliste 🤪🤡</option>
+                <option value="fisc">Le Fisc & L'Inspecteur Général 🏦💼💀</option>
+                <option value="pigeons">Le Radar Militaire des Pigeons Drone 🐦👁️📐</option>
+            </select>
+        </div>
+
+        <div class="config-group">
+            <label for="count-select">📋 Volume de l'Épreuve :</label>
+            <select id="count-select">
+                <option value="5">Séquence Éclair (5 questions)</option>
+                <option value="10" selected>Évaluation Majeure (10 questions)</option>
+                <option value="20">Marathon National (20 questions)</option>
+            </select>
+        </div>
+
+        <div class="config-group">
+            <label for="difficulty-select">🧠 Soutien Tactique :</label>
+            <select id="difficulty-select">
+                <option value="easy">Normal (Avec Parchemin d'Indices)</option>
+                <option value="hard">Légendaire (Aucun Indice, Écran Nu)</option>
+            </select>
+        </div>
+
+        <div class="config-group">
+            <label for="timer-select">⏱️ Compte à rebours :</label>
+            <select id="timer-select">
+                <option value="0">Illimité (Analyse tranquille)</option>
+                <option value="15">Cadence Infernale (15s / question)</option>
+                <option value="30" selected>Standard Brevet (30s / question)</option>
+            </select>
+        </div>
+
+        <button onclick="startQuiz()" class="action-btn">Initialiser le Test</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="quiz-header">
+            <div class="progress-bar">
+                <div id="progress" class="progress"></div>
+            </div>
+            <div id="timer-display" class="timer-badge">--s</div>
+        </div>
+        
+        <div id="question" class="question-box"></div>
+        <div id="hint" class="hint-box hidden"></div>
+        
+        <div id="options" class="options-list"></div>
+        
+        <div id="explanation" class="explanation-box"></div>
+        
+        <button id="next-button" class="action-btn hidden">Valider et Continuer</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <div style="text-align: center;">
+            <h2>Bilan d'Évaluation</h2>
+            <div id="score-box" class="score-circle">0/10</div>
+            <p id="feedback-text"></p>
+            <button onclick="returnToSetup()" class="action-btn">Retourner à la base</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // BASE DE DONNÉES INTEGRALE APPUYÉE SUR VOS PIÈCES JOINTES
+    const poolFrancais = [
+        { question: "À quel groupe appartient le verbe « aller » ?", options: ["1er groupe", "2e groupe", "3e groupe", "Groupe impersonnel"], correct: 2, hint: "Il se termine en -er mais fait exception à la règle générale.", rationale: "La fiche de révision mentionne que le 1er groupe réunit les verbes en -er 'sauf aller'. C'est un verbe irrégulier du 3e groupe." },
+        { question: "Lequel des modes suivants est qualifié de mode 'non personnel' ?", options: ["L'indicatif", "Le subjonctif", "Le gérondif", "Le conditionnel"], correct: 2, hint: "Il s'emploie avec la préposition 'en' sans pronom sujet.", rationale: "Les modes non personnels (infinitif, participe, gérondif) ne prennent pas de marques de personne (je, tu...)." },
+        { question: "Quelle est la valeur du présent dans : « L'eau gèle à zéro degré » ?", options: ["Présent d'énonciation", "Présent de vérité générale", "Présent de narration", "Présent itératif"], correct: 1, hint: "Il s'agit d'une loi scientifique universelle.", rationale: "Le présent de vérité générale exprime des réalités scientifiques, des définitions ou proverbes valables de tout temps." },
+        { question: "Dans le récit au passé, quel présent utilise-t-on pour rendre une action soudaine vivante ?", options: ["Le présent itératif", "Le présent de narration", "Le présent de vérité générale", "Le présent d'énonciation"], correct: 1, hint: "Il donne au lecteur l'impression de voir la scène se dérouler en direct.", rationale: "Le présent de narration s'introduit au milieu de temps du passé pour dynamiser l'action." },
+        { question: "Quelle figure de style associe immédiatement deux termes contradictoires (ex: « obscure clarté ») ?", options: ["L'antithèse", "L'oxymore", "La périphrase", "L'allégorie"], correct: 1, hint: "Les deux mots opposés sont placés côte à côte.", rationale: "Un oxymore réunit deux mots de sens contraires dans un même groupe grammatical." },
+        { question: "Comment appelle-t-on la figure qui remplace un mot simple par une expression imagée (ex: « Le septième art ») ?", options: ["La périphrase", "La métaphore", "L'oxymore", "L'antithèse"], correct: 0, hint: "On fait le tour du mot au lieu de le nommer directement.", rationale: "La périphrase désigne un objet ou une notion par ses caractéristiques au lieu de son nom propre." },
+        { question: "Quelle est la valeur du verbe dans : « Tous les matins, je bois un grand verre d'eau » ?", options: ["Présent d'énonciation", "Présent itératif / d'habitude", "Futur proche", "Vérité générale"], correct: 1, hint: "Repère l'indicateur temporel de répétition.", rationale: "Le présent itératif s'emploie pour marquer l'habitude ou des actions cycliques régulières." },
+        { question: "À quel temps et mode est conjuguée la forme « (qu')il eût fait » ?", options: ["Indicatif plus-que-parfait", "Subjonctif plus-que-parfait", "Conditionnel passé", "Subjonctif imparfait"], correct: 1, hint: "Reconnaissable à l'utilisation du 'que' et de l'accent circonflexe sur l'auxiliaire.", rationale: "Il s'agit de la forme classique du plus-que-parfait du subjonctif." },
+        { question: "Quel temps utilise-t-on pour marquer un 'retour en arrière' dans un récit au passé ?", options: ["Le passé simple", "Le plus-que-parfait", "L'imparfait", "Le passé antérieur"], correct: 1, hint: "Il s'agit d'une action antérieure à une autre action déjà passée.", rationale: "Le plus-que-parfait sert à exprimer l'antériorité par rapport à un fait passé, comme un flash-back." },
+        { question: "Identifie la figure de style : « Le Malheur a percé mon vieux cœur de sa lance ».", options: ["Une antithèse", "Une allégorie", "Une périphrase", "Un oxymore"], correct: 1, hint: "Une idée abstraite prend une forme humaine et porte une majuscule.", rationale: "L'allégorie matérialise une idée abstraite (ici le Malheur) en lui donnant des attributs humains et concrets." }
+    ];
+
+    const poolHistoire = [
+        { question: "Quelles sont les dates de la Première Guerre mondiale ?", options: ["1914-1918", "1939-1945", "1916-1920", "1947-1991"], correct: 0, hint: "Le conflict s'est achevé un 11 novembre.", rationale: "La Première Guerre mondiale s'est étendue d'août 1914 à novembre 1918." },
+        { question: "En quelle année s'est déroulée la bataille de Verdun ?", options: ["1914", "1915", "1916", "1918"], correct: 2, hint: "Au cœur de la Grande Guerre.", rationale: "La terrible guerre d'usure et de tranchées à Verdun a eu lieu en 1916." },
+        { question: "Quelle période correspond au pouvoir de Staline en URSS ?", options: ["1917-1924", "1924-1953", "1933-1945", "1945-1991"], correct: 1, hint: "Il succède à Lénine et gouverne jusqu'au début des années 50.", rationale: "Joseph Staline a exercé une dictature totalitaire sur l'URSS de 1924 à 1953." },
+        { question: "Sous quelles dates s'étend le régime de Vichy en France ?", options: ["1933-1945", "1936-1939", "1940-1944", "1944-1945"], correct: 2, hint: "Pendant l'Occupation, de la défaite militaire à la Libération.", rationale: "Le régime de l'État français dirigé par le maréchal Pétain s'est étendu de 1940 à 1944." },
+        { question: "Quand les femmes françaises ont-elles obtenu et exercé le droit de vote ?", options: ["1918", "1936", "1944-1945", "1958"], correct: 2, hint: "À la Libération, sur décision du GPRF.", rationale: "L'ordonnance d'Alger d'octobre 1944 octroie le droit de vote aux femmes, appliqué pour la première fois en 1945." },
+        { question: "Quelles sont les bornes de la Guerre Froide ?", options: ["1914-1918", "1939-1945", "1947-1991", "1954-1962"], correct: 2, hint: "De la création des blocs à l'effondrement soviétique.", rationale: "La Guerre Froide entre le bloc de l'Est et de l'Ouest s'étend de 1947 à la dislocation de l'URSS en 1991." },
+        { question: "En quelle année est adopté le Traité de Rome fondant la CEE ?", options: ["1945", "1957", "1992", "2002"], correct: 1, hint: "Pendant les années 50, ouvrant le marché commun.", rationale: "Signé en 1957, le Traité de Rome jette les bases économiques de l'actuelle Union européenne." },
+        { question: "Quelle grande chaîne de montagnes borde la côte Ouest de l'Amérique du Sud ?", options: ["L'Himalaya", "Les Rocheuses", "La Cordillère des Andes", "Les Alpes"], correct: 2, hint: "Un grand repère géologique mondial.", rationale: "La Cordillère des Andes s'étend le long de toute la façade pacifique sud-américaine." },
+        { question: "Quel fleuve d'Afrique est l'un des plus longs du monde avec le fleuve Amazone ?", options: ["Le Congo", "Le Nil", "Le Gange", "Le Yangzi"], correct: 1, hint: "Il traverse l'Égypte.", rationale: "Le Nil est le fleuve historique d'Afrique traversant plusieurs pays dont l'Égypte." },
+        { question: "Combien de régions métropolitaines la France compte-t-elle depuis la réforme territoriale ?", options: ["5", "10", "13", "27"], correct: 2, hint: "La France continentale et la Corse.", rationale: "Le territoire métropolitain français est découpé en 13 grandes régions administratives." }
+    ];
+
+    const poolMaths = [
+        { question: "Comment appelle-t-on le résultat mathématique d'une division ?", options: ["La somme", "La différence", "Le produit", "Le quotient"], correct: 3, hint: "À ne pas confondre avec le résultat de la multiplication.", rationale: "L'addition donne la somme, la soustraction la différence, la multiplication le produit et la division le quotient." },
+        { question: "Comment reconnaît-on à coup sûr un nombre divisible par 3 ou par 9 ?", options: ["Il se termine par 3 ou 9", "La somme de ses chiffres est dans la table de 3 ou de 9", "C'est un nombre impair", "Son dernier chiffre est pair"], correct: 1, hint: "Fais l'addition de tous les chiffres qui composent le nombre.", rationale: "La règle arithmétique stipule qu'un nombre est divisible par 3 (ou 9) si la somme de ses chiffres est un multiple de 3 (ou 9)." },
+        { question: "Qu'est-ce qu'un nombre premier ?", options: ["Un nombre se terminant par 1", "Un entier ayant exactement deux diviseurs distincts (1 et lui-même)", "Un nombre négatif", "Un nombre pair uniquement"], correct: 1, hint: "2, 3, 5, 7 en sont des exemples.", rationale: "Un nombre premier ne peut être divisé de manière entière que par 1 et par lui-même. 1 n'est pas premier." },
+        { question: "Quelle formule traduit la double distributivité algébrique ?", options: ["k(a+b) = ka+kb", "(a+b)(c+d) = ac+ad+bc+bd", "a²-b² = (a-b)(a+b)", "f(x) = ax+b"], correct: 1, hint: "On distribue chaque terme de la première parenthèse sur la seconde.", rationale: "Le développement complet donne quatre produits croisés distincts réunis par addition." },
+        { question: "Quelle est l'identité remarquable correspondant à la différence de deux carrés : a² - b² ?", options: ["(a - b)²", "(a + b)²", "(a + b)(a - b)", "a² + 2ab + b²"], correct: 2, hint: "Cette forme factorisée est essentielle pour simplifier les expressions.", rationale: "a² - b² se factorise sous la forme du produit de la somme par la différence : (a + b)(a - b)." },
+        { question: "Que se passe-t-il obligatoirement si un produit de facteurs est nul ?", options: ["Tous les facteurs sont nuls", "Au moins l'un des facteurs est nul", "Le résultat est indéfini", "x est égal à zéro"], correct: 1, hint: "Pour que A × B = 0, quelle est la condition minimale ?", rationale: "Un produit est nul si et seulement si l'un au moins de ses facteurs est égal à zéro (Équation produit nul)." },
+        { question: "Quelle est la somme totale des mesures des angles intérieurs de n'importe quel triangle ?", options: ["90°", "180°", "360°", "45°"], correct: 1, hint: "C'est l'équivalent d'un angle plat.", rationale: "En géométrie euclidienne, la somme des trois angles d'un triangle vaut invariablement 180°." },
+        { question: "Dans quel type de triangle peut-on utiliser le théorème de Pythagore ?", options: ["Triangle équilatéral", "Triangle isocèle", "Triangle rectangle", "Triangle quelconque"], correct: 2, hint: "Il nécessite impérativement la présence d'un angle droit.", rationale: "Le théorème de Pythagore relie les carrés des longueurs des côtés dans un triangle rectangle uniquement." },
+        { question: "Quelle est l'utilité première de la réciproque du théorème de Thalès ?", options: ["Calculer une longueur manquante", "Démontrer que deux droites sont parallèles", "Calculer un angle", "Prouver qu'un triangle est rectangle"], correct: 1, hint: "Elle vérifie l'égalité des rapports de longueurs pour valider un alignement géométrique.", rationale: "Si les rapports de Thalès sont égaux dans le bon ordre, la réciproque prouve le parallélisme des droites." },
+        { question: "Sous quelle forme générale s'écrit la formule d'une fonction affine ?", options: ["f(x) = a × x", "f(x) = a × x + b", "f(x) = x²", "f(x) = a / x"], correct: 1, hint: "Elle est modélisée graphiquement par une droite qui ne passe pas forcément par l'origine.", rationale: "f(x) = ax + b est la fonction affine, où 'a' est le coefficient directeur et 'b' l'ordonnée à l'origine." }
+    ];
+
+    let activeQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let hasAnswered = false;
+    let configDifficulty = "easy";
+    let configTimeLimit = 30; 
+    let timerInterval = null;
+    let timeLeft = 0;
+
+    const setupScreen = document.getElementById("setup-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionElement = document.getElementById("question");
+    const hintElement = document.getElementById("hint");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const nextButton = document.getElementById("next-button");
+    const progressElement = document.getElementById("progress");
+    const timerDisplay = document.getElementById("timer-display");
+    const scoreBox = document.getElementById("score-box");
+    const feedbackText = document.getElementById("feedback-text");
+
+    function changeTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+    }
+
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function startQuiz() {
+        const subject = document.getElementById("subject-select").value;
+        const count = parseInt(document.getElementById("count-select").value);
+        configDifficulty = document.getElementById("difficulty-select").value;
+        configTimeLimit = parseInt(document.getElementById("timer-select").value);
+
+        let combinedPool = [];
+        if (subject === "francais") {
+            combinedPool = [...poolFrancais];
+        } else if (subject === "histoire") {
+            combinedPool = [...poolHistoire];
+        } else if (subject === "maths") {
+            combinedPool = [...poolMaths];
+        } else {
+            combinedPool = [...poolFrancais, ...poolHistoire, ...poolMaths];
+        }
+
+        let shuffled = shuffleArray(combinedPool);
+        activeQuestions = shuffled.slice(0, Math.min(count, shuffled.length));
+
+        currentQuestionIndex = 0;
+        score = 0;
+
+        // CORRECTION MAJEURE : Transition propre des fenêtres d'affichage HTML
+        setupScreen.classList.add("hidden");
+        resultScreen.classList.add("hidden");
+        quizScreen.classList.remove("hidden");
+
+        showQuestion();
+    }
+
+    function showQuestion() {
+        hasAnswered = false;
+        nextButton.classList.add("hidden");
+        explanationElement.style.display = "none";
+        optionsElement.innerHTML = "";
+        clearInterval(timerInterval);
+
+        const currentQuestion = activeQuestions[currentQuestionIndex];
+        const progressPercentage = (currentQuestionIndex / activeQuestions.length) * 100;
+        progressElement.style.width = `${progressPercentage}%`;
+
+        questionElement.textContent = `Question ${currentQuestionIndex + 1}/${activeQuestions.length} : ${currentQuestion.question}`;
+
+        if (configDifficulty === "easy" && currentQuestion.hint) {
+            hintElement.textContent = `💡 Conseil tactique : ${currentQuestion.hint}`;
+            hintElement.classList.remove("hidden");
+        } else {
+            hintElement.classList.add("hidden");
+        }
+
+        currentQuestion.options.forEach((option, index) => {
+            const button = document.createElement("button");
+            button.textContent = option;
+            button.classList.add("option-btn");
+            button.removeAttribute("disabled");
+            button.addEventListener("click", () => handleSelection(index, button));
+            optionsElement.appendChild(button);
+        });
+
+        if (configTimeLimit > 0) {
+            timeLeft = configTimeLimit;
+            timerDisplay.classList.remove("hidden");
+            timerDisplay.classList.remove("warning");
+            timerDisplay.textContent = `${timeLeft}s`;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `${timeLeft}s`;
+                if (timeLeft <= 5) timerDisplay.classList.add("warning");
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        } else {
+            timerDisplay.classList.add("hidden");
+        }
+    }
+
+    function handleSelection(selectedIndex, selectedButton) {
+        if (hasAnswered) return;
+        hasAnswered = true;
+        clearInterval(timerInterval);
+
+        const currentQuestion = activeQuestions[currentQuestionIndex];
+        const buttons = optionsElement.querySelectorAll(".option-btn");
+
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (selectedIndex === currentQuestion.correct) {
+            selectedButton.classList.add("correct");
+            score++;
+        } else {
+            selectedButton.classList.add("incorrect");
+            buttons[currentQuestion.correct].classList.add("correct");
+        }
+
+        revealExplanation(currentQuestion.rationale);
+    }
+
+    function handleTimeOut() {
+        if (hasAnswered) return;
+        hasAnswered = true;
+
+        const currentQuestion = activeQuestions[currentQuestionIndex];
+        const buttons = optionsElement.querySelectorAll(".option-btn");
+
+        buttons.forEach(btn => btn.disabled = true);
+        buttons[currentQuestion.correct].classList.add("correct");
+
+        revealExplanation(`⏱️ Temps expiré ! Rappel de cours : ${currentQuestion.rationale}`);
+    }
+
+    function revealExplanation(text) {
+        explanationElement.textContent = text;
+        explanationElement.style.display = "block";
+        nextButton.classList.remove("hidden");
+        nextButton.textContent = currentQuestionIndex === activeQuestions.length - 1 ? "Éditer le Score" : "Question Suivante";
+    }
+
+    nextButton.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < activeQuestions.length) {
+            showQuestion();
+        } else {
+            finishQuiz();
+        }
+    });
+
+    function finishQuiz() {
+        clearInterval(timerInterval);
+        progressElement.style.width = "100%";
+        quizScreen.classList.add("hidden");
+        resultScreen.classList.remove("hidden");
+        
+        scoreBox.textContent = `${score}/${activeQuestions.length}`;
+        const ratio = score / activeQuestions.length;
+        const currentTheme = document.body.getAttribute('data-theme');
+        
+        if (ratio === 1) {
+            if(currentTheme === "fisc") {
+                feedbackText.textContent = "💀 AUDIT FINANCIER PARFAIT ! L'inspecteur déchire tes avis d'imposition. Tu es déclaré souverain fiscal absolu !";
+            } else {
+                feedbackText.textContent = "🏆 EXCELLENCE ACADÉMIQUE ! Zéro faute constatée. Le diplôme du Brevet s'incline devant ta supériorité intellectuelle.";
+            }
+        } else if (ratio >= 0.7) {
+            feedbackText.textContent = "⚡ ADMIS MENTION TRÈS BIEN ! Tes connaissances académiques sont solides et bien ancrées.";
+        } else if (ratio >= 0.5) {
+            feedbackText.textContent = "🛡️ ADMISSIBILITÉ SUR LE FIL ! La moyenne est validée, mais certains points de géométrie ou de subjonctif restent flous.";
+        } else {
+            if(currentTheme === "fisc") {
+                feedbackText.textContent = "💸 REDRESSEMENT IMMÉDIAT ! Tu as échoué au test. L'inspecteur saisit tes meubles et te renvoie étudier tes fiches de cours.";
+            } else {
+                feedbackText.textContent = "💀 AJOURNEMENT ! Les notions fondamentales se sont volatilisées. Relis attentivement tes documents et relance un cycle d'entraînement.";
+            }
+        }
+    }
+
+    function returnToSetup() {
+        resultScreen.classList.add("hidden");
+        setupScreen.classList.remove("hidden");
+    }
+</script>
+
+</body>
+</html>
