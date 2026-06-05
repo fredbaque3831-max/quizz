@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brevet Championnat - Révise comme un Pro ! 🔥</title>
+    <style>
+        /* Styles Généraux et Variables */
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --primary-color: #ccc;
+            --secondary-color: #666;
+            --accent-color: #e74c3c;
+            --card-bg: #ffffff;
+        }
+
+        /* Thème OM 💙🤍 */
+        .theme-om {
+            --bg-color: #e3f2fd;
+            --text-color: #0b3c5d;
+            --primary-color: #00a2e8; /* Bleu ciel OM */
+            --secondary-color: #ffffff;
+            --accent-color: #f39c12; /* Or de l'étoile */
+            --card-bg: #ffffff;
+            font-family: 'Arial Black', Gadget, sans-serif;
+        }
+
+        /* Thème PSG ❤️💙 */
+        .theme-psg {
+            --bg-color: #0a192f;
+            --text-color: #f5f5f7;
+            --primary-color: #001c3d; /* Bleu marine PSG */
+            --secondary-color: #da291c; /* Rouge PSG */
+            --accent-color: #ffffff;
+            --card-bg: #112240;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Écran de Sélection du Club 🏟️ */
+        #selection-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+
+        .club-container {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .club-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid white;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            width: 180px;
+        }
+
+        .club-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .club-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+        }
+
+        /* Header de l'Appli 👑 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--primary-color);
+            color: var(--accent-color);
+            border-bottom: 4px solid var(--secondary-color);
+        }
+
+        header img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        /* Conteneur Principal 🌍 */
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Menu d'Accueil 🏠 */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        @media (min-width: 600px) {
+            .menu-grid { grid-template-columns: 1fr 1fr; }
+            .full-width { grid-column: span 2; }
+        }
+
+        .main-btn {
+            background-color: var(--card-bg);
+            border: 3px solid var(--primary-color);
+            color: var(--text-color);
+            padding: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .main-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            background-color: var(--primary-color);
+            color: var(--accent-color);
+        }
+
+        /* Fiches de Révisions 📚 */
+        .fiches-section {
+            text-align: left;
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .fiche-box {
+            margin-bottom: 25px;
+        }
+
+        .fiche-box h3 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .list-items {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        @media (min-width: 600px) {
+            .list-items { grid-template-columns: 1fr 1fr; }
+        }
+
+        .item-card {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        /* Interface Quizz 🎯 */
+        .quiz-box {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            background-color: rgba(255,255,255,0.7);
+            border: 2px solid var(--text-color);
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s;
+        }
+
+        .theme-psg .option-btn {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .option-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--accent-color);
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            background: var(--secondary-color);
+            color: var(--text-color);
+            border: 2px solid var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .theme-psg .back-btn {
+            color: white;
+        }
+
+        #punchline {
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="selection-screen">
+        <h2>WESH LE SANG ! 👋<br>Choisis ton camp pour débloquer ton thème direct ! ⚽</h2>
+        <p>Tu es plutôt Classico à la capitale ou Force aux Phocéens ?</p>
+        <div class="club-container">
+            <button class="club-btn" onclick="selectTheme('om')">
+                <svg viewBox="0 0 100 100" class="club-logo">
+                    <circle cx="50" cy="50" r="45" fill="#00a2e8"/>
+                    <text x="50" y="55" font-family="Arial" font-size="22" fill="white" font-weight="bold" text-anchor="middle">OM</text>
+                    <polygon points="50,5 55,20 70,20 58,30 62,45 50,35 38,45 42,30 30,20 45,20" fill="#f39c12"/>
+                </svg>
+                <h3 style="color:white; margin:10px 0 0 0;">Droit au But 💙</h3>
+            </button>
+            <button class="club-btn" onclick="selectTheme('psg')">
+                <svg viewBox="0 0 100 100" class="club-logo">
+                    <circle cx="50" cy="50" r="45" fill="#001c3d" stroke="#da291c" stroke-width="4"/>
+                    <path d="M50,25 L50,75 M35,45 L50,25 L65,45" stroke="#da291c" stroke-width="6" fill="none"/>
+                    <text x="50" y="85" font-family="Arial" font-size="14" fill="white" font-weight="bold" text-anchor="middle">PARIS</text>
+                </svg>
+                <h3 style="color:white; margin:10px 0 0 0;">Ici c'est Paris ❤️</h3>
+            </button>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden">
+        <header>
+            <svg viewBox="0 0 100 100" style="width:50px; height:50px;">
+                <circle cx="50" cy="50" r="45" fill="#00a2e8"/>
+                <text x="50" y="58" font-family="Arial" font-size="26" fill="white" font-weight="bold" text-anchor="middle">OM</text>
+            </svg>
+            
+            <h1 id="app-title">PROJET : ALLER CHERCHER LE BREVET 🏆</h1>
+            
+            <svg viewBox="0 0 100 100" style="width:50px; height:50px;">
+                <circle cx="50" cy="50" r="45" fill="#001c3d" stroke="#da291c" stroke-width="3"/>
+                <text x="50" y="58" font-family="Arial" font-size="24" fill="white" font-weight="bold" text-anchor="middle">PSG</text>
+            </svg>
+        </header>
+
+        <div class="container">
+            
+            <div id="screen-home">
+                <h2 id="welcome-msg">Wesh mon reuf ! Prêt à tout casser ? 🥊</h2>
+                <p id="sub-msg">Pas de place pour les touristes ici, on vise la mention Très Bien, direct dans la lucarne ! Choisis ton mode d'entraînement :</p>
+                
+                <div class="menu-grid">
+                    <button class="main-btn" onclick="startQuiz('geo')">🌍 Quizz Repères Géo<br><span style="font-size:0.9rem; font-weight:normal;">Deviens le boss de la carte</span></button>
+                    <button class="main-btn" onclick="startQuiz('histoire')">⏳ Quizz Dates Histoire<br><span style="font-size:0.9rem; font-weight:normal;">Maîtrise le chrono de l'histoire</span></button>
+                    <button class="main-btn full-width" onclick="showScreen('screen-fiches')">📚 Check les Fiches de Révision<br><span style="font-size:0.9rem; font-weight:normal;">Pour caler tes connaissances proprement</span></button>
+                </div>
+            </div>
+
+            <div id="screen-fiches" class="hidden">
+                <button class="back-btn" onclick="showScreen('screen-home')">⬅️ Retour au Vestiaire</button>
+                <h2 style="text-align: center;">📖 Tes fiches tactiques pour le Brevet</h2>
+                
+                <div class="fiches-section">
+                    <div class="fiche-box">
+                        <h3>⏳ Grandes Dates d'Histoire (Programme 3ème)</h3>
+                        <div class="list-items" id="history-dates-list"></div>
+                    </div>
+                    <div class="fiche-box">
+                        <h3>💡 Les Notions Clés à Connaître</h3>
+                        <div class="list-items" id="history-notions-list"></div>
+                    </div>
+                    <div class="fiche-box">
+                        <h3>🌍 Repères Géographiques de France et d'Europe</h3>
+                        <div class="list-items" id="geo-france-list"></div>
+                    </div>
+                    <div class="fiche-box">
+                        <h3>🗺️ Grands Repères Terrestres Mondiaux</h3>
+                        <div class="list-items" id="geo-world-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="screen-quiz" class="hidden">
+                <button class="back-btn" onclick="showScreen('screen-home')">放弃 Abandonner le match</button>
+                <div class="quiz-box" style="margin-top: 20px;">
+                    <h3 id="quiz-progress">Question 1/5</h3>
+                    <h2 id="quiz-question">La question s'affiche ici ?</h2>
+                    <div class="quiz-options" id="quiz-options-container"></div>
+                    <div id="punchline"></div>
+                    <button id="next-btn" class="main-btn hidden" style="width:100%; margin-top:20px;" onclick="nextQuestion()">Question Suivante ➡️</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // DONNÉES DE L'APPLI EXTRACTES DU DOCUMENT
+        const historyDates = [
+            { question: "Quelle est la période de la Grande Guerre (Première Guerre mondiale) ?", answer: "1914-1918", options: ["1914-1918", "1939-1945", "1916-1920"] },
+            { question: "Que s'est-il passé en 1916 ?", answer: "Bataille de Verdun", options: ["Bataille de Verdun", "Révolution russe", "Armistice"] },
+            { question: "Quand a eu lieu l'Armistice de la Première Guerre mondiale ?", answer: "11 novembre 1918", options: ["11 novembre 1918", "8 mai 1945", "18 juin 1940"] },
+            { question: "Quelle est la période où Staline était au pouvoir en URSS ?", answer: "1924-1953", options: ["1924-1953", "1917-1924", "1933-1945"] },
+            { question: "Quand l'Allemagne nazie d'Adolf Hitler a-t-il été en place ?", answer: "1933-1945", options: ["1933-1945", "1914-1918", "1940-1944"] },
+            { question: "Quand s'est déroulée la Seconde Guerre mondiale ?", answer: "1939-1945", options: ["1939-1945", "1914-1918", "1947-1991"] },
+            { question: "Quelle est la date de l'Appel du général De Gaulle ?", answer: "18 juin 1940", options: ["18 juin 1940", "6 juin 1944", "8 mai 1945"] },
+            { question: "Quand a eu lieu le Débarquement allié en Normandie ?", answer: "6 juin 1944", options: ["6 juin 1944", "11 novembre 1918", "8 mai 1945"] },
+            { question: "Quand les femmes ont-elles obtenu le droit de vote en France ?", answer: "1944-1945", options: ["1944-1945", "1918", "1962"] },
+            { question: "Quand a eu lieu la Capitulation allemande marquant la fin de la guerre en Europe ?", answer: "8 mai 1945", options: ["8 mai 1945", "11 novembre 1918", "15 août 1945"] },
+            { question: "Quand ont été lancées les bombes atomiques sur Hiroshima et Nagasaki ?", answer: "Août 1945", options: ["Août 1945", "Juin 1944", "Septembre 1939"] },
+            { question: "Quelle est la période de la Guerre Froide ?", answer: "1947-1991", options: ["1947-1991", "1939-1945", "1954-1962"] },
+            { question: "Quand la Ve République est-elle née ?", answer: "1958", options: ["1958", "1945", "1962"] },
+            { question: "Quelle est la période de la Guerre d'Algérie ?", answer: "1954-1962", options: ["1954-1962", "1939-1945", "1914-1918"] },
+            { question: "Quand a été votée la Loi Veil sur l'IVG ?", answer: "1975", options: ["1975", "1962", "1989"] },
+            { question: "Quand est tombé le mur de Berlin ?", answer: "9 novembre 1989", options: ["9 novembre 1989", "11 septembre 2001", "1991"] }
+        ];
+
+        const historyNotions = [
+            "Civils / Militaires", "Guerre de tranchées", "Guerre totale", "Mobilisation", "Économie de guerre", 
+            "Propagande", "Culte de la personnalité", "Censure", "Génocide / Shoah", "Totalitarisme", 
+            "Stalinisme / Nazisme", "Antisémitisme", "Collectivisation", "Goulag", "Régime de Vichy", "Collaboration"
+        ];
+
+        const geoFranceEurope = [
+            "Territoire national (Métropole et DROM-COM)", "Les 13 régions métropolitaines", 
+            "Les principales aires urbaines françaises dynamiques", "Grands repères physiques (Massifs, grands fleuves)",
+            "La carte des 27 États membres de l'UE et leurs capitales", "La mégalopole européenne",
+            "Les façades maritimes européennes", "Les axes de transport majeurs"
+        ];
+
+        const geoWorld = [
+            { question: "Quel grand désert d'Afrique faut-il localiser au collège ?", answer: "Le Sahara", options: ["Le Sahara", "Le Gobi", "L'Atacama"] },
+            { question: "Quelles sont les deux grandes forêts denses mondiales à connaître ?", answer: "Amazonie et Afrique centrale", options: ["Amazonie et Afrique centrale", "Taïga et Sibérie", "Forêt Noire"] },
+            { question: "Quelle immense chaîne de montagnes se trouve en Asie ?", answer: "L'Himalaya", options: ["L'Himalaya", "Les Andes", "Les Alpes"] },
+            { question: "Quel fleuve traverse l'Égypte ?", answer: "Le Nil", options: ["Le Nil", "L'Amazone", "Le Mississippi"] },
+            { question: "Quels sont les deux grands isthmes stratégiques mondiaux ?", answer: "Suez et Panama", options: ["Suez et Panama", "Gibraltar et Malacca", "Bosphore"] },
+            { question: "Quelle mégalopole asiatique est un foyer de très forte densité ?", answer: "La mégalopole japonaise (Tokyo)", options: ["La mégalopole japonaise (Tokyo)", "La mégalopole américaine", "La mégalopole européenne"] }
+        ];
+
+        let currentTheme = 'om';
+        let currentQuizData = [];
+        let quizIndex = 0;
+        let score = 0;
+
+        // Slang & Punchlines customisées
+        const punchlinesOM = {
+            correct: ["C'est ça le sang ! En pleine lucarne ! ⚽🔥", "Tié un monstre mon reuf ! Zone en personne ! 🎸", "Magnifique ! Direct au but comme Greenwood ! ⚡"],
+            wrong: ["Ah oé tié fatigué là... Relis tes fiches gros ! 🥱", "Mais non l'ami ! Tu as tiré sur le poteau là ! 🥅", "Wesh ! C'est pas le comportement d'un titulaire ça ! ❌"]
+        };
+
+        const punchlinesPSG = {
+            correct: ["Ici c'est Paris ! Masterclass mon crack ! 🔴🔵", "Propre, chirurgical comme Barcola ! 🔥", "Le talent est là, tu régales la capitale ! 👑"],
+            wrong: ["Aïe, grosse contre-attaque... Reste concentré ! 📉", "C'est pas le niveau Champions League ça mon reuf ! ❌", "Sors les crampons et révise, tu dors là ! 💤"]
+        };
+
+        // GESTION DU THÈME ET ENTRÉE
+        function selectTheme(theme) {
+            currentTheme = theme;
+            const body = document.body;
+            body.className = ''; // Reset
+            
+            if (theme === 'om') {
+                body.classList.add('theme-om');
+                document.getElementById('welcome-msg').innerHTML = "Wesh le sang ! Prêt à tout péter au Vélodrome des révisions ? 💙⚡";
+                document.getElementById('sub-msg').innerHTML = "Ici on lâche rien gros ! Fais honneur à l'étoile sur le maillot. Choisis ton mode d'entraînement, tié un tigre ou pas ?";
+                document.getElementById('app-title').innerHTML = "DNB OLYMPIQUE : DROIT AU BREVET ! 🏆🔥";
+            } else {
+                body.classList.add('theme-psg');
+                document.getElementById('welcome-msg').innerHTML = "Wesh le crack ! Bienvenue au Parc des Révisions ! ❤️💙";
+                document.getElementById('sub-msg').innerHTML = "Pas de place pour les amateurs ici, on veut la mention très bien comme un titre de champion ! Prêt à aligner les masterclass ?";
+                document.getElementById('app-title').innerHTML = "DNB PARIS : ICI C'EST LE BREVET ! 👑⚽";
+            }
+
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            initFiches();
+        }
+
+        function showScreen(screenId) {
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-fiches').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        // INITIALISATION DES FICHES DE REVISION
+        function initFiches() {
+            // Histoire dates
+            const histList = document.getElementById('history-dates-list');
+            histList.innerHTML = historyDates.map(d => `<div class="item-card">🗓️ <strong>${d.answer}</strong> : ${d.question.replace("Quelle est la période de la ", "").replace("Quand a eu lieu l'", "").replace("Quand l'", "").replace("Quand s'est déroulée la ", "")}</div>`).join('');
+
+            // Histoire Notions
+            const notionList = document.getElementById('history-notions-list');
+            notionList.innerHTML = historyNotions.map(n => `<div class="item-card">📌 ${n}</div>`).join('');
+
+            // Géo France
+            const geoFrList = document.getElementById('geo-france-list');
+            geoFrList.innerHTML = geoFranceEurope.map(g => `<div class="item-card">🗺️ ${g}</div>`).join('');
+
+            // Géo Monde
+            const geoWldList = document.getElementById('geo-world-list');
+            geoWldList.innerHTML = geoWorld.map(w => `<div class="item-card">🌍 <strong>${w.answer}</strong> : ${w.question}</div>`).join('');
+        }
+
+        // LOGIQUE DU QUIZZ
+        function startQuiz(type) {
+            showScreen('screen-quiz');
+            quizIndex = 0;
+            score = 0;
+            document.getElementById('punchline').innerHTML = "";
+            document.getElementById('next-btn').classList.add('hidden');
+
+            if (type === 'histoire') {
+                // Shuffle array et prendre 5 questions
+                currentQuizData = [...historyDates].sort(() => 0.5 - Math.random()).slice(0, 5);
+            } else {
+                currentQuizData = [...geoWorld].sort(() => 0.5 - Math.random()).slice(0, 5);
+            }
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            document.getElementById('punchline').innerHTML = "";
+            document.getElementById('next-btn').classList.add('hidden');
+            
+            const q = currentQuizData[quizIndex];
+            document.getElementById('quiz-progress').innerText = `🔥 Match : Action ${quizIndex + 1}/5`;
+            document.getElementById('quiz-question').innerText = q.question;
+
+            const optionsContainer = document.getElementById('quiz-options-container');
+            optionsContainer.innerHTML = "";
+
+            // Mélanger les propositions
+            const shuffledOptions = [...q.options].sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, q.answer);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedBtn, selectedOpt, correctAns) {
+            // Désactiver tous les boutons de réponse
+            const btns = document.querySelectorAll('.quiz-options .option-btn');
+            btns.forEach(b => b.disabled = true);
+
+            const punchlines = currentTheme === 'om' ? punchlinesOM : punchlinesPSG;
+            const pDiv = document.getElementById('punchline');
+
+            if (selectedOpt === correctAns) {
+                score++;
+                selectedBtn.style.backgroundColor = "#2ecc71";
+                selectedBtn.style.color = "white";
+                pDiv.innerHTML = `<span style="color:#2ecc71">${punchlines.correct[Math.floor(Math.random() * punchlines.correct.length)]}</span>`;
+            } else {
+                selectedBtn.style.backgroundColor = "#e74c3c";
+                selectedBtn.style.color = "white";
+                
+                // Afficher la bonne réponse en vert
+                btns.forEach(b => {
+                    if (b.innerText === correctAns) {
+                        b.style.backgroundColor = "#2ecc71";
+                        b.style.color = "white";
+                    }
+                });
+                pDiv.innerHTML = `<span style="color:#e74c3c">${punchlines.wrong[Math.floor(Math.random() * punchlines.wrong.length)]}</span>`;
+            }
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            quizIndex++;
+            if (quizIndex < currentQuizData.length) {
+                showQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-progress').innerText = "🏁 FIN DU MATCH !";
+            const optionsContainer = document.getElementById('quiz-options-container');
+            optionsContainer.innerHTML = "";
+            document.getElementById('next-btn').classList.add('hidden');
+
+            let finalMsg = "";
+            if (score >= 4) {
+                finalMsg = currentTheme === 'om' ? 
+                    `🔥 Score : ${score}/5 ! WESH TIÉ UN MONSTRE ! Tu as plié le match, direct sur le Vieux-Port pour fêter ça ! 🥳🏆` :
+                    `👑 Score : ${score}/5 ! Quelle masterclass ! Champion de France incontestable des révisions ! 🔴🔵🎈`;
+            } else if (score >= 2) {
+                finalMsg = currentTheme === 'om' ? 
+                    `⚡ Score : ${score}/5 ! Pas mal le sang, mais tu peux faire mieux. Retourne t'entraîner à la Commanderie ! ⚽` :
+                    `📈 Score : ${score}/5 ! Y'a des bonnes phases de jeu mais faut bosser la finition au Camp des Loges ! 🙌`;
+            } else {
+                finalMsg = currentTheme === 'om' ? 
+                    `🥱 Score : ${score}/5... Oh fada tié fatigué là ! Tu as tiré en touche tout le long ! Relis les fiches direct ! ❌` :
+                    `📉 Score : ${score}/5... Aïe aïe aïe, relégation directe... Mets-toi en mode charbon sur les fiches mon reuf ! 🛑`;
+            }
+
+            document.getElementById('quiz-question').innerText = finalMsg;
+            document.getElementById('punchline').innerHTML = `<button class="main-btn" style="width:100%;" onclick="showScreen('screen-home')">Revenir à l'accueil du club 🏠</button>`;
+        }
+    </script>
+</body>
+</html>
